@@ -1,0 +1,38 @@
+#largeImg {
+    border: solid 1px #ccc;
+    width: 550px;
+    height: 400px;
+    padding: 5px;
+}
+
+#previewImg {
+    width: 300px;
+    height: 300px;
+    border-style: solid;
+    border-color: black;
+}
+
+@media screen and (max-width: 400px) {
+    #previewImg {
+        width: 200px;
+        height: 200px;
+    }
+}
+
+.operate1 {
+    margin: 10px auto;
+}
+
+.result_mess1 {
+    height: 300px;
+    width: 100%;
+}
+
+.file_form {
+    font-size: 20px;
+    width: 100%
+}
+
+#myfile {
+    width: 100%;
+}
