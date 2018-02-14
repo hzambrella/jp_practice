@@ -74,8 +74,8 @@ public class Setting {
 			// 发起请求 并返回请求的响应
 			CloseableHttpResponse response = httpClient.execute(httpPost);
 			try {
-//				// 打印响应状态
-//				System.out.println(response.getStatusLine());
+//				
+
 				// 获取响应对象
 				HttpEntity resEntity = response.getEntity();
 				if (resEntity != null) {
@@ -87,6 +87,19 @@ public class Setting {
 						Charset.forName("UTF-8"));
 					System.out.println(respString);
 					EntityUtils.consume(resEntity);
+					if (response.getStatusLine().getStatusCode()!=200){
+						// 打印响应状态
+						System.out.println(response.getStatusLine());
+						DetectRespSucc wrongResp=new DetectRespSucc();
+						if (response.getStatusLine().getReasonPhrase().equals("Request Entity Too Large")){
+							wrongResp.setErrorMessage("上传图片过大");
+						}else{
+							wrongResp.setErrorMessage(response.getStatusLine().getReasonPhrase());
+						}
+						
+				
+						return wrongResp;
+					}
 					DetectRespSucc detectRes=JSON.parseObject(respString,new TypeReference<DetectRespSucc>() {});
 					System.out.println(JSON.toJSONString(detectRes));
 					return detectRes;	
