@@ -42,5 +42,9 @@ $(function () {
         // $.toast("test_scan")
         $scanimg2.scanimg("scanning")
         $scanimg3.scanimg("scanning")
+        setTimeout(function(){
+            $.toast("这个功能交给你了,我去吃鸡了")
+            $("#stop2").trigger("click")
+        },1500)
     }
 })

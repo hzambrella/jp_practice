@@ -16,26 +16,19 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
+import setting.Setting;
 import View.Result;
 
 /**
  * Servlet implementation class fileUploadServlet
  */
-public class fileUploadServlet extends HttpServlet {
+public class FileUploadServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
-	// 上传文件存储目录
-	private static final String UPLOAD_DIRECTORY = "upload";
-
-	// 上传配置
-	private static final int MEMORY_THRESHOLD = 1024 * 1024 * 3; // 3MB
-	private static final int MAX_FILE_SIZE = 1024 * 1024 * 40; // 40MB
-	private static final int MAX_REQUEST_SIZE = 1024 * 1024 * 50; // 50MB
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public fileUploadServlet() {
+	public FileUploadServlet() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -62,17 +55,17 @@ public class fileUploadServlet extends HttpServlet {
 		// 配置上传参数
 		DiskFileItemFactory factory = new DiskFileItemFactory();
 		// 设置内存临界值 - 超过后将产生临时文件并存储于临时目录中
-		factory.setSizeThreshold(MEMORY_THRESHOLD);
+		factory.setSizeThreshold(Setting.MEMORY_THRESHOLD);
 		// 设置临时存储目录
 		factory.setRepository(new File(System.getProperty("java.io.tmpdir")));
 
 		ServletFileUpload upload = new ServletFileUpload(factory);
 
 		// 设置最大文件上传值
-		upload.setFileSizeMax(MAX_FILE_SIZE);
+		upload.setFileSizeMax(Setting.MAX_FILE_SIZE);
 
 		// 设置最大请求值 (包含文件和表单数据)
-		upload.setSizeMax(MAX_REQUEST_SIZE);
+		upload.setSizeMax(Setting.MAX_REQUEST_SIZE);
 
 		// 中文处理
 		upload.setHeaderEncoding("UTF-8");
@@ -80,7 +73,7 @@ public class fileUploadServlet extends HttpServlet {
 		// 构造临时路径来存储上传的文件
 		// 这个路径相对当前应用的目录
 		String uploadPath = request.getServletContext().getRealPath("")
-				+ File.separator + UPLOAD_DIRECTORY;
+				+ File.separator + Setting.UPLOAD_DIRECTORY;
 
 		// 如果目录不存在则创建
 		File uploadDir = new File(uploadPath);
@@ -110,9 +103,7 @@ public class fileUploadServlet extends HttpServlet {
 						// 保存文件到硬盘
 						item.write(storeFile);
 						fileNames.add(fileName);
-						request.setAttribute("message", "文件上传成功!");
 					}
-
 				}
 				
 				rmap.put("fileName", fileNames);
@@ -120,7 +111,7 @@ public class fileUploadServlet extends HttpServlet {
 			}else{
 				result.setCode(400);
 				result.setMessage("上传文件为空");
-				response.getWriter().println(result.toJSON());
+				response.getWriter().println(result);
 				return;
 			}
 		} catch (Exception ex) {
@@ -130,7 +121,7 @@ public class fileUploadServlet extends HttpServlet {
 			return;
 		}
 
-		response.getWriter().println(result.toJSON());
+		response.getWriter().println(result);
 		System.out.println(result.toJSON());
 	}
 

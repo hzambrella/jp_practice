@@ -25,6 +25,7 @@ $.extend({
                 if(ioContent)xml.responseText = ioContent.document.body?ioContent.document.body.innerHTML:null,xml.responseXML = ioContent.document.XMLDocument?ioContent.document.XMLDocument:ioContent.document;
             }catch(e){
                 $.handleError(s, xml, null, e);
+                console.log(e)
             }
             if ( xml || isTimeout == "timeout"){
                 requestDone = true;
@@ -40,6 +41,7 @@ $.extend({
                 } catch(e){
                     status = "error";
                     $.handleError(s, xml, status, e);
+                    console.log(e)
                 }
                 if( s.global )
                     $.event.trigger( "ajaxComplete", [xml, s] );
@@ -53,6 +55,7 @@ $.extend({
 		                $(io,form).remove();
 	                } catch(e){
                         $.handleError(s, xml, null, e);
+                        console.log(e)
                     }
                 }, 100)
                 xml = null
@@ -64,6 +67,7 @@ $.extend({
             $('#' + formId).attr({action:s.url,method:'POST',target:frameId,encoding:'multipart/form-data',enctype:'multipart/form-data'}).submit();
         } catch(e){
             $.handleError(s, xml, null, e);
+            console.log(e)
         }
         $('#'+frameId).on('load',uploadCallback);
         return {abort: function () {}};
@@ -81,7 +85,9 @@ $.extend({
                 data =am? am[1] : '';
                 alert(1)
         	}
-            console.log(data)
+            if (data==""){
+                console.log("data is null")
+            }           
             data=JSON.parse(data);
         }
         if ( type == "html" )

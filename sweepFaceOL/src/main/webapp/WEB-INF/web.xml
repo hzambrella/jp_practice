@@ -13,7 +13,7 @@
     <description></description>
     <display-name>sweepServlet</display-name>
     <servlet-name>sweepServlet</servlet-name>
-    <servlet-class>sweepFaceOL.sweepServlet</servlet-class>
+    <servlet-class>sweepFaceOL.SweepServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>sweepServlet</servlet-name>
@@ -23,7 +23,7 @@
     <description></description>
     <display-name>fileUploadServlet</display-name>
     <servlet-name>fileUploadServlet</servlet-name>
-    <servlet-class>fileUpload.fileUploadServlet</servlet-class>
+    <servlet-class>fileUpload.FileUploadServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>fileUploadServlet</servlet-name>
