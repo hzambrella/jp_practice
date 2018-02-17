@@ -121,7 +121,7 @@ public class FileUploadServlet extends HttpServlet {
 			return;
 		}
 
-		response.getWriter().println(result);
+		response.getWriter().println(result.toJSON());
 		System.out.println(result.toJSON());
 	}
 

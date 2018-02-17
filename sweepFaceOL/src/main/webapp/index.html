@@ -81,13 +81,13 @@
                     <img id="addImg2" class="addImg" src="/sweepFaceOL/view/images/addPic.png" />
                 </div>
                 <div id="compare_img1" class="ui-helper-hidden">
-                    <form action="uploadServlet.do" method="post" enctype="multipart/form-data">
-                        <input type="file" name="上传证件图" onchange="showPreview(this,'addImg1')" accept="image/jpg,image/jpeg,image/png" />
+                    <form  method="post" enctype="multipart/form-data">
+                        <input id="compare_file1" type="file" name="上传证件图" onchange="showPreview(this,'addImg1')" accept="image/jpg,image/jpeg,image/png" />
                     </form>
                 </div>
                 <div id="compare_img2" class="ui-helper-hidden">
-                    <form action="uploadServlet.do" method="post" enctype="multipart/form-data">
-                        <input type="file" name="上传待对比图" onchange="showPreview(this,'addImg2')" accept="image/jpg,image/jpeg,image/png" />
+                    <form  method="post" enctype="multipart/form-data">
+                        <input id="compare_file2" type="file" name="上传待对比图" onchange="showPreview(this,'addImg2')" accept="image/jpg,image/jpeg,image/png" />
                     </form>
                 </div>
 
@@ -95,7 +95,7 @@
                     <button id="stop2">stop</button>
                     <button id="test_scan2">scan it!</button>
                 </div>
-                <div class="result_mess2 ui-widget-content" style="overflow:auto;font-size:0.5em">
+                <div id="result2" class="result_mess2 ui-widget-content" style="overflow:auto;font-size:0.5em">
 
                 </div>
             </div>

@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
+
+import model.CmpRespSucc;
 import model.DetectRespSucc;
 
 import org.apache.http.HttpEntity;
@@ -43,7 +45,9 @@ public class Setting {
 	public static final String KuangshiFaceApiSecret = "1_b_swUwPWcy1bJSSk--XglBt_V5IXrR";
 	// 接口的URL
 	public static final String KuangshiFaceDetectURL = "https://api-cn.faceplusplus.com/facepp/v3/detect";
-	
+	public static final String KuangshiFaceCmpURL="https://api-cn.faceplusplus.com/facepp/v3/compare";
+
+
 	// 发送post请求到face++的detect接口
 	public static DetectRespSucc kuangshiFaceDetectPostByHttpClient(File file)
 			throws IOException {
@@ -114,6 +118,77 @@ public class Setting {
 			file.delete();
 		}
 	}
+	
+	// 发送post请求到face++的compare接口。目前暂且只支持2个文件。
+		public static CmpRespSucc kuangshiFaceCmpPostByHttpClient(File fileOrg,File fileCmp)
+				throws IOException {
+
+			CloseableHttpClient httpClient = HttpClients.createDefault();
+			
+			try {
+				HttpPost httpPost = new HttpPost(Setting.KuangshiFaceCmpURL);
+				// 把文件转换成流对象FileBody
+				FileBody imageFileOrg = new FileBody(fileOrg);
+				FileBody imageFileCmp = new FileBody(fileCmp);
+				StringBody apikey = new StringBody(KuangshiFaceApiKey, ContentType.TEXT_PLAIN);
+				StringBody apiSecret = new StringBody(KuangshiFaceApiSecret, ContentType.TEXT_PLAIN);		
+				
+				HttpEntity reqEntity = MultipartEntityBuilder.create()
+						.setMode(HttpMultipartMode.BROWSER_COMPATIBLE)
+						.addPart("image_file1", imageFileOrg)
+						.addPart("image_file2", imageFileCmp) // uploadFile对应服务端类的同名属性<File类型>
+						.addPart("api_key", apikey)
+						.addPart("api_secret", apiSecret)
+						// uploadFileName对应服务端类的同名属性<String类型>
+						.setCharset(CharsetUtils.get("UTF-8")).build();
+
+				httpPost.setEntity(reqEntity);
+
+//				System.out.println("发起请求的页面地址 " + httpPost.getRequestLine());
+				// 发起请求 并返回请求的响应
+				CloseableHttpResponse response = httpClient.execute(httpPost);
+				try {
+//					
+
+					// 获取响应对象
+					HttpEntity resEntity = response.getEntity();
+					if (resEntity != null) {
+//						// 打印响应长度
+//						System.out.println("Response content length: "
+//								+ resEntity.getContentLength());
+						// 打印响应内容
+						String respString=EntityUtils.toString(resEntity,
+							Charset.forName("UTF-8"));
+						System.out.println(respString);
+						EntityUtils.consume(resEntity);
+						if (response.getStatusLine().getStatusCode()!=200){
+							// 打印响应状态
+							System.out.println(response.getStatusLine());
+							CmpRespSucc wrongResp=new CmpRespSucc();
+							if (response.getStatusLine().getReasonPhrase().equals("Request Entity Too Large")){
+								wrongResp.setErrorMessage("上传图片过大");
+							}else{
+								wrongResp.setErrorMessage(response.getStatusLine().getReasonPhrase());
+							}
+							
+					
+							return wrongResp;
+						}
+						CmpRespSucc cmpRes=JSON.parseObject(respString,new TypeReference<CmpRespSucc>() {});
+						System.out.println(JSON.toJSONString(cmpRes));
+						return cmpRes;	
+					}
+					return null;
+				} finally {
+					response.close();
+				}
+			} finally {
+				httpClient.close();
+				//删掉硬盘文件
+				fileOrg.delete();
+				fileCmp.delete();
+			}
+		}
 	
 	// 不能用
 	public static String kuangshiFaceDetectPost1(Result result) throws IOException {

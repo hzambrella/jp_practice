@@ -29,4 +29,14 @@
     <servlet-name>fileUploadServlet</servlet-name>
     <url-pattern>/fileUploadServlet</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>compareFaceServlet</display-name>
+    <servlet-name>compareFaceServlet</servlet-name>
+    <servlet-class>compareFaceOL.CompareFaceServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>compareFaceServlet</servlet-name>
+    <url-pattern>/compareFaceServlet</url-pattern>
+  </servlet-mapping>
 </web-app>

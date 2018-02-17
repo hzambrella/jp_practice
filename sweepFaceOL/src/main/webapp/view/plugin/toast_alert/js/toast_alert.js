@@ -30,7 +30,7 @@ $.extend({
 
     //服务端需要定义response数据格式，code为状态码，message为信息。
     toastForJavaAjaxRes: function (data, callback) {
-        console.log(data,data.code)
+        //console.log(data,data.code)
         if (data.code != 200) {
             $.toast(data.message)
         } else {
