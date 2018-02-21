@@ -27,7 +27,7 @@ $.extend({
             // console.log(oldElement.prop("files"))
             $form.append($(oldElement).attr('id', fileId).before(newElement))
         }
-        $form.appendTo('body')[0];
+        return $form.appendTo('body')[0];
     },
     addOtherRequestsToForm: function (form, data) {
         var originalElement = $('<input type="hidden"/>');
