@@ -1,0 +1,57 @@
+.map-container {
+    background-color: blue;
+    margin: 0 auto;
+    border-radius: 4px;
+    border: 1px #666 solid;
+}
+
+.operate-container {
+    /*background-color: green;*/
+    margin: 0 auto;
+}
+
+.result-container {
+    background-color: white;
+    margin: 0 auto;
+    /*border: 1px solid black;*/
+      /*border:1px solid #333;
+    box-shadow:inset 0 0 5px 5px #ccc;*/
+    border-radius: 4px;
+    box-shadow: inset 0px 2px 9px 2px #666;
+    border: 1px #666 solid;
+    padding: 10px;
+}
+
+@media screen and (max-width: 450px) {
+    .map-container {
+        margin: 10px;
+        height: 70%;
+    }
+    .operate-container {
+        margin: 10px;
+        height: 17%;
+    }
+    .result-container {
+        margin: 10px;
+        height: 8%;
+    }
+}
+
+@media screen and (min-width: 450px) {
+    .map-container {
+        margin-top: 10px;
+        width: 430px;
+        height: 600px;
+    }
+
+    .operate-container {
+        margin-top: 10px;
+        width: 430px;
+        height: 100px;
+    }
+    .result-container {
+        margin-top: 10px;
+        width: 410px;
+        height: 110px;
+    }
+}

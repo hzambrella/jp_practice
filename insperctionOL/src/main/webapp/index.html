@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>电力设备巡检路径规划</title>
+    <!--<link href="/insperctionOL/view/css/style.css" rel='stylesheet' type='text/css' />-->
+    <!--<meta name="viewport" content="width=device-width, initial-scale=1">-->
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimal-ui" />
+    <meta name="renderer" content="webkit" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <!--jquery-->
+    <script src="/insperctionOL/view/js/vendor/jquery-3.2.1.min.js"></script>
+    <!--jqueryui-->
+    <!--<link rel="stylesheet" href="http://apps.bdimg.com/libs/jqueryui/1.10.4/css/jquery-ui.min.css">
+    <script src="http://apps.bdimg.com/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="http://apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>-->
+    <!--baidu map-->
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=Nj2QIPFYyVb49p93WnQhxbvjPt4lsmco"></script>
+    <!--toast_alert-->
+    <link rel="stylesheet" type="text/css" href="/insperctionOL/view/plugin/toast_alert/css/toast_alert.css">
+    <script src="/insperctionOL/view/plugin/toast_alert/js/toast_alert.js"></script>
+
+    <!--css-->
+    <link href="/insperctionOL/view/css/main.css" rel="stylesheet" type="text/css" />
+    <link href="/insperctionOL/view/css/app.css" rel="stylesheet" type="text/css" />
+    <style type="text/css">
+    </style>
+
+</head>
+
+<body>
+    <div class="main-panel">
+        <div id="map" class="map-container">
+        </div>
+        <div class="operate-container">
+            <button id="my_position">移动到当前位置</button>
+            <button id="get_device">获取待巡检设备</button>
+            <button id="get_route">获取巡检路线</button>
+            <button id="clear_layout">清除地图所有标记</button>
+            <button id="product_info">相关信息</button>
+        </div>
+        <div class="result-container">
+            <p id="message">基于百度地图的多点电力设备巡检路径规划<br/>(待改进以提高速度。1.计算距离在js。2.规划算法在服务端)</p>
+        </div>
+    </div>
+    <div class="toast">
+        <div class="toast_text"></div>
+    </div>
+
+
+</body>
+<!--js-->
+<script src="/insperctionOL/view/js/main.js"></script>
+<script>
+    //百度地图控件
+    var $default_zoom = 14; //默认放大级别
+    //将武科大青山校区作为默认中心(起点/终点)。原本应该是自己的当前位置。
+    var $default_cen_lng = 114.37901;
+    var $default_cen_lat = 30.63299;
+    var map = new BMap.Map("map");
+    var $start_end_point = new BMap.Point($default_cen_lng, $default_cen_lat);
+    var $start_end_marker= null;
+
+    //地图初始化
+    map.centerAndZoom($start_end_point, $default_zoom);
+    map.enableScrollWheelZoom(true);
+    $start_end_marker=addStartEndMarker();
+    //生成起/终点
+    function addStartEndMarker() {
+        var title = "起/终",
+            center_marker = new BMap.Marker($start_end_point, {
+                title: title
+            }),
+            desc = "地址武科大青山校区";
+        var cen_label = new BMap.Label(title, {
+            offset: new BMap.Size(20, -10)
+        });
+        center_marker.setLabel(cen_label);
+        map.addOverlay(addWindowsInfo(center_marker, title, desc))
+        return center_marker
+    }
+
+    //生成maker
+    function addMarker(point, title, desc) {
+        var marker = new BMap.Marker(point, {
+            title: title
+        });
+        map.addOverlay(addWindowsInfo(marker, title, desc));
+        return marker
+    }
+
+
+    //给marker添加信息窗口
+    function addWindowsInfo(marker, title, desc) {
+        var info_opts = {
+            width: 200, // 信息窗口宽度
+            height: 100, // 信息窗口高度
+            title: title, // 信息窗口标题
+            enableMessage: true, //设置允许信息窗发送短息
+            message: "无"
+        }
+        var infoWindow = new BMap.InfoWindow(desc, info_opts); // 创建信息窗口对象 
+
+        marker.addEventListener("click", function () {
+            map.closeInfoWindow()
+            console.log("marker:", marker.getTitle())
+            map.openInfoWindow(infoWindow, marker.getPosition()); //开启信息窗口
+        });
+        return marker
+    }
+
+    //调试用
+    function showInfo(e){
+		console.log(e.point.lng,e.point.lat);
+	}
+	map.addEventListener("click", showInfo);
+</script>
+
+<script>
+    // 添加带有定位的导航控件
+    var navigationControl = new BMap.NavigationControl({
+        // 靠左上角位置
+        anchor: BMAP_ANCHOR_TOP_LEFT,
+        // LARGE类型
+        type: BMAP_NAVIGATION_CONTROL_LARGE,
+        // 启用显示定位
+        enableGeolocation: true
+    });
+    map.addControl(navigationControl);
+    // 添加定位控件
+    var geolocationControl = new BMap.GeolocationControl();
+    geolocationControl.addEventListener("locationSuccess", function (e) {
+        // 定位成功事件
+        var address = '';
+        address += e.addressComponent.province;
+        address += e.addressComponent.city;
+        address += e.addressComponent.district;
+        address += e.addressComponent.street;
+        address += e.addressComponent.streetNumber;
+
+        $.toast("当前定位地址为：" + address);
+    });
+    geolocationControl.addEventListener("locationError", function (e) {
+        // 定位失败事件
+        $.toast(e.message);
+    });
+    map.addControl(geolocationControl);
+</script>
+<script src="/insperctionOL/view/js/app.js"></script>
+<script src="/insperctionOL/view/js/device_data.js"></script>
+
+</html>
