@@ -9,6 +9,7 @@ import com.alibaba.fastjson.JSON;
 import TSP.DP;
 import TSP.DP2;
 
+@SuppressWarnings("unused")
 public class TestDP {
 
 	@Test

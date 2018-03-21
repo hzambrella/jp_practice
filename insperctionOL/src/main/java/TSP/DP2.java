@@ -121,6 +121,7 @@ public class DP2 {
 		this.setMinDistance(D[0][vminusv0id]);
 	}
 
+	@SuppressWarnings("unused")
 	private void printDP(double[][] D) {
 		for (int i = 0; i < D.length; i++) {
 			for (int j = 0; j < D[i].length; j++) {

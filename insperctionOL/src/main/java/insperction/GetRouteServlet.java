@@ -18,6 +18,7 @@ import View.Result;
 /**
  * Servlet implementation class GetRoutes
  */
+@SuppressWarnings("unused")
 @WebServlet("/GetRouteServlet")
 public class GetRouteServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
