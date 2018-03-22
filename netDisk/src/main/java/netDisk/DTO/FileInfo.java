@@ -2,7 +2,7 @@ package netDisk.DTO;
 
 import java.io.File;
 import java.io.IOException;
-import netDisk.netDiskEngine.GetFileInfo;
+import netDisk.netDiskEngine.FileOperate;
 
 public class FileInfo{
 	private String name;
@@ -20,10 +20,10 @@ public class FileInfo{
 	public FileInfo(File f) throws IOException{
 		String name=f.getName();
 	
-		this.setModifiedTime(GetFileInfo.getFileModifiedTime(f));
+		this.setModifiedTime(FileOperate.getFileModifiedTime(f));
 		this.setName(name);
-		this.setSize(GetFileInfo.getFileSize(f));
-		this.setType(GetFileInfo.getFileType(f));
+		this.setSize(FileOperate.getFileSize(f));
+		this.setType(FileOperate.getFileType(f));
 	}
 	
 	

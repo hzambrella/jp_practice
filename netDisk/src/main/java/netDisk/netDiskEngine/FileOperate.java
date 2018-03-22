@@ -1,20 +1,92 @@
 package netDisk.netDiskEngine;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
-import com.alibaba.fastjson.JSON;
-
+import netDisk.DTO.DirTreeNode;
 import netDisk.DTO.FileInfo;
 
 public class FileOperate {
-	// cd
+	/**
+	 * 获取带有单位的文件大小。大文件不准。建议用FileChannel
+	 * 
+	 * @param f
+	 *            文件
+	 * @return
+	 * @throws IOException
+	 */
+	public static String getFileSize(File f) throws IOException {
+		// 文件夹没大小，强行看大小会有拒绝访问异常
+		if (f.isDirectory()) {
+			return "0";
+		}
+		FileInputStream fis = new FileInputStream(f);
+		int available = fis.available();
+		fis.close();
+		return formatSize(available);
+	}
+
+	/**
+	 * 格式化文件大小输出
+	 * 
+	 * @param fileSize文件大小
+	 * @return
+	 */
+	public static String formatSize(int fileSize) {
+		DecimalFormat df = new DecimalFormat("#.00");
+		String size = "0";
+		if (fileSize <= 0) {
+			size = "0";
+		} else if (fileSize < 1024) {
+			size = df.format((double) fileSize) + "BT";
+		} else if (fileSize < 1048576) {
+			size = df.format((double) fileSize / 1024) + "KB";
+		} else if (fileSize < 1073741824) {
+			size = df.format((double) fileSize / 1048576) + "MB";
+		} else {
+			size = df.format((double) fileSize / 1073741824) + "GB";
+		}
+		return size;
+	}
+
+	// 修改时间
+	public static String getFileModifiedTime(File f) {
+		long mtime = f.lastModified();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(mtime);
+		String modifytimeStr = sdf.format(cal.getTime());
+		return modifytimeStr;
+	}
+
+	// 文件类型
+	public static String getFileType(File f) {
+		if (f.isDirectory()) {
+			return "folder";
+		}
+		String[] split = f.getName().split(".");
+
+		if (split.length < 2) {
+			return "file";
+		} else {
+			return split[split.length - 1];
+		}
+	}
+
+	/**
+	 * cd 获得目标路径下的目录
+	 * 
+	 * @param targetPath
+	 * @return
+	 * @throws IOException
+	 */
 	public static List<FileInfo> getFileDirectory(String targetPath)
 			throws IOException {
 		File target = new File(targetPath);
@@ -40,8 +112,11 @@ public class FileOperate {
 	 * commons-io FileUtils#copyFileToDirectory(File,File)
 	 * 
 	 * @param orgDir
+	 *            原来的目录
 	 * @param newDir
+	 *            目标目录
 	 * @param fileName
+	 *            文件名
 	 * @return
 	 */
 	public static boolean moveFile(String orgDir, String newDir, String fileName) {
@@ -60,7 +135,7 @@ public class FileOperate {
 	}
 
 	/**
-	 * 若目录不存在，创建。
+	 * 若目录(文件夹)不存在，创建。
 	 * 
 	 * @param serverPath
 	 *            servlet 主目录的绝对地址，末尾不能有斜杠
@@ -93,6 +168,17 @@ public class FileOperate {
 		}
 	}
 
+	/**
+	 * // * 重命名文件/文件夹
+	 * 
+	 * @param dir
+	 *            文件所在目录
+	 * @param orgName
+	 *            文件原名
+	 * @param newName
+	 *            文件新名
+	 * @return
+	 */
 	public static String renameFile(String dir, String orgName, String newName) {
 		// System.out.println(dir+File.separator+orgName);
 		// System.out.println(dir+File.separator+newName);
@@ -107,18 +193,20 @@ public class FileOperate {
 	};
 
 	/**
+	 * 复制文件或者文件夹
 	 * 
 	 * @param src
 	 *            源文件的所在目录 绝对地址
 	 * @param des
 	 *            目标的目录 绝对地址 一定要确保目标目录存在。可以先使用方法newFolderIfNotExist。
 	 * @param des
-	 *            源文件名字 绝对地址 一定要确保目标目录存在。可以先使用方法newFolderIfNotExist。
+	 *            源文件名字（文件或者文件夹） 绝对地址 一定要确保目标目录存在。可以先使用方法newFolderIfNotExist。
 	 * @throws Exception
 	 */
-	public static boolean copyFile(String src, String des, String fileName) throws Exception{
+	public static boolean copyFile(String src, String des, String fileName)
+			throws Exception {
 		// 初始化文件复制
-		System.out.println(src+des+fileName);
+		System.out.println(src + des + fileName);
 		src = src + File.separator + fileName;
 		File file1 = new File(src);
 		if (!file1.exists()) {
@@ -147,13 +235,13 @@ public class FileOperate {
 		if (!file2.exists()) {
 			file2.mkdirs();
 		}
-		
-		boolean success=true;
+
+		boolean success = true;
 		// 遍历文件及文件夹
 		for (File f : fs) {
 			// 递归的地方
-			success=copyFile(src, des, f.getName());
-			if (!success){
+			success = copyFile(src, des, f.getName());
+			if (!success) {
 				break;
 			}
 		}
@@ -162,24 +250,98 @@ public class FileOperate {
 
 	private static void fileCopy(String src, String des) throws Exception {
 		// io流固定格式
-		File f = new File(des);
+		// File f = new File(des);
 
 		FileInputStream fin = new FileInputStream(src);
-//		BufferedInputStream bis = new BufferedInputStream(fin);
-//		BufferedOutputStream bos = new BufferedOutputStream(
-//				new FileOutputStream(des));
-		FileOutputStream fo=new FileOutputStream(des);
-		if (fin.available()<=0){
+		// BufferedInputStream bis = new BufferedInputStream(fin);
+		// BufferedOutputStream bos = new BufferedOutputStream(
+		// new FileOutputStream(des));
+		FileOutputStream fo = new FileOutputStream(des);
+		if (fin.available() <= 0) {
+			fo.close();
+			fin.close();
 			return;
 		}
 		System.out.println(fin.available());
 		byte[] bt = new byte[fin.available()];// 缓冲区
-		while(fin.read(bt)!=-1){
-		};
+		while (fin.read(bt) != -1) {
+		}
+		;
 		fo.write(bt);
 		// 关闭流
 		fin.close();
 		fo.close();
 	}
 
+	/**
+	 * 删除文件或者文件夹
+	 * 
+	 * @param f
+	 * @return
+	 */
+	public static boolean deleteFile(File f) {
+		// File f=new File(dir+File.separator+fileName);
+		// if (!f.exists()){
+		// return false;
+		// }
+
+		if (!f.isDirectory()) {
+			return f.delete();
+		} else {
+			File[] childs = f.listFiles();
+			if (null == childs || childs.length <= 0) {
+				return f.delete();
+			}
+
+			// 先删除子文件
+			boolean success = false;
+			for (int i = 0; i < childs.length; i++) {
+				success = deleteFile(childs[i]);
+				if (!success) {
+					break;
+				}
+			}
+
+			if (success) {
+				return f.delete();
+			} else {
+				return success;
+			}
+		}
+	}
+
+	public static DirTreeNode getDirTree(String basePath) throws IOException {
+		File f = new File(basePath);
+
+		// System.out.println(f.getName());
+
+		DirTreeNode dirTreeBaseNode = new DirTreeNode(f, 0);
+
+		List<DirTreeNode> childNode = tree(f, 1);
+
+		if (childNode != null) {
+			dirTreeBaseNode.AddChildNode(childNode);
+		}
+		return dirTreeBaseNode;
+	}
+
+	public static List<DirTreeNode> tree(File f, int level) throws IOException {
+		List<DirTreeNode> dirNodeList = new ArrayList<DirTreeNode>();
+
+		File[] childs = f.listFiles();
+		for (int i = 0; i < childs.length; i++) {
+			// System.out.println(preStr + childs[i].getName());
+			if (childs[i].isDirectory()) {
+				DirTreeNode thisNode = new DirTreeNode(childs[i], level);
+				List<DirTreeNode> nextNodeList = tree(childs[i], level + 1);
+				if (nextNodeList != null) {
+					thisNode.AddChildNode(nextNodeList);
+				}
+
+				dirNodeList.add(thisNode);
+			}
+		}
+
+		return dirNodeList;
+	}
 }

@@ -33,6 +33,8 @@ public class TestFileOperate {
 			b=JSON.toJSONString(FileOperate.moveFile(orgDir, newDir, fileName));
 			System.out.println(b);
 			
+			System.out.println(JSON.toJSONString(FileOperate.getDirTree(testDir)));
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
