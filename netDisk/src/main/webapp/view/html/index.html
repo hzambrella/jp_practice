@@ -17,6 +17,10 @@
     <script src="http://apps.bdimg.com/libs/jquery/1.10.2/jquery.min.js"></script>
     <script src="http://apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>-->
 
+    <!--toast_alert-->
+    <link rel="stylesheet" type="text/css" href="/netDisk/view/plugin/toast_alert/css/toast_alert.css">
+    <script src="/netDisk/view/plugin/toast_alert/js/toast_alert.js"></script>
+
     <!--template.js-->
     <script src="/netDisk/view/js/vendor/template.js"></script>
 
@@ -31,11 +35,10 @@
 
 <body>
     <div class="top">
-        <img style="float:left;height:60px;margin:10px 10px" src="/netDisk/view/images/logo.png" onclick="alert('hz网盘!!')" />
-        <div class="top_navigation" style="display:block;height:60px;width:1000px;margin:10px 10px;float:left;"></div>
+        <img style="float: left; height: 60px; margin: 10px 10px" src="/netDisk/view/images/logo.png" onclick="alert('hz网盘!!')" />
+        <div class="top_navigation" style="display: block; height: 60px; width: 1000px; margin: 10px 10px; float: left;"></div>
         <div class="user_info">
-            <img id="head_img" class="head_img" src="/netDisk/view/images/head_default.png" />
-            <span class="nickname">no_name21312313</span>
+            <img id="head_img" class="head_img" src="/netDisk/view/images/head_default.png" /> <span class="nickname">no_name21312313</span>
 
             <div id="user_info_detail" class="user_info_detail">
                 <div class="user_info_detail_head">
@@ -56,12 +59,16 @@
     <div class="con">
         <!--left-->
         <div class="con-left">
-            <div style="height:480px;width:100%">
+            <div style="height: 480px; width: 100%">
                 <ul class="item-list">
-                    <li><a href="javascript:void(0)" id="allFile"><i class="fa fa-files-o"></i> 全部文件</a></li>
-                    <li><a href="javascript:void(0)" id="textFile"><i class="fa fa-file-text-o"></i> 文档</a></li>
-                    <li><a href="javascript:void(0)" id="imageFile"><i class="fa fa-photo"></i> 图片</a></li>
-                    <li><a href="javascript:void(0)" id="recycleFile"><i class="fa fa-trash"></i> 回收站</a></li>
+                    <li><a href="javascript:void(0)" id="allFile"><i
+							class="fa fa-files-o"></i> 全部文件</a></li>
+                    <li><a href="javascript:void(0)" id="textFile"><i
+							class="fa fa-file-text-o"></i> 文档</a></li>
+                    <li><a href="javascript:void(0)" id="imageFile"><i
+							class="fa fa-photo"></i> 图片</a></li>
+                    <li><a href="javascript:void(0)" id="recycleFile"><i
+							class="fa fa-trash"></i> 回收站</a></li>
                 </ul>
             </div>
             <div class="disk-size">
@@ -75,11 +82,14 @@
         <div class="con-right">
             <!--操作栏-->
             <div class="operate">
-                <a class="operate-common" href="javascript:void(0)" id="uploadFile"><i class="fa fa-upload"></i> 上传</a>
-                <a class="operate-common" href="javascript:void(0)" id="newFolder"><i class="fa fa-plus"></i> 新建文件夹</a>
+                <a class="operate-common" href="javascript:void(0)" id="uploadFile"><i
+					class="fa fa-upload"></i> 上传</a> <a class="operate-common" href="javascript:void(0)" id="newFolder"><i class="fa fa-plus"></i>
+					新建文件夹</a>
                 <ul class="operate-file hide">
-                    <li><a id="downloadFile" href="javascript:void(0)"><i class="fa fa-download"></i> 下载</a></li>
-                    <li><a id="deleteFile" href="javascript:void(0)"><i class="fa fa-trash"></i> 删除</a></li>
+                    <li><a id="downloadFile" href="javascript:void(0)"><i
+							class="fa fa-download"></i> 下载</a></li>
+                    <li><a id="deleteFile" href="javascript:void(0)"><i
+							class="fa fa-trash"></i> 删除</a></li>
                     <li><a id="renameFile" href="javascript:void(0)">重命名</a></li>
                     <li><a id="copyFile" href="javascript:void(0)">复制到</a></li>
                     <li><a id="moveFile" href="javascript:void(0)">移动到</a></li>
@@ -92,20 +102,19 @@
                     <!--<li><a id="gobackToLast" data-deep="-1" class="dir_go_back" href="javascript:void(0)">返回上一级</a><span class="EKIHPEb">|</span></li>
                     <li><a data-deep="-1" class="dir_go_back" href="javascript:void(0)">全部文件</a><span class="KLxwHFb">></span></li>-->
                 </ul>
-                 <span id="itemTitle" class="tab_info" style="float:left">全部文件</span>
-                <span class="tab_info" style="float:right">正在获取中...</span>
+                <span id="itemTitle" class="tab_info" style="float: left">全部文件</span>
+                <span class="tab_info" style="float: right">正在获取中...</span>
             </div>
-            
+
             <div class="file-list">
                 <!--文件列表-->
                 <table id="file-list-table" data-deep="0">
                     <tr class="table-title" style="color: grey;">
-                        <th style="width:50%">
-                            <input id="selectAllList" style="float:left" type="checkbox" />
-                            <span class="tab_info" id="selectFileNum" style="float:left;margin-left:5px">文件名</span>
+                        <th style="width: 50%"><input id="selectAllList" style="float: left" type="checkbox" /> <span class="tab_info" id="selectFileNum"
+                                style="float: left; margin-left: 5px">文件名</span>
                         </th>
-                        <th style="width:20%">大小</th>
-                        <th style="width:30%">修改时间</th>
+                        <th style="width: 20%">大小</th>
+                        <th style="width: 30%">修改时间</th>
                     </tr>
                     <!--<tr>
                         <td>
@@ -126,6 +135,11 @@
                 </table>
             </div>
         </div>
+    </div>
+
+    <!--toast_alert-->
+    <div class="toast" id="toastAlert">
+        <div class="toast_text">打发</div>
     </div>
 
     <!--modal-->
@@ -200,6 +214,7 @@
         });
     })
 </script>
+
 <script src="/netDisk/view/js/app.js"></script>
 <script src="/netDisk/view/js/dirTree.js"></script>
 <!--mock-->
@@ -212,7 +227,6 @@
 <!--modal-->
 <link rel="stylesheet" type="text/css" href="/netDisk/view/plugin/modal/css/modal.css">
 <script src="/netDisk/view/plugin/modal/js/modal.js"></script>
-
 
 <!--box_alert-->
 <link rel="stylesheet" type="text/css" href="/netDisk/view/plugin/box_alert/css/box_alert.css">

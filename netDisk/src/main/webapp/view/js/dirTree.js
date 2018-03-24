@@ -29,13 +29,20 @@ function drawDirTreeUl(height, resultObj) {
 // 返回子节点的li,用来插入至父节点的ul上
 function addChildNodeToDirTree(resultObj, pretitle) {
     var _childHTML = ""
+    var nameInsert = ""
+    if (resultObj.level == 0) {
+        nameInsert = "";
+    } else {
+        nameInsert = pretitle +"/"+ resultObj.name;
+    }
+    
     if (resultObj.childDirNode != null && resultObj.childDirNode.length != 0) {
         _childHTML += "<li>" +
-            "<div class='close_menu'><span></span><a title='" + pretitle + resultObj.name + "' data-deep=' " + resultObj.level + "'>"+"<i class='fa fa-folder' style='margin-right:2px'></i>" + resultObj.name + "</a></div>" +
-            subDirTree(resultObj.childDirNode, pretitle + resultObj.name + "/") + "</li>"
+            "<div class='close_menu'><span></span><a title='" + nameInsert + "' data-deep=' " + resultObj.level + "'>" + "<i class='fa fa-folder' style='margin-right:2px'></i>" + resultObj.name + "</a></div>" +
+            subDirTree(resultObj.childDirNode, nameInsert) + "</li>"
     } else {
         resultObj.name == null ? resultObj.name = "" : resultObj.name = resultObj.name
-        _childHTML += " <li class='leaf_node' style='padding-left:24px'><a title='" + pretitle + resultObj.name + "' data-deep='" + resultObj.level + "'>" + "<i class='fa fa-folder' style='margin-right:2px'></i>"+resultObj.name + "</a></li>"
+        _childHTML += " <li class='leaf_node' style='padding-left:24px'><a title='" +nameInsert + "' data-deep='" + resultObj.level + "'>" + "<i class='fa fa-folder' style='margin-right:2px'></i>" + resultObj.name + "</a></li>"
     }
     return _childHTML;
 

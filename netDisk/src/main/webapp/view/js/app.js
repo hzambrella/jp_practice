@@ -9,12 +9,14 @@ $(function () {
     var disabledButtonFlag = false;
     var jqueryTreeScrollHeight = "200px"
 
+    //文件目录树，用于复制到和移动到功能
+
     //...初始化...
     //初始化模态modal (蒙版)
     //弹框
     var $modal = $("#modal").modal()
-    //目录树蒙板
-    var $modalDirTree = null;
+    // 目录树蒙板
+    var $modalDirTree = null
 
     //初始化化容量条
     var $sizeBar = $("#size_progress_bar").progressbar({
@@ -84,8 +86,8 @@ $(function () {
             }
             return str;
         },
-        dirForAjax: function () {
-            var str = ""
+        getDirForAjax: function () {
+            var str = "";
             for (var i = 1; i < this.data.length; i++) {
                 str += "/" + this.data[i]
             }
@@ -104,12 +106,12 @@ $(function () {
         pop: function () {
             return this.data.pop()
         },
-        getDataMirror:function(){
-            var mirror=this.data;
+        getDataMirror: function () {
+            var mirror = this.data;
             return mirror;
         },
-        rollBack:function(mirror){
-            data=mirror;
+        rollBack: function (mirror) {
+            data = mirror;
         }
     };
 
@@ -130,7 +132,7 @@ $(function () {
 
         //备份,ajax失败后可用于恢复$(".item-title").html(_backupHTML);
         var _backupHTML = $(".item-title").html();
-        var mirror=dirStack.getDataMirror();
+        var mirror = dirStack.getDataMirror();
 
         if (back_num < 0) {
             //title为null ,back_num<0或为null时，就是直接到初始层。用于左边栏切换。
@@ -195,9 +197,9 @@ $(function () {
             }
         }
         return {
-            dirname: dirStack.dirForAjax(),
+            dirname: dirStack.getDirForAjax(),
             _backupHTML: _backupHTML,
-            mirror:mirror,
+            mirror: mirror,
         }
     }
 
@@ -209,12 +211,11 @@ $(function () {
             var dataDeep = $target.attr("data-deep")
             var obj = ChangeItemTitle(-dataDeep)
 
-            AjaxCd(obj.dirname, function () {
+            AjaxCd(obj, function () {
                 //do nothing
             }, function () {
                 //fail 
-                $(".item-title").html(obj._backupHTML);
-                dirStack.rollBack(mirror)
+
             });
             // console.log(obj)
 
@@ -240,7 +241,7 @@ $(function () {
 
 
             if ($target.prop("id") == "allFile") {
-                AjaxCd("",
+                AjaxCd(null,
                     function () {
                         // drawTable(result_data);
                         ChangeItemTitle()
@@ -258,13 +259,12 @@ $(function () {
                     function () {
 
                     });
-            }else{
-
-                alert("尊敬的用户，查看"+titleMap[GetItemId()]+"功能正在开发中，敬请期待");
-                drawTable({directory:[]});
+            } else {
+                alert("尊敬的用户，查看" + titleMap[GetItemId()] + "功能正在开发中，敬请期待");
+                drawTable({
+                    directory: []
+                });
             };
-
-
         }
     })
 
@@ -387,15 +387,12 @@ $(function () {
                 //do nothing
             } else {
                 //下一页
-                var result_data = getMockData(GetItemId());
                 //ChangeItemTitle(0,"111");
                 var obj = ChangeItemTitle(0, $target.parent().find("span").html());
-                AjaxCd(obj.dirname, function () {
+                AjaxCd(obj, function () {
                     //do nothing
                 }, function () {
                     //fail 
-                    $(".item-title").html(obj._backupHTML);
-                    dirStack.rollBack(mirror);
                 });
             }
         }, 200)
@@ -419,7 +416,7 @@ $(function () {
         var date = new Date();
         dateStr = date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate();
         resultList = {
-            resultList: [{
+            directory: [{
                 name: dealDupName("新建文件夹"),
                 size: "0KB",
                 modifiedTime: dateStr,
@@ -432,8 +429,10 @@ $(function () {
         $target = $("#file-list-table .table-title").next().find(".tbcol-1")
         rename($target, $target.find("span"),
             //confirm_callback
-            function () {
+            function (filename, cb) {
                 //do ajax  if fail,cancel。后端将文件名字发送回来。
+                dirname = dirStack.getDirForAjax();
+                AjaxMkdir(dirname, filename, cb, cancel)
             },
             //cancel_callback
             function () {
@@ -476,14 +475,42 @@ $(function () {
             'title': '确认删除',
             'content': "确认要把所选的" + GetSelectNum() + "个文件放入回收站吗?<br/> 删除的文件可在10天内通过回收站还原",
             'confirmFunc': function () {
-                for (i = 0; i < tbcolToDelete.length; i++) {
-                    tbcolToDelete[i].remove();
-                }
-
-                //$modal.children().remove()
                 $modal.hideModal();
-                ShowSelectNum();
-                showOrHideOperateBar(false);
+
+                AjaxDelete(dirStack.getDirForAjax(), names, function (data) {
+                    var failIds = data.map.failIds;
+                    var failNameStr = "";
+                    for (i = 0; i < tbcolToDelete.length; i++) {
+                        if (failIds[i] == null || failIds[i] == "") {
+                            tbcolToDelete[i].remove();
+                        } else {
+                            failNameStr += names[i] + "(原因:" + failIds[i] + ")<br/>";
+                        }
+                    }
+                    if (failNameStr != "") {
+                        // $.toast('文件' + failNameStr + '删除失败')
+                        $modal.boxAlert({
+                            'title': '部分文件删除失败:',
+                            'content': failNameStr,
+                            'needCancel': false,
+                            'confirmFunc': function () {
+                                $modal.hideModal();
+                                // $("#allFile").trigger("click")
+                            }
+                        })
+                        $modal.show();
+                    } else {
+                        $.toast('文件删除成功')
+                    }
+
+                    ShowSelectNum();
+                    showOrHideOperateBar(false);
+                }, function () {
+                    ShowSelectNum();
+                    showOrHideOperateBar(false);
+                })
+                //$modal.children().remove()
+
             },
             'cancelFunc': function () {
                 //$modal.children().remove()
@@ -500,7 +527,11 @@ $(function () {
         var $target = $("#file-list-table .selectFile:checked").parent() //<div class="tbcol-1">
         var $name_el = $("#file-list-table .selectFile:checked").siblings("span")
 
-        rename($target, $name_el)
+        rename($target, $name_el, function (newName, cb) {
+            dirname = dirStack.getDirForAjax()
+            orgName = $name_el.html();
+            AjaxRename(dirname, orgName, newName, cb)
+        })
     })
 
     function rename($target, $name_el, confirm_callback, cancel_callback) {
@@ -522,20 +553,22 @@ $(function () {
 
         $target.find(".rename_confirm").bind("click", function () {
             var new_name = $target.find(".rename_input").val();
-            //TODO: ajax成功后调用
-            dorename(new_name)
-            confirm_callback == null ? function () {} : confirm_callback();
+            confirm_callback == null ? dorename(new_name) : confirm_callback(new_name, function () {
+                dorename(new_name)
+            })
         });
 
         function dorename(new_name) {
             $target.find("div.rename").remove();
             $target.append("<span>" + new_name + "</span>");
             enableAllButton();
+            return new_name;
         }
     }
 
-    //复制到按钮
-    $("#copyFile").click(function (event) {
+    //复制到，移动到按钮
+    $("a#moveFile,a#copyFile").click(function (event) {
+        $target = $(event.target);
         var $checked_el = $("#file-list-table .selectFile:checked");
         var tbcolToDelete = [];
         var names = [];
@@ -544,76 +577,131 @@ $(function () {
             var name = $(this).siblings("span").html()
             names.push(name)
         })
-        //lazy load
-        $modalDirTree == null ? $modalDirTree = initModalDirTree() : $modalDirTree = $modalDirTree;
-        $modalDirTree.changeTitle("复制到")
-        $modalDirTree.show()
-        rebindConfirmAndCancelEventForDirTreeButton(confirmCallback)
 
-        function confirmCallback() {
-            //TODO:ajax and copy dir
-            var absolutePath = getAbsolutePathFromDirTree()
-            alert(names + "已经复制到" + absolutePath)
-        }
-    })
 
-    //移动到按钮
-    $("#moveFile").click(function (event) {
-        var $checked_el = $("#file-list-table .selectFile:checked");
-        var tbcolToDelete = [];
-        var names = [];
-        $checked_el.each(function () {
-            // tbcolToDelete.push($(this).parent().parent().parent())
-            var name = $(this).siblings("span").html()
-            names.push(name)
-        })
-        //lazy load
-        $modalDirTree == null ? $modalDirTree = initModalDirTree() : $modalDirTree = $modalDirTree;
-        $modalDirTree.changeTitle("移动到")
-        $modalDirTree.show()
-
-        rebindConfirmAndCancelEventForDirTreeButton(confirmCallback)
-
-        function confirmCallback() {
-            //TODO:ajax and move dir
-            var absolutePath = getAbsolutePathFromDirTree()
-            alert(names + "已经移动到" + absolutePath)
-        }
-    })
-
-    // 文件树
-    function initModalDirTree() {
         var __dirTreeButtonHTML = $("#mock_dir_tree_button").html()
-        //TODO:based on back data ajax not mock
-        var _dirTreeHTML = drawDirTreeUl(jqueryTreeScrollHeight, getMockDirData())
+        AjaxGetDirTree(function (dirTree) {
+            var _dirTreeHTML = drawDirTreeUl(jqueryTreeScrollHeight, dirTree)
 
-        var $modalDirTree = $("#modalDirTree").modal()
-        $modalDirTree.boxContainer({
-            closeFunc: function () {
-                $modalDirTree.hide();
-                $(".box_container").hide();
+            //lazy single
+            if ($modalDirTree == null) {
+                $modalDirTree = $("#modalDirTree").modal()
+                $modalDirTree.boxContainer({
+                    closeFunc: function () {
+                        $modalDirTree.hide();
+                        $(".box_container").hide();
+                    }
+                }, _dirTreeHTML, __dirTreeButtonHTML);
+                jqueryTreeScroll()
+            } else {
+                $modalDirTree.changeCon(_dirTreeHTML);
             }
-        }, _dirTreeHTML, __dirTreeButtonHTML);
-        jqueryTreeScroll()
-        $modalDirTree.changeTitle("移动到")
 
-        $modalDirTree.find("a[data-deep='0']").addClass("ontree")
 
-        $(".box_container .box_container_con").addClass("border_grey_solid")
-        $(".box_container .box_container_button").addClass("box_container_button_dirTree")
-        $("#dirTreeNewFolder").bind("click", function () {
-            //TODO：new folder
-            alert("新建文件夹")
+            if ($target.is("a#moveFile")) {
+                $modalDirTree.changeTitle("移动到")
+            } else if ($target.is("a#copyFile")) {
+                $modalDirTree.changeTitle("复制到")
+            }
+
+
+            $modalDirTree.find("a[data-deep='0']").addClass("ontree")
+
+            $(".box_container .box_container_con").addClass("border_grey_solid")
+            $(".box_container .box_container_button").addClass("box_container_button_dirTree")
+
+            $("#dirTreeNewFolder").bind("click", function () {
+                //TODO：new folder
+                alert("新建文件夹")
+            })
+
+            $modalDirTree.show()
+
+            var confirmCallback = null;
+            if ($target.is("a#moveFile")) {
+                confirmCallback = moveFileConfirmCallback
+            } else if ($target.is("a#copyFile")) {
+                confirmCallback = copyConfirmCallback
+            }
+
+            rebindConfirmAndCancelEventForDirTreeButton(confirmCallback)
+
+            function moveFileConfirmCallback() {
+                var absolutePath = getAbsolutePathFromDirTree()
+                orgDirName = dirStack.getDirForAjax();
+                AjaxMoveTo(orgDirName, absolutePath, names, function (data) {
+                    var failIds = data.map.failIds;
+                    var failNameStr = "";
+                    for (i = 0; i < names.length; i++) {
+                        if (failIds[i] == null || failIds[i] == "") {
+                            
+                        } else {
+                            failNameStr += names[i] + "(原因:" + failIds[i] + ")<br/>";
+                        }
+                    }
+
+                
+                    if (failNameStr != "") {
+                        // $.toast('文件' + failNameStr + '删除失败')
+                        $modal.boxAlert({
+                            'title': '部分文件删除失败:',
+                            'content': failNameStr,
+                            'needCancel': false,
+                            'confirmFunc': function () {
+                                $modal.hideModal();
+                                // $("#allFile").trigger("click")
+                            }
+                        })
+                        $modal.show();
+                    } else {
+                        $.toast('文件转移成功')
+                    }
+                })
+
+            }
+
+            function copyConfirmCallback() {
+                var absolutePath = getAbsolutePathFromDirTree()
+                orgDirName = dirStack.getDirForAjax();
+                AjaxCopyTo(orgDirName, absolutePath, names, function (data) {
+                    var failIds = data.map.failIds;
+                    var failNameStr = "";
+                    for (i = 0; i < names.length; i++) {
+                        if (failIds[i] == null || failIds[i] == "") {
+      
+                        } else {
+                            failNameStr += names[i] + "(原因:" + failIds[i] + ")<br/>";
+                        }
+                    }
+
+                    console.log(failNameStr)
+                    if (failNameStr != "") {
+                        // $.toast('文件' + failNameStr + '删除失败')
+                        $modal.boxAlert({
+                            'title': '部分文件删除失败:',
+                            'content': failNameStr,
+                            'needCancel': false,
+                            'confirmFunc': function () {
+                                $modal.hideModal();
+                                // $("#allFile").trigger("click")
+                            }
+                        })
+                        $modal.show();
+                    } else {
+                        $.toast('文件复制成功')
+                    }
+                })
+            }
+
         })
-
-        return $modalDirTree
-    }
+    })
 
     //从目录树中获得完整的目录
     function getAbsolutePathFromDirTree() {
         $ontree = $(".treebox .tree").find(".ontree")
         return $ontree.attr("title")
     }
+
     //重新绑定目录树box的确认和取消按钮事件
     function rebindConfirmAndCancelEventForDirTreeButton(confirmCallback, cancelCallback) {
         confirmCallback == null ? confirmCallback = function () {} : confirmCallback = confirmCallback;
@@ -729,28 +817,222 @@ $(function () {
     }
 
     //ajax
+    //查询某个目录下的全部文件
+    function AjaxCd(obj, cb, failcb) {
+        if (obj == null) {
+            obj = {
+                dirname: '',
+                _backupHTML: '',
+                mirror: [],
+            }
+        }
 
-    //查询某个目录下的全部文件s
-    function AjaxCd(dirname, cb, failcb) {
-        dirname == null ? dirname = "" : dirname = dirname;
+        obj.dirname == null ? obj.dirname = "" : obj.dirname = obj.dirname;
+        obj._backupHTML == null ? obj._backupHTML = "" : obj._backupHTML = obj._backupHTML;
+        obj.mirror == null ? obj.mirror = [] : obj.mirror = obj.mirror;
+        cb == null ? cb = function () {} : cb = cb;
+        failcb == null ? failcb = function () {} : failcb = failcb;
+
         $.ajax({
             type: "post",
             dataType: "json",
             url: "/netDisk/CdServlet",
             data: {
-                dirname: dirname
+                dirname: obj.dirname
             },
             success: function (data) {
-                console.log(data)
-                //                console.log(data.map.directory)
-                if (data.map.directory == undefined) {
-                    data.map.directory = [];
-                }
-                drawTable(data.map, data.map.dataDeep);
-                cb();
+                $.toastForJavaAjaxRes(data, function () {
+                    if (data.map.directory == undefined) {
+                        data.map.directory = [];
+                    }
+
+                    drawTable(data.map, data.map.dataDeep);
+                    cb()
+                })
+
             },
             error: function (data, status, e) {
-                console.log(data, e)
+                $.toastForAjaxErr(data)
+                $(".item-title").html(obj._backupHTML);
+                dirStack.rollBack(mirror)
+                failcb(data, status, e)
+            }
+        })
+    }
+
+
+    //DirTree
+    function AjaxGetDirTree(cb, failcb) {
+        cb == null ? cb = function () {} : cb = cb;
+        failcb == null ? failcb = function () {} : failcb = failcb;
+        $.ajax({
+            type: "get",
+            dataType: "json",
+            url: "/netDisk/GetDirTreeServlet",
+            success: function (data) {
+                $.toastForJavaAjaxRes(data, function () {
+                    cb(data.map.dirTree);
+                })
+            },
+            error: function (data, status, e) {
+                $.toastForAjaxErr(data)
+                failcb(data, status, e)
+            }
+        })
+    }
+
+    //新建文件夹ajax
+    function AjaxMkdir(dirname, filename, cb, failcb) {
+        dirname == null ? dirname = "" : dirname = dirname;
+        filename == null ? filename = "" : filename = filename;
+        cb == null ? cb = function () {} : cb = cb;
+        failcb == null ? failcb = function () {} : failcb = failcb;
+
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "/netDisk/MkdirServlet",
+            data: {
+                dirname: dirname,
+                folderName: filename,
+            },
+            success: function (data) {
+                $.toastForJavaAjaxRes(data, function () {
+                    cb();
+                })
+            },
+            error: function (data, status, e) {
+                $.toastForAjaxErr(data)
+                failcb(data, status, e)
+            }
+        })
+    }
+
+    //重命名ajax
+    function AjaxRename(dirname, orgName, newName, cb, failcb) {
+        dirname == null ? dirname = "" : dirname = dirname;
+        orgName == null ? orgName = "" : orgName = orgName;
+        newName == null ? newName = "" : newName = newName;
+
+        cb == null ? cb = function () {} : cb = cb;
+        failcb == null ? failcb = function () {} : failcb = failcb;
+
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "/netDisk/RenameFileServlet",
+            data: {
+                dirname: dirname,
+                orgName: orgName,
+                newName: newName,
+            },
+            success: function (data) {
+                $.toastForJavaAjaxRes(data, function () {
+                    cb();
+                })
+            },
+            error: function (data, status, e) {
+                $.toastForAjaxErr(data)
+                failcb(data, status, e)
+            }
+        })
+    }
+
+    //删除ajax
+    function AjaxDelete(dirname, fileNames, cb, failcb) {
+        dirname == null ? dirname = "" : dirname = dirname;
+
+        if (fileNames == null || fileNames == [] || fileNames.length == 0) {
+            $.toast("删除项为空");
+            return;
+        }
+
+        cb == null ? cb = function () {} : cb = cb;
+        failcb == null ? failcb = function () {} : failcb = failcb;
+
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "/netDisk/DeleteFileServlet",
+            data: {
+                dirname: dirname,
+                fileNames: fileNames,
+            },
+            success: function (data) {
+                $.toastForJavaAjaxRes(data, function () {
+                    cb(data);
+                })
+            },
+            error: function (data, status, e) {
+                console.log(data, status, e)
+                $.toastForAjaxErr(data)
+                failcb(data, status, e)
+            }
+        })
+    }
+
+    // 移动到到ajax
+    function AjaxCopyTo(orgDirName, newDirName, fileNames, cb, failcb) {
+        orgDirName == null ? orgDirName = "" : orgDirName = orgDirName;
+        newDirName = null ? newDirName = "" : newDirName = newDirName;
+
+        if (fileNames == null || fileNames.length == 0) {
+            $.toast("所选项为空");
+            return;
+        }
+
+        cb == null ? cb = function () {} : cb = cb;
+        failcb == null ? failcb = function () {} : failcb = failcb;
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "/netDisk/CopyFileServlet",
+            data: {
+                orgDirName: orgDirName,
+                newDirName: newDirName,
+                fileNames: fileNames,
+            },
+            success: function (data) {
+                $.toastForJavaAjaxRes(data, function () {
+                    cb(data);
+                })
+            },
+            error: function (data, status, e) {
+                $.toastForAjaxErr(data)
+                failcb(data, status, e)
+            }
+        })
+    }
+
+
+    // 复制到ajax
+    function AjaxMoveTo(orgDirName, newDirName, fileNames, cb, failcb) {
+        orgDirName == null ? orgDirName = "" : orgDirName = orgDirName;
+        newDirName = null ? newDirName = "" : newDirName = newDirName;
+
+        if (fileNames == null || fileNames.length == 0) {
+            $.toast("所选项为空");
+            return;
+        }
+
+        cb == null ? cb = function () {} : cb = cb;
+        failcb = null ? failcb = function () {} : failcb = failcb;
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "/netDisk/MoveFileServlet",
+            data: {
+                orgDirName: orgDirName,
+                newDirName: newDirName,
+                fileNames: fileNames,
+            },
+            success: function (data) {
+                $.toastForJavaAjaxRes(data, function () {
+                    cb(data);
+                })
+            },
+            error: function (data, status, e) {
+                $.toastForAjaxErr(data)
                 failcb(data, status, e)
             }
         })

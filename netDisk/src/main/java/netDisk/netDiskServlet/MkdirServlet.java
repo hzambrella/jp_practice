@@ -33,7 +33,7 @@ public class MkdirServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	protected void doGet(HttpServletRequest request,
+	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String userAccountMock = "testUser";
 
@@ -48,13 +48,13 @@ public class MkdirServlet extends HttpServlet {
 			response.getWriter().print(JSON.toJSONString(result));
 			return;
 		}
-		folderName = new String(folderName.getBytes("ISO8859-1"), "UTF-8");
+//		folderName = new String(folderName.getBytes("ISO8859-1"), "UTF-8");
 
-		String dirName = request.getParameter("dirName");
+		String dirName = request.getParameter("dirname");
 		if (null == dirName) {
 			dirName="";
 		}
-		dirName = new String(dirName.getBytes("ISO8859-1"), "UTF-8");
+//		dirName = new String(dirName.getBytes("ISO8859-1"), "UTF-8");
 
 		String serverPath = request.getServletContext().getRealPath("")
 				+ File.separator;
@@ -84,9 +84,9 @@ public class MkdirServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		doGet(request, response);
-	}
+//	protected void doPost(HttpServletRequest request,
+//			HttpServletResponse response) throws ServletException, IOException {
+//		doGet(request, response);
+//	}
 
 }

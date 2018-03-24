@@ -387,3 +387,14 @@
     width: 250px;
     font-size: 1em;
 }
+
+#toastAlert{
+    top:14%;  
+}
+
+#toastAlert .toast_text{
+    box-shadow: 0px 0px 0.5px #888888;
+    background-color: #4287ed;
+    color: white;
+    padding:12px 10px;
+}
