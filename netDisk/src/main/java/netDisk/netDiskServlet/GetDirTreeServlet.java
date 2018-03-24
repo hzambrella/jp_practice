@@ -18,7 +18,7 @@ import com.alibaba.fastjson.JSON;
 import View.Result;
 
 /**
- * Servlet implementation class GetDirTreeServlet
+ * Servlet implementation class GetDirTreeServlet 获得目录树
  */
 @WebServlet("/GetDirTreeServlet")
 public class GetDirTreeServlet extends HttpServlet {
@@ -40,6 +40,11 @@ public class GetDirTreeServlet extends HttpServlet {
 		String userAccountMock="testUser";
 		
 		// 通用
+//		String re=request.getParameter("1");
+//		if (null==re){
+//			response.sendError(400,"1111");
+//			return;
+//		}
 		response.setCharacterEncoding("utf-8");
 		Result result = new Result(200, "成功", new HashMap<String, Object>());
 

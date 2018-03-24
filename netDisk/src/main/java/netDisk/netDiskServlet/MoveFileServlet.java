@@ -30,7 +30,6 @@ public class MoveFileServlet extends HttpServlet {
 	 */
 	public MoveFileServlet() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	/**

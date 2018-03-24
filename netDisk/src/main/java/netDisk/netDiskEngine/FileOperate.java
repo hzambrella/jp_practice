@@ -45,7 +45,7 @@ public class FileOperate {
 		if (fileSize <= 0) {
 			size = "0";
 		} else if (fileSize < 1024) {
-			size = df.format((double) fileSize) + "BT";
+			size = df.format((double) fileSize) + "B";
 		} else if (fileSize < 1048576) {
 			size = df.format((double) fileSize / 1024) + "KB";
 		} else if (fileSize < 1073741824) {
@@ -108,8 +108,8 @@ public class FileOperate {
 	}
 
 	/**
-	 * warning:use File.renameTo。May occur some exception. /* TODO:change to
-	 * commons-io FileUtils#copyFileToDirectory(File,File)
+	 * warning:use File.renameTo。May occur some exception. 
+	 /* TODO:change tocommons-io FileUtils#copyFileToDirectory(File,File)
 	 * 
 	 * @param orgDir
 	 *            原来的目录

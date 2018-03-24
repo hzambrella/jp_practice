@@ -1,0 +1,389 @@
+/*layout*/
+
+/*body{
+    background-color: #CCCCCC;
+}*/
+
+.top {
+    width: 100%;
+    height: 78px;
+    background-color: #99CCFF;
+    position: fixed;
+    z-index: 2;
+}
+
+.con {
+    width: 100%;
+    margin-top: 82px;
+    font-size: 1em;
+    /*position: relative;*/
+    overflow: hidden;
+}
+
+.con-left {
+    position: relative;
+    width: 200px;
+    height: 750px;
+    background: rgba(239, 244, 248, 1);
+    float: left;
+    display: table;
+    text-align: left;
+    color: #fff;
+}
+
+.con-right {
+    margin-left: 210px;
+    height: 500px;
+    /*background: #CCCCFF;*/
+    background-color: white;
+    text-align: center;
+}
+
+.disk-size {
+    height: 120px;
+    /*background-color: #99CCCC;*/
+    margin-top: 100px
+}
+
+/*element father*/
+
+.con a {
+    display: block;
+    text-decoration: none;
+}
+
+.con ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/*top*/
+
+.top .user_info {
+    display: inline-block;
+    height: 60px;
+    width: 500px;
+    margin: 10px 10px
+}
+
+.top .head_img {
+    height: 40px;
+    margin: 4.5px 9px 9px 9px;
+    float: left;
+    border-style: solid;
+    border-width: 4px;
+    border-color: #cccccc;
+    border-radius: 50%
+}
+
+.top .user_info_detail {
+    display: none;
+    background-color: white;
+    width: 300px;
+    height: 260px;
+    margin: 10px 0 0 0;
+    border-radius: 10px;
+    box-shadow: 0px 4px 9px #888888;
+    transition: width 2s;
+    -webkit-transition: width 2s;
+    /* Safari */
+}
+
+.top .user_info_detail::after {
+    content: " ";
+    position: absolute;
+    top: 100%;
+    /* 提示工具底部 */
+    left: 1245px;
+    margin-top: -7px;
+    border-width: 12px;
+    border-style: solid;
+    border-color: transparent transparent rgba(62, 139, 229, 1) transparent;
+}
+
+.top .user_info_detail_head {
+    border-radius: 10px 10px 0 0;
+    width: 300px;
+    height: 100px;
+    margin: 0;
+    padding: 0;
+    background-color: rgba(62, 139, 229, 1);
+}
+
+.top .user_info_detail_head .head_img {
+    height: 50px;
+    margin: 18px 9px 9px 18px;
+}
+
+.top .user_info_detail_head .nickname {
+    margin: 21px 9px 9px 2px;
+    color: white;
+}
+
+.top .user_info_detail_middle {
+    width: 300px;
+    height: 0px;
+    margin: 0;
+    padding: 0;
+}
+
+.top .user_info_detail ul {
+    margin-top: 10px;
+    list-style-type: none;
+    /*padding: 0;*/
+    float: left;
+    border-collapse: collapse;
+}
+
+/*.top  .user_info_detail li{
+   
+}*/
+
+.top .user_info_detail a {
+    display: block;
+    text-decoration: none;
+    width: 285px;
+    height: 35px;
+    padding-top: 10px;
+    padding-left: 15px;
+    text-align: left;
+    color: black;
+}
+
+.top .user_info_detail a:hover {
+    background-color: rgba(240, 258, 253, 1.2);
+}
+
+/* 废弃。鼠标移出去，就没了！！改用js*/
+
+/*#head_img:hover ~ #user_info_detail{
+    display: block;
+}*/
+
+.top .nickname {
+    display: inline-block;
+    /*float:left;*/
+    margin: 4.5px 9px 9px 0;
+    /*width:200px;*/
+    height: 40px;
+    text-align: center;
+    font-size: 1em;
+    padding: 10px 0;
+}
+
+/*left*/
+
+.con-left a {
+    color: #000;
+    padding: 20px 20px 8px 50px;
+    font-size: 1.2em;
+    height: 40px;
+}
+
+.con-left a:hover {
+    background-color: #cccccc;
+    color: white;
+}
+
+.con-left a.select {
+    background-color: #555;
+    color: white;
+}
+
+/*right*/
+
+.operate {
+    width: 100%;
+    height: 50px;
+}
+
+.operate a,
+.file-list a {
+    height: 30px;
+    font-size: 1.2em;
+    display: block;
+    float: left;
+}
+
+/*common button*/
+
+.operate .operate-common {
+    padding: 8px 0 2px 0;
+    margin: 10px;
+    border-style: solid;
+    border-width: 1.5px;
+    border-radius: 4px;
+}
+
+/*ul button*/
+
+.operate ul {
+    list-style-type: none;
+    margin-top: 10px;
+    padding: 0;
+    float: left;
+    border-collapse: collapse;
+}
+
+.operate ul.hide {
+    display: none;
+}
+
+.operate li {
+    display: inline;
+}
+
+.operate ul a {
+    width: 80px;
+    padding: 8px 10px 2px 10px;
+    border-style: solid;
+    color: #0066CC;
+    border-color: #0066CC;
+    border-width: 1.8px;
+    border-right-width: 0;
+}
+
+.operate li:first-child a {
+    border-radius: 4px 0 0 4px;
+}
+
+.operate li:last-child a {
+    border-radius: 0 4px 4px 0;
+    border-right-width: 1.8px;
+}
+
+.operate ul a:hover {
+    opacity: 0.7;
+}
+
+.operate ul a.disabled {
+    opacity: 0.5;
+    color: grey;
+}
+
+#uploadFile {
+    width: 100px;
+    border-color: #0066CC;
+    background-color: #0066CC;
+    color: white;
+}
+
+#uploadFile:hover {
+    background-color: #0099CC;
+}
+
+#uploadFile:active {
+    background-color: #333399;
+}
+
+#newFolder,
+#doRecycle {
+    width: 150px;
+    color: #0066CC;
+    border-color: #0066CC;
+    border-width: 1.8px;
+}
+
+#doRecycle {
+    width: 80px;
+}
+
+#newFolder:hover,
+#doRecycle:hover {
+    border-color: #0099CC;
+    color: #0099CC;
+}
+
+.item-title {
+    margin: 10px 5px;
+    padding: 10px;
+    width: 95%;
+    height: 20px;
+    /*text-align: left;*/
+}
+
+.item-title .tab_info {
+    display: block;
+    text-align: left;
+    margin-top: 5px;
+    margin-bottom: 3px;
+}
+
+.item-title .dir_go_back {
+    margin-top: 5px;
+    margin-bottom: 3px;
+    height: 21.33px;
+    float:left;
+    display: block;
+    color: #4287ed;
+}
+
+.item-title .EKIHPEb{
+    margin: 5px 3px 3px 3px;  
+    color: #c5d8f3; 
+    /*float:left;*/
+}
+.item-title .KLxwHFb{
+    margin: 5px 5px 3px 5px;  
+    color: #c5d8f3; 
+    float:left;
+}
+/*table*/
+
+.file-list {
+    width: 100%;
+    height: 600px;
+    overflow: auto;
+}
+
+.file-list input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+}
+
+#file-list-table {
+    text-align: left;
+    padding-left: 20px;
+    padding-bottom: 20px;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#file-list-table th {
+    padding: 10px 0px;
+}
+
+#file-list-table tr,
+#file-list-table td {
+    padding: 18px 0;
+    border-bottom: 1px #cccccc solid;
+}
+
+.rename {
+    display: inline;
+}
+
+.rename button {
+    background-color: white;
+    border: 2px solid #0099CC;
+    border-radius: 2px;
+    text-align: center;
+    text-decoration: none;
+    padding: 2px;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+
+.rename input {
+    background-color: white;
+    border: 2px solid #0099CC;
+    border-radius: 2px;
+    text-align: left;
+    text-decoration: none;
+    padding: 1px 1px 1px 8px;
+    height: 25px;
+    width: 250px;
+    font-size: 1em;
+}

@@ -27,7 +27,6 @@ public class MkdirServlet extends HttpServlet {
 	 */
 	public MkdirServlet() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	/**

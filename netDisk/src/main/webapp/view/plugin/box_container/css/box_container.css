@@ -1,0 +1,86 @@
+.box_container {
+    position: absolute;
+    width: 650px;
+    height: 350px;
+    display: block;
+    border-radius: 9px;
+    box-shadow: 0px 0px 9px #888888;
+    background-color: white;
+    top: 30%;
+    left: 35%;
+}
+
+.box_container .title {
+    border-radius: 9px 9px 0 0;
+    width: 650px;
+    height: 60px;
+    background-color: #CCCCFF;
+}
+
+.box_container .title p {
+    padding: 15px 10px;
+    /*首行缩进*/
+    text-indent: 1em;
+    font-size: 1.5em;
+    height: 30px;
+    text-overflow: ellipsis;
+}
+
+.box_container .box_container_con{
+    width: 610px;
+    overflow: auto;
+    margin:10px 20px;
+    /*background-color: palegoldenrod;*/
+}
+
+.box_container .box_container_button{
+    width: 610px;
+    overflow: hide;
+    /*background-color: palegoldenrod;*/
+}
+
+
+/*box container按钮*/
+.box_container_a{
+    height: 50px;
+    display: inline-block;
+    height: 30px;
+    width:150px;
+    text-decoration: none;
+    font-size: 1.4em;
+    border-radius: 5px;
+    text-align: center;
+    padding:10px 0 10px 0;
+        
+    border-style: solid;
+    border-width:1px;
+}
+
+.box_container_a.white{
+    background-color: white;
+    border-color: #3b8cff;
+    border-style: solid;
+    border-width:1px;
+    color: #3b8cff;
+}
+
+
+.box_container_a.blue{
+    border-color: #3b8cff;
+    background-color: #3b8cff;
+    color: white;
+}
+
+.box_container_a:hover{
+    opacity: 0.7;
+}
+
+.floatright{
+    float:right;
+    margin-left:20px; 
+}
+
+.floatleft{
+    float:left;
+    margin-right: 20px;
+}

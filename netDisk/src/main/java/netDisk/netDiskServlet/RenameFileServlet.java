@@ -29,7 +29,6 @@ public class RenameFileServlet extends HttpServlet {
 	 */
 	public RenameFileServlet() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	/**

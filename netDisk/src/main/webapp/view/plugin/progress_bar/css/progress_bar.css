@@ -1,0 +1,19 @@
+.progress_bar_container {
+    position: relative;
+    display: block;
+    border-radius: 5px;
+    /*width: 160px;
+    height:14px;*/
+    margin: 0 auto;
+    /*background-color: #cccccc;*/
+}
+
+.progress_bar_container .progress_water {
+    position: relative;
+    display: block;
+    border-radius: 5px;
+    width: 0px;
+    /*width: 14px;
+    height: 14px;*/
+    /*background-color: #99CCFF;*/
+}

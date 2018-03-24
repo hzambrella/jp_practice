@@ -36,7 +36,6 @@ public class TestFileOperate {
 			System.out.println(JSON.toJSONString(FileOperate.getDirTree(testDir)));
 			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

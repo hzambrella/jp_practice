@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>在线网盘</title>
+    <!--<link href="/netDisk/view/css/style.css" rel='stylesheet' type='text/css' />-->
+    <!--<meta name="viewport" content="width=device-width, initial-scale=1">-->
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimal-ui" />
+    <meta name="renderer" content="webkit" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <!--jquery-->
+    <script src="/netDisk/view/js/vendor/jquery-3.2.1.min.js"></script>
+    <!--jqueryui-->
+    <!--<link rel="stylesheet" href="http://apps.bdimg.com/libs/jqueryui/1.10.4/css/jquery-ui.min.css">
+    <script src="http://apps.bdimg.com/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="http://apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>-->
+
+    <!--template.js-->
+    <script src="/netDisk/view/js/vendor/template.js"></script>
+
+    <!--css-->
+    <link href="/netDisk/view/css/main.css" rel="stylesheet" type="text/css" />
+    <link href="/netDisk/view/css/app.css" rel="stylesheet" type="text/css" />
+
+    <style type="text/css">
+    </style>
+
+</head>
+
+<body>
+    <div class="top">
+        <img style="float:left;height:60px;margin:10px 10px" src="/netDisk/view/images/logo.png" onclick="alert('hz网盘!!')" />
+        <div class="top_navigation" style="display:block;height:60px;width:1000px;margin:10px 10px;float:left;"></div>
+        <div class="user_info">
+            <img id="head_img" class="head_img" src="/netDisk/view/images/head_default.png" />
+            <span class="nickname">no_name21312313</span>
+
+            <div id="user_info_detail" class="user_info_detail">
+                <div class="user_info_detail_head">
+                    <img class="head_img" src="/netDisk/view/images/head_default.png" />
+                    <span class="nickname">no_name21312313</span>
+                </div>
+                <!--<div class="user_info_detail_middle"></div>-->
+                <ul>
+                    <li><a id="personal_info" href="javascript:void(0)">个人资料</a></li>
+                    <li><a id="help_center" href="javascript:void(0)">帮助中心</a></li>
+                    <li><a id="logout" href="javascript:void(0)">退出</a></li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="con">
+        <!--left-->
+        <div class="con-left">
+            <div style="height:480px;width:100%">
+                <ul class="item-list">
+                    <li><a href="javascript:void(0)" id="allFile"><i class="fa fa-files-o"></i> 全部文件</a></li>
+                    <li><a href="javascript:void(0)" id="textFile"><i class="fa fa-file-text-o"></i> 文档</a></li>
+                    <li><a href="javascript:void(0)" id="imageFile"><i class="fa fa-photo"></i> 图片</a></li>
+                    <li><a href="javascript:void(0)" id="recycleFile"><i class="fa fa-trash"></i> 回收站</a></li>
+                </ul>
+            </div>
+            <div class="disk-size">
+                <div id="size_progress_bar">
+                    <!--<div id="size_progress_water" class="progress_water"></div>
+                     <span style="color:black;display:inline-block;margin-top:6px;margin-left:2px">7.6G/100G</span>-->
+                </div>
+            </div>
+        </div>
+        <!--right-->
+        <div class="con-right">
+            <!--操作栏-->
+            <div class="operate">
+                <a class="operate-common" href="javascript:void(0)" id="uploadFile"><i class="fa fa-upload"></i> 上传</a>
+                <a class="operate-common" href="javascript:void(0)" id="newFolder"><i class="fa fa-plus"></i> 新建文件夹</a>
+                <ul class="operate-file hide">
+                    <li><a id="downloadFile" href="javascript:void(0)"><i class="fa fa-download"></i> 下载</a></li>
+                    <li><a id="deleteFile" href="javascript:void(0)"><i class="fa fa-trash"></i> 删除</a></li>
+                    <li><a id="renameFile" href="javascript:void(0)">重命名</a></li>
+                    <li><a id="copyFile" href="javascript:void(0)">复制到</a></li>
+                    <li><a id="moveFile" href="javascript:void(0)">移动到</a></li>
+                </ul>
+            </div>
+            <p></p>
+            <!--状态栏-->
+            <div class="item-title">
+                <ul>
+                    <!--<li><a id="gobackToLast" data-deep="-1" class="dir_go_back" href="javascript:void(0)">返回上一级</a><span class="EKIHPEb">|</span></li>
+                    <li><a data-deep="-1" class="dir_go_back" href="javascript:void(0)">全部文件</a><span class="KLxwHFb">></span></li>-->
+                </ul>
+                 <span id="itemTitle" class="tab_info" style="float:left">全部文件</span>
+                <span class="tab_info" style="float:right">正在获取中...</span>
+            </div>
+            
+            <div class="file-list">
+                <!--文件列表-->
+                <table id="file-list-table" data-deep="0">
+                    <tr class="table-title" style="color: grey;">
+                        <th style="width:50%">
+                            <input id="selectAllList" style="float:left" type="checkbox" />
+                            <span class="tab_info" id="selectFileNum" style="float:left;margin-left:5px">文件名</span>
+                        </th>
+                        <th style="width:20%">大小</th>
+                        <th style="width:30%">修改时间</th>
+                    </tr>
+                    <!--<tr>
+                        <td>
+                            <div class="tbcol-1">
+                                <input type="checkbox" class="selectFile" />
+                                <i class="fa fa-folder-o"></i>
+                                <div class="rename">
+                                    <input type="text" value="dsafasf" />
+                                    <button class="rename-cancel"><i class="fa fa-close"></i></button>
+                                    <button class="rename-confirm"><i class="fa fa-check"></i></button>
+                                </div>
+                                <span>row 1, cell 1123133333333333333333333333333333333</span>
+                            </div>
+                        </td>
+                        <td>-</td>
+                        <td>2018-9-12</td>
+                    </tr>-->
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!--modal-->
+    <div id="modal"></div>
+    <div id="modalDirTree"></div>
+
+    <script id="table_tpl" type="text/html">
+        <%for(var i = 0; i < directory.length; i++) {%>
+            <tr>
+                <td>
+                    <div class="tbcol-1">
+                        <input type="checkbox" class="selectFile" />
+                        <i class="fa fa-folder-o"></i>
+                        <span><%:=directory[i].name%></span>
+                    </div>
+                </td>
+                <td><span><%:=directory[i].size%></span></td>
+                <td><span><%:=directory[i].modifiedTime%></span></td>
+            </tr>
+            <%}%>
+    </script>
+
+    <script id="table_rename" type="text/html">
+        <div class="rename">
+            <input class="rename_input" type="text" value="<%:=name%>" autofocus/>
+            <button class="rename_cancel"><i class="fa fa-close"></i></button>
+            <button class="rename_confirm"><i class="fa fa-check"></i></button>
+        </div>
+    </script>
+
+</body>
+
+<!--js-->
+<script src="/netDisk/view/js/main.js"></script>
+<script src="/netDisk/view/js/lib/jquery.hoverdelay.js"></script>
+<!--进度条-->
+<link rel="stylesheet" type="text/css" href="/netDisk/view/plugin/progress_bar/css/progress_bar.css">
+<script src="/netDisk/view/plugin/progress_bar/js/progress_bar.js"></script>
+<script>
+    // window.onload=function(){
+    //      if ("WebSocket" in window)
+    //         {
+    //            alert("您的浏览器支持 WebSocket!");
+    //         }
+    //     }
+    // alert(1)
+
+    //控制hover的显示
+    $(function () {
+        var userDetailIsHover = false;
+        $("#user_info_detail").hoverDelay({
+            hoverEvent: function () {
+                userDetailIsHover = true;
+            },
+            outEvent: function () {
+                userDetailIsHover = false;
+                $("#user_info_detail").css("display", "none")
+            }
+        })
+
+        $("#head_img").hoverDelay({
+            hoverEvent: function () {
+                $("#user_info_detail").css("display", "block")
+            },
+            outDuring: 2000,
+            outEvent: function () {
+                if (!userDetailIsHover) {
+                    $("#user_info_detail").css("display", "none")
+                }
+                //$("#user_info_detail").css("display", "none")
+            }
+        });
+    })
+</script>
+<script src="/netDisk/view/js/app.js"></script>
+<script src="/netDisk/view/js/dirTree.js"></script>
+<!--mock-->
+<script src="/netDisk/view/js/mock.js"></script>
+
+<!--fontAwesome-->
+<link href="/netDisk/view/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+
+
+<!--modal-->
+<link rel="stylesheet" type="text/css" href="/netDisk/view/plugin/modal/css/modal.css">
+<script src="/netDisk/view/plugin/modal/js/modal.js"></script>
+
+
+<!--box_alert-->
+<link rel="stylesheet" type="text/css" href="/netDisk/view/plugin/box_alert/css/box_alert.css">
+<script src="/netDisk/view/plugin/box_alert/js/box_alert.js"></script>
+
+<!--box_container-->
+<link rel="stylesheet" type="text/css" href="/netDisk/view/plugin/box_container/css/box_container.css">
+<script src="/netDisk/view/plugin/box_container/js/box_container.js"></script>
+<link href="/netDisk/view/css/box_container_app.css" rel="stylesheet" type="text/css" />
+
+<!--jqueryTreeScroll-->
+<link rel="stylesheet" type="text/css" href="/netDisk/view/plugin/jqueryTreeScroll/css/jqueryTreeScroll.css">
+<script src="/netDisk/view/plugin/jqueryTreeScroll/js/jqueryTreeScroll.js"></script>
+<!--scroll beauty-->
+<!--<link rel="stylesheet" type="text/css" href="/netDisk/view/plugin/scroll_beauty/css/scroll_beauty.css">
+<script src="/netDisk/view/plugin/scroll_beauty/js/scroll_beauty.js"></script>-->
+
+<script>
+</script>
+
+<!--目录树的操作按钮-->
+<script id="mock_dir_tree_button" type="text/html">
+    <a href='javascript:void(0)' id="dirTreeNewFolder" class='box_container_a white floatleft'>新建文件夹</a>
+
+    <a href='javascript:void(0)' id="dirTreeCancel" class='box_container_a white floatright'>取消</a>
+    <a href='javascript:void(0)' id="dirTreeConfirm" class='box_container_a blue floatright'>确认</a>
+
+</script>
+
+<!--mock dirTree 目录树的原始html  not use-->
+<script id="mock_dir_tree" type="text/html">
+    <!--<div class='dirtree_centent'>-->
+    <div class='treebox scrollXY' style="height:200px">
+        <div class='tree'>
+            <ul>
+                <li>
+                    <div class='close_menu'><span></span><a title='一级菜单'>一级菜单</a></div>
+                    <ul>
+                        <li>
+                            <div class='close_menu'><span></span><a title='二级菜单'>二级菜单</a></div>
+                            <ul>
+                                <div class='close_menu'><span></span><a title='二级菜单'>二级菜单</a></div>
+                                <ul>
+                                    <li>
+                                        <div class='close_menu'><span></span><a title='二级菜单'>二级菜单</a></div>
+                                        <ul>
+                                            <li>
+                                                <div class='close_menu'><span></span><a title='二级菜单'>二级菜单</a></div>
+                                                <ul>
+                                                    <li>
+                                                        <div class='close_menu'><span></span><a title='二级菜单'>二级菜单</a></div>
+                                                        <ul>
+                                                            <li>
+                                                                <a title='最后一层'>最后一层的结构有变化最后一层的结构有变化</a>
+                                                            </li>
+                                                        </ul>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </ul>
+                        </li>
+                        <li>
+                            <div class='close_menu'><span></span><a title='二级菜单'>二级菜单</a></div>
+                            <ul>
+                                <li><a title='最后一层'>最后一层的结构有变化最后一层的结构有变化</a></li>
+                                <li><a title='最后一层'>最后一层的结构有变化最后一层的结构有变化</a></li>
+                                <li><a title='最后一层'>最后一层的结构有变化最后一层的结构有变化</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+
+                <li>
+                    <div class='close_menu'><span></span><a title='一级菜单'>一级菜单</a></div>
+                    <ul>
+                        <li>
+                            <div class='close_menu'><span></span><a title='二级菜单'>二级菜单</a></div>
+                            <ul>
+                                <li>
+                                    <div class='close_menu'><span></span><a title='三级菜单'>三级菜单</a></div>
+                                    <ul>
+                                        <li><a title='最后一层'>最后一层的结构有变化最后一层的结构有变化</a></li>
+                                        <li><a title='最后一层'>最后一层的结构有变化最后一层的结构有变化</a></li>
+                                        <li><a title='最后一层'>最后一层的结构有变化最后一层的结构有变化</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <div class='close_menu'><span></span><a title='二级菜单'>二级菜单</a></div>
+                            <ul>
+                                <li>
+                                    <div class='close_menu'><span></span><a title='三级菜单'>三级菜单</a></div>
+                                    <ul>
+                                        <li><a title='最后一层'>最后一层的结构有变化最后一层的结构有变化</a></li>
+                                        <li><a title='最后一层'>最后一层的结构有变化最后一层的结构有变化</a></li>
+                                        <li><a title='最后一层'>最后一层的结构有变化最后一层的结构有变化</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <div class='close_menu'><span></span><a title='三级菜单'>三级菜单</a></div>
+                                    <ul>
+                                        <li><a title='最后一层'>最后一层的结构有变化最后一层的结构有变化</a></li>
+                                        <li><a title='最后一层'>最后一层的结构有变化最后一层的结构有变化</a></li>
+                                        <li><a title='最后一层'>最后一层的结构有变化最后一层的结构有变化</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li><a title='最后一层'>最后一层的结构有变化最后一层的结构有变化</a></li>
+
+            </ul>
+        </div>
+    </div>
+    <!--</div>-->
+</script>
+
+</html>

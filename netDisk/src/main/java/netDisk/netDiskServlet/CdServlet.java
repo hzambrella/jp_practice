@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import View.Result;
 import netDisk.DTO.FileInfo;
 import netDisk.netDiskEngine.FileOperate;
+import netDisk.netDiskEngine.StringOperate;
 
 /**
  * Servlet implementation class cdServlet  查询某个目录下的全部文件
@@ -28,14 +29,13 @@ public class CdServlet extends HttpServlet {
 	 */
 	public CdServlet() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	protected void doGet(HttpServletRequest request,
+	protected void doPost(HttpServletRequest request,
 		HttpServletResponse response) throws ServletException, IOException {
 		
 		String userAccountMock="testUser";
@@ -49,8 +49,9 @@ public class CdServlet extends HttpServlet {
 		if (targetPath==null){
 			targetPath="";
 		}
-		targetPath =new String(targetPath.getBytes("ISO8859-1"),"UTF-8"); 
-		
+		System.out.println("编码检查"+targetPath);
+//		targetPath =new String(targetPath.getBytes("ISO8859-1"),"UTF-8"); 
+		int dataDeep=StringOperate.getSubStringNumFromString(targetPath);
 		//逻辑
 		String serverPath = request.getServletContext().getRealPath("")
 				+ File.separator;
@@ -62,8 +63,8 @@ public class CdServlet extends HttpServlet {
 			System.out.println(targetPath);
 			List<FileInfo> directory = FileOperate.getFileDirectory(targetPath);
 			result.getMap().put("directory", directory);
+			result.getMap().put("dataDeep", dataDeep);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			result.setCode(500);
 			result.setMessage("系统文件服务异常");
@@ -76,4 +77,5 @@ public class CdServlet extends HttpServlet {
 		System.out.println(result.toJSON());
 		return;
 	}
+	
 }

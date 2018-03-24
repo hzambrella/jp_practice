@@ -1,0 +1,152 @@
+* {
+    /*/
+    /*font-size: 12px;*/
+}
+
+/*登录的tabs*/
+.notice {
+    background-color: white;
+    width: 550px;
+    height: 430px;
+    margin: 10px;
+    border-radius: 3px;
+    border: 1px solid #999999;
+    overflow: hidden;
+    position:absolute;
+    top:15%;
+    left:35%;
+}
+
+.notice ul{
+     list-style: none;
+}
+
+.notice-tit {
+    height: 96px;
+    background-color: #eaeaea;
+    /*padding:10px;*/
+    font-size: 2em;
+    position: relative;
+}
+
+.notice-tit ul {
+    position: absolute;
+    width: 600px;
+    /*left: -1px;*/
+}
+
+.notice-tit ul li {
+    float: left;
+    width: 275px;
+    height:26px;
+    line-height: 26px;
+    text-align: center;
+    border-bottom: 1px solid #7c7c7c;
+    padding: 35px 0;
+    /*padding: 0 1px;*/
+}
+
+.notice-tit ul a {
+    text-decoration: none;
+    display: block;
+}
+
+.notice-tit ul .select {
+    background-color: white;
+    border-top: 3px solid green;
+    border-right: 1px solid #7c7c7c;
+    border-left: 1px solid #7c7c7c;
+    border-bottom: 1px solid #999999;
+    /*border-bottom:1px solid rgba(255,0,0,.3);*/
+    height: 23px;
+}
+
+/*.notice-tit ul li .select{
+     
+}*/
+.notice-con{
+    background-color: white;
+}
+.notice-con .show{
+    padding:10px;
+    display: block;
+}
+
+.notice-con .hide{
+    display: none;
+}
+
+.notice-con .inputlabel{
+    margin: 10px;
+    font-size: 1.5em;
+    text-align: right;
+    width:140.8px;
+    display: block;
+    float:left;
+}
+
+#loginForm .inputlabel{
+    width:90.8px;
+}
+
+
+.notice-con .input{
+    margin: 10px;
+    height: 30px;
+    width: 200px;
+    font-size: 1.2em;
+    border-style: solid;
+    border-width: 1.5px;
+    border-color: grey;
+    display: block;
+    float:left;
+}
+
+/*
+.notice-con .checkbox{
+    display: block;
+    clear: both;
+ 
+}*/
+
+.notice-con .input.red{
+    border-width: 2px;
+    border-color: red;
+}
+
+#login,#register{
+    width: 200px;
+    background-color: #4CAF50;
+    border:none;
+    border-radius: 2px;
+    color: white;
+    padding: 10px 50px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 0.5em;
+    margin-top:20px;
+    -webkit-transition-duration: 0.4s;
+    /* Safari */
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
+
+
+#login:hover,#register:hover {
+    background-color: #99CC99;
+    color: white;
+}
+
+#login:active ,#register:active {
+    background-color: #99CC00;
+    color: white;
+}
+
+/*.notice-tit ul li:hover{
+            background-color: white;
+            border-right: 1px solid #7c7c7c;
+            border-left: 1px solid #7c7c7c;
+            border-bottom: 1px solid white;
+            padding: 0;
+        }*/
