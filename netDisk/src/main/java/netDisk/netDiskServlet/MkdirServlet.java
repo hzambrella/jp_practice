@@ -10,9 +10,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONPath;
+import netDisk.netDiskCfg.netDiskCfg;
 
+import com.alibaba.fastjson.JSON;
 import View.Result;
 
 /**
@@ -35,7 +35,13 @@ public class MkdirServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		String userAccountMock = "testUser";
+		String userAccount = (String) request.getSession(true).getAttribute(
+				"userAccount");
+		if (userAccount == null) {
+			request.getServletContext()
+					.getRequestDispatcher("/netDisk/LoginServlet")
+					.forward(request, response);
+		}
 
 		response.setCharacterEncoding("utf-8");
 		Result result = new Result(200, "³É¹¦", new HashMap<String, Object>());
@@ -56,10 +62,9 @@ public class MkdirServlet extends HttpServlet {
 		}
 //		dirName = new String(dirName.getBytes("ISO8859-1"), "UTF-8");
 
-		String serverPath = request.getServletContext().getRealPath("")
-				+ File.separator;
-
-		String targetPath = serverPath + userAccountMock + dirName;
+		String serverPath=netDiskCfg.getDiskDir()+File.separator;
+		
+		String targetPath = serverPath + userAccount + dirName;
 		targetPath=targetPath.replace("/", File.separator);
 
 		

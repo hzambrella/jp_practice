@@ -9,10 +9,11 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import netDisk.netDiskCfg.netDiskCfg;
 
 /**
  * Servlet Filter implementation class LoginFilter
@@ -54,25 +55,18 @@ public class LoginFilter implements Filter {
 			return;
 		}
 		
-//		if(url != null && (url.endsWith(".js")||(url.endsWith(".css")))){
-//			httpServletResponse.sendRedirect(httpServletRequest.getContextPath());
-//			return;
-//		}
 		//session为空，没登录。
 		HttpSession session=httpServletRequest.getSession(false);
 		if (null==session){
 			httpServletResponse.sendRedirect("LoginServlet");
 			return;
 		}
-//		System.out.println(session.getId());
-//		boolean remember=(boolean) session.getAttribute("rememberLogin");
-//		if (!remember){
-//			for (Cookie c:httpServletRequest.getCookies()){
-//				System.out.println(c.getMaxAge()+":"+c.getValue());
-//				c.setMaxAge(-1);
-//			}
-//		}
-	
+		
+		//读取网盘所在地址。目前是在webapp文件夹下。
+		if (netDiskCfg.getDiskDir()==null){
+			netDiskCfg.setDiskDir(httpServletRequest.getServletContext().getRealPath(""));
+		}
+		
 		chain.doFilter(request, response);
 		return;
 	}

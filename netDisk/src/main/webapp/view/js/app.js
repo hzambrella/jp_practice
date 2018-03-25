@@ -49,15 +49,15 @@ $(function () {
                 draw = 'fa fa-file-video-o';
                 break;
             case 'document':
-            console.log(str)
-                if (str=="pdf"){
-                    draw='fa fa-file-pdf-o';
-                }else if(str=="xls"||str=="xlsx"){
-                    draw='fa fa-file-excel-o';
-                }else if (str=="doc"||str=="docx"){
-                    draw="fa fa-file-word-o";
-                }else{
-                    draw="fa fa-file-o"
+                console.log(str)
+                if (str == "pdf") {
+                    draw = 'fa fa-file-pdf-o';
+                } else if (str == "xls" || str == "xlsx") {
+                    draw = 'fa fa-file-excel-o';
+                } else if (str == "doc" || str == "docx") {
+                    draw = "fa fa-file-word-o";
+                } else {
+                    draw = "fa fa-file-o"
                 }
                 break;
             case 'music':
@@ -65,8 +65,8 @@ $(function () {
                 break;
         }
 
-        if (str=='zip'){
-            draw='fa fa-file-zip-o'
+        if (str == 'zip') {
+            draw = 'fa fa-file-zip-o'
         }
         return draw
     });
@@ -1004,6 +1004,9 @@ $(function () {
 
     //新建文件夹ajax
     function AjaxMkdir(dirname, filename, cb, failcb) {
+        $.toast("新建中..", {
+            timeout: 0,
+        })
         dirname == null ? dirname = "" : dirname = dirname;
         filename == null ? filename = "" : filename = filename;
         cb == null ? cb = function () {} : cb = cb;
@@ -1031,6 +1034,9 @@ $(function () {
 
     //重命名ajax
     function AjaxRename(dirname, orgName, newName, cb, failcb) {
+        $.toast("重命名中..", {
+            timeout: 0,
+        })
         dirname == null ? dirname = "" : dirname = dirname;
         orgName == null ? orgName = "" : orgName = orgName;
         newName == null ? newName = "" : newName = newName;
@@ -1061,6 +1067,9 @@ $(function () {
 
     //删除ajax
     function AjaxDelete(dirname, fileNames, cb, failcb) {
+        $.toast("删除中..", {
+            timeout: 0,
+        })
         dirname == null ? dirname = "" : dirname = dirname;
 
         if (fileNames == null || fileNames == [] || fileNames.length == 0) {
@@ -1094,6 +1103,9 @@ $(function () {
 
     // 移动到到ajax
     function AjaxCopyTo(orgDirName, newDirName, fileNames, cb, failcb) {
+        $.toast("移动中..", {
+            timeout: 0,
+        })
         orgDirName == null ? orgDirName = "" : orgDirName = orgDirName;
         newDirName = null ? newDirName = "" : newDirName = newDirName;
 
@@ -1128,6 +1140,9 @@ $(function () {
 
     // 复制到ajax
     function AjaxMoveTo(orgDirName, newDirName, fileNames, cb, failcb) {
+        $.toast("复制中..", {
+            timeout: 0,
+        })
         orgDirName == null ? orgDirName = "" : orgDirName = orgDirName;
         newDirName = null ? newDirName = "" : newDirName = newDirName;
 

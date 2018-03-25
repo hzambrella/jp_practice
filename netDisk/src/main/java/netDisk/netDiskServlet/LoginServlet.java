@@ -5,7 +5,6 @@ import java.util.HashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,7 +26,6 @@ public class LoginServlet extends HttpServlet {
 	 */
 	public LoginServlet() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
@@ -48,7 +46,7 @@ public class LoginServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		// 通用
-		String userAccountMock = "testUser";
+		
 		response.setCharacterEncoding("utf-8");
 		// response.setContentType("text/html;charset=utf-8");
 		Result result = new Result(200, "成功", new HashMap<String, Object>());
@@ -63,7 +61,8 @@ public class LoginServlet extends HttpServlet {
 		}
 		
 		//TODO:from db
-		accountLogin=userAccountMock;
+		String userAccount = "testUser";
+		accountLogin=userAccount;
 		String userName="haozhao";
 		
 		String passwordLogin = request.getParameter("passwordLogin");
@@ -81,7 +80,7 @@ public class LoginServlet extends HttpServlet {
 		Boolean remember=Boolean.parseBoolean(rememberStr);
 
 		HttpSession session=request.getSession(true);
-		session.setAttribute("account", accountLogin);
+		session.setAttribute("userAccount", accountLogin);
 		session.setAttribute("userName", userName);
 		session.setAttribute("rememberLogin", remember);
 		

@@ -1,7 +1,5 @@
 package netDisk;
 
-import static org.junit.Assert.*;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -21,7 +19,7 @@ public class TestFileOperate {
 	@Test
 	public void test() {
 		try {
-			String testDir="E:/test";
+			String testDir="E://test";
 			String b=JSON.toJSONString(FileOperate.getFileDirectory(testDir));
 			System.out.println(b);
 			b=JSON.toJSONString(FileOperate.renameFile(testDir, "1231", "1231"));

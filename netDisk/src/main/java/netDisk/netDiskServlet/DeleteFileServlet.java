@@ -2,9 +2,7 @@ package netDisk.netDiskServlet;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -13,6 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import netDisk.netDiskCfg.netDiskCfg;
 import netDisk.netDiskEngine.FileOperate;
 import View.Result;
 
@@ -42,7 +41,13 @@ public class DeleteFileServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		// 通用
-		String userAccountMock = "testUser";
+		String userAccount = (String) request.getSession(true).getAttribute(
+				"userAccount");
+		if (userAccount == null) {
+			request.getServletContext()
+					.getRequestDispatcher("/netDisk/LoginServlet")
+					.forward(request, response);
+		}
 		response.setCharacterEncoding("utf-8");
 		Result result = new Result(200, "成功", new HashMap<String, Object>());
 
@@ -51,7 +56,7 @@ public class DeleteFileServlet extends HttpServlet {
 		if (targetPath == null) {
 			targetPath = "";
 		}
-		targetPath = new String(targetPath.getBytes("ISO8859-1"), "UTF-8");
+	
 
 		String[] fileNames = request.getParameterValues("fileNames[]");
 		if (fileNames == null || fileNames.length == 0) {
@@ -61,12 +66,10 @@ public class DeleteFileServlet extends HttpServlet {
 			return;
 		}
 
-		// fileName = new String(fileName.getBytes("ISO8859-1"), "UTF-8");
 
-		String serverPath = request.getServletContext().getRealPath("")
-				+ File.separator;
+		String serverPath=netDiskCfg.getDiskDir()+File.separator;
 
-		targetPath = serverPath + userAccountMock + targetPath;
+		targetPath = serverPath + userAccount + targetPath;
 		targetPath = targetPath.replace("/", File.separator);
 		
 		Map<String,String> failIds=new HashMap<String,String>();

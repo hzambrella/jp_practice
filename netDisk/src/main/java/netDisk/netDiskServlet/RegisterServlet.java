@@ -26,7 +26,6 @@ public class RegisterServlet extends HttpServlet {
      */
     public RegisterServlet() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
 	/**
@@ -34,7 +33,7 @@ public class RegisterServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// 通用
-				String userAccountMock = "testUser";
+				
 				response.setCharacterEncoding("utf-8");
 				// response.setContentType("text/html;charset=utf-8");
 				Result result = new Result(200, "成功", new HashMap<String, Object>());
@@ -74,7 +73,8 @@ public class RegisterServlet extends HttpServlet {
 				}
 				
 				//TODO:from db
-				accountLogin=userAccountMock;
+				String userAccount = "testUser";
+				accountLogin=userAccount;
 				String userName=nickName;
 
 				HttpSession session=request.getSession(true);

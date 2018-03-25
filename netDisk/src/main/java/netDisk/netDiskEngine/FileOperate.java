@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -189,8 +188,8 @@ public class FileOperate {
 	 * @return
 	 */
 	public static String renameFile(String dir, String orgName, String newName) {
-		// System.out.println(dir+File.separator+orgName);
-		// System.out.println(dir+File.separator+newName);
+		 System.out.println(dir+File.separator+orgName);
+		 System.out.println(dir+File.separator+newName);
 		File f = new File(dir + File.separator + orgName);
 		File fnew = new File(dir + File.separator + newName);
 

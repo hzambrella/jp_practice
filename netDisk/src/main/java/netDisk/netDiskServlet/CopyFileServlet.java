@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import netDisk.netDiskCfg.netDiskCfg;
 import netDisk.netDiskEngine.FileOperate;
 import View.Result;
 
@@ -40,7 +41,13 @@ public class CopyFileServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		// 通用
-		String userAccountMock = "testUser";
+		String userAccount = (String) request.getSession(true).getAttribute(
+				"userAccount");
+		if (userAccount == null) {
+			request.getServletContext()
+					.getRequestDispatcher("/netDisk/LoginServlet")
+					.forward(request, response);
+		}
 		response.setCharacterEncoding("utf-8");
 		// response.setContentType("text/html;charset=utf-8");
 		Result result = new Result(200, "成功", new HashMap<String, Object>());
@@ -65,11 +72,10 @@ public class CopyFileServlet extends HttpServlet {
 			return;
 		}
 
-		String serverPath = request.getServletContext().getRealPath("")
-				+ File.separator;
+		String serverPath=netDiskCfg.getDiskDir()+File.separator;
 
-		String orgPath = serverPath + userAccountMock + orgDirName;
-		String newPath = serverPath + userAccountMock + newDirName;
+		String orgPath = serverPath + userAccount + orgDirName;
+		String newPath = serverPath + userAccount + newDirName;
 		//源文件所在目录
 		String src = orgPath.replace("/", File.separator);
 		//目标目录
@@ -79,7 +85,7 @@ public class CopyFileServlet extends HttpServlet {
 		// 新目录不存在就创建
 		String newDir = newDirName;
 		newDir = newDir.replace("/", File.separator);
-		FileOperate.newFolderIfNotExist(serverPath +userAccountMock, newDir);
+		FileOperate.newFolderIfNotExist(serverPath +userAccount, newDir);
 		
 		// 逻辑
 		for (int i=0;i<fileNames.length;i++){

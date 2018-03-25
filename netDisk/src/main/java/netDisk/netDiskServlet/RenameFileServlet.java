@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import netDisk.netDiskCfg.netDiskCfg;
 import netDisk.netDiskEngine.FileOperate;
 
 import com.alibaba.fastjson.JSON;
@@ -35,10 +36,16 @@ public class RenameFileServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	protected void doGet(HttpServletRequest request,
+	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 
-		String userAccountMock = "testUser";
+		String userAccount = (String) request.getSession(true).getAttribute(
+				"userAccount");
+		if (userAccount == null) {
+			request.getServletContext()
+					.getRequestDispatcher("/netDisk/LoginServlet")
+					.forward(request, response);
+		}
 		
 		//Í¨ÓÃ
 		response.setCharacterEncoding("utf-8");
@@ -52,7 +59,6 @@ public class RenameFileServlet extends HttpServlet {
 			response.getWriter().print(JSON.toJSONString(result));
 			return;
 		}
-		orgName =new String(orgName.getBytes("ISO8859-1"),"UTF-8"); 
 		
 		String newName= request.getParameter("newName");
 		if (null==newName){
@@ -61,18 +67,15 @@ public class RenameFileServlet extends HttpServlet {
 			response.getWriter().print(JSON.toJSONString(result));
 			return;
 		}
-		newName =new String(newName.getBytes("ISO8859-1"),"UTF-8"); 
-		
+
 		String targetPath = request.getParameter("dirname");
 		if (targetPath == null) {
 			targetPath = "";
 		}
-		targetPath =new String(targetPath.getBytes("ISO8859-1"),"UTF-8"); 
 
-		String serverPath = request.getServletContext().getRealPath("")
-				+ File.separator;
+		String serverPath=netDiskCfg.getDiskDir()+File.separator;
 
-		targetPath = serverPath + userAccountMock + targetPath;
+		targetPath = serverPath + userAccount + targetPath;
 		targetPath=targetPath.replace("/", File.separator);
 		
 		//Âß¼­
@@ -95,15 +98,6 @@ public class RenameFileServlet extends HttpServlet {
 		response.getWriter().print(result.toJSON());
 		System.out.println(result.toJSON());
 		return;
-	}
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
-	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		doGet(request,response);
 	}
 
 }

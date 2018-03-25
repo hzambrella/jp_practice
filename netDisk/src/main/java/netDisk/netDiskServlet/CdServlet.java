@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -14,11 +12,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import View.Result;
 import netDisk.DTO.FileInfo;
+import netDisk.netDiskCfg.netDiskCfg;
 import netDisk.netDiskEngine.FileOperate;
 import netDisk.netDiskEngine.StringOperate;
 
 /**
- * Servlet implementation class cdServlet  查询某个目录下的全部文件
+ * Servlet implementation class cdServlet 查询某个目录下的全部文件
  */
 @WebServlet("/CdServlet")
 public class CdServlet extends HttpServlet {
@@ -36,29 +35,34 @@ public class CdServlet extends HttpServlet {
 	 *      response)
 	 */
 	protected void doPost(HttpServletRequest request,
-		HttpServletResponse response) throws ServletException, IOException {
-		
-		String userAccountMock="testUser";
-		
-		//通用
+			HttpServletResponse response) throws ServletException, IOException {
+
+		String userAccount = (String) request.getSession(true).getAttribute(
+				"userAccount");
+		if (userAccount == null) {
+			request.getServletContext()
+					.getRequestDispatcher("/netDisk/LoginServlet")
+					.forward(request, response);
+		}
+
+		// 通用
 		response.setCharacterEncoding("utf-8");
 		Result result = new Result(200, "成功", new HashMap<String, Object>());
-		
-		//校验参数
+
+		// 校验参数
 		String targetPath = request.getParameter("dirname");
-		if (targetPath==null){
-			targetPath="";
+		if (targetPath == null) {
+			targetPath = "";
 		}
-		System.out.println("编码检查"+targetPath);
-//		targetPath =new String(targetPath.getBytes("ISO8859-1"),"UTF-8"); 
-		int dataDeep=StringOperate.getSubStringNumFromString(targetPath);
-		//逻辑
-		String serverPath = request.getServletContext().getRealPath("")
-				+ File.separator;
-		
-		targetPath=serverPath+userAccountMock+targetPath;
-		targetPath=targetPath.replace("/", File.separator);
-		
+		System.out.println("编码检查" + targetPath);
+		// targetPath =new String(targetPath.getBytes("ISO8859-1"),"UTF-8");
+		int dataDeep = StringOperate.getSubStringNumFromString(targetPath);
+		// 逻辑
+		String serverPath = netDiskCfg.getDiskDir();
+
+		targetPath = serverPath + File.separator + userAccount + targetPath;
+		targetPath = targetPath.replace("/", File.separator);
+
 		try {
 			System.out.println(targetPath);
 			List<FileInfo> directory = FileOperate.getFileDirectory(targetPath);
@@ -71,11 +75,11 @@ public class CdServlet extends HttpServlet {
 			response.getWriter().print(result.toJSON());
 			return;
 		}
-		
-		//结果
+
+		// 结果
 		response.getWriter().print(result.toJSON());
 		System.out.println(result.toJSON());
 		return;
 	}
-	
+
 }

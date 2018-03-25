@@ -11,9 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import netDisk.DTO.DirTreeNode;
+import netDisk.netDiskCfg.netDiskCfg;
 import netDisk.netDiskEngine.FileOperate;
-
-import com.alibaba.fastjson.JSON;
 
 import View.Result;
 
@@ -37,7 +36,13 @@ public class GetDirTreeServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		String userAccountMock="testUser";
+		String userAccount = (String) request.getSession(true).getAttribute(
+				"userAccount");
+		if (userAccount == null) {
+			request.getServletContext()
+					.getRequestDispatcher("/netDisk/LoginServlet")
+					.forward(request, response);
+		}
 		
 		// 通用
 //		String re=request.getParameter("1");
@@ -48,10 +53,9 @@ public class GetDirTreeServlet extends HttpServlet {
 		response.setCharacterEncoding("utf-8");
 		Result result = new Result(200, "成功", new HashMap<String, Object>());
 
-		String serverPath = request.getServletContext().getRealPath("")
-				+ File.separator;
+		String serverPath=netDiskCfg.getDiskDir()+File.separator;
 
-		String targetPath = serverPath + userAccountMock;
+		String targetPath = serverPath + userAccount;
 		targetPath = targetPath.replace("/", File.separator);
 
 		// 逻辑
