@@ -35,25 +35,27 @@
 
 <body>
     <div class="top">
-        <img id="logo" style="float: left; height: 60px; margin: 10px 10px" src="/netDisk/view/images/logo.png" />
-        <div class="top_navigation" style="display: block; height: 60px; width: 1000px; margin: 10px 10px; float: left;"></div>
-        <div class="user_info">
-            <img id="head_img" class="head_img" src="/netDisk/view/images/head_default.png" /> <span class="nickname">testUser</span>
+        <dl>
+            <dt><img id="logo" style="float: left; height: 60px; margin: 10px 10px" src="/netDisk/view/images/logo.png" /></dt>
+            <!--<div class="top_navigation" style="display: block; height: 60px; width: 50%; margin: 10px 10px; float: left;"></div>-->
+            <dd class="user_info">
+                <img id="head_img" class="head_img" src="/netDisk/view/images/head_default.png" /> <span class="nickname">testUser</span>
 
-            <div id="user_info_detail" class="user_info_detail">
-                <div class="user_info_detail_head">
-                    <img class="head_img" src="/netDisk/view/images/head_default.png" />
-                    <span class="nickname">testUser</span>
+                <div id="user_info_detail" class="user_info_detail">
+                    <div class="user_info_detail_head">
+                        <img class="head_img" src="/netDisk/view/images/head_default.png" />
+                        <span class="nickname">testUser</span>
+                    </div>
+                    <!--<div class="user_info_detail_middle"></div>-->
+                    <ul>
+                        <li><a id="personal_info" href="javascript:void(0)">个人资料</a></li>
+                        <li><a id="helpCenter" href="javascript:void(0)">帮助中心</a></li>
+                        <li><a id="logout" href="javascript:void(0)">退出</a></li>
+                    </ul>
                 </div>
-                <!--<div class="user_info_detail_middle"></div>-->
-                <ul>
-                    <li><a id="personal_info" href="javascript:void(0)">个人资料</a></li>
-                    <li><a id="helpCenter" href="javascript:void(0)">帮助中心</a></li>
-                    <li><a id="logout" href="javascript:void(0)">退出</a></li>
-                </ul>
-            </div>
-
-        </div>
+            </dd>
+        </dl>
+    </div>
     </div>
 
     <div class="con">
@@ -146,6 +148,9 @@
     <div id="modal"></div>
     <div id="modalDirTree"></div>
 
+    <!--upload-->
+    <div id="uploadTabs"></div>
+
     <script id="table_tpl" type="text/html">
         <%for(var i = 0; i < directory.length; i++) {%>
             <tr>
@@ -233,10 +238,10 @@
 <link rel="stylesheet" type="text/css" href="/netDisk/view/plugin/box_alert/css/box_alert.css">
 <script src="/netDisk/view/plugin/box_alert/js/box_alert.js"></script>
 
-<!--box_container-->
-<link rel="stylesheet" type="text/css" href="/netDisk/view/plugin/box_container/css/box_container.css">
-<script src="/netDisk/view/plugin/box_container/js/box_container.js"></script>
-<link href="/netDisk/view/css/box_container_app.css" rel="stylesheet" type="text/css" />
+<!--dialog-->
+<link rel="stylesheet" type="text/css" href="/netDisk/view/plugin/dialog/css/dialog.css">
+<script src="/netDisk/view/plugin/dialog/js/dialog.js"></script>
+<link href="/netDisk/view/css/dialog_app.css" rel="stylesheet" type="text/css" />
 
 <!--jqueryTreeScroll-->
 <link rel="stylesheet" type="text/css" href="/netDisk/view/plugin/jqueryTreeScroll/css/jqueryTreeScroll.css">
@@ -250,10 +255,30 @@
 
 <!--目录树的操作按钮-->
 <script id="mock_dir_tree_button" type="text/html">
-    <a href='javascript:void(0)' id="dirTreeNewFolder" class='box_container_a white floatleft'>新建文件夹</a>
+    <a href='javascript:void(0)' id="dirTreeNewFolder" class='dialog_a white floatleft'>新建文件夹</a>
 
-    <a href='javascript:void(0)' id="dirTreeCancel" class='box_container_a white floatright'>取消</a>
-    <a href='javascript:void(0)' id="dirTreeConfirm" class='box_container_a blue floatright'>确认</a>
+    <a href='javascript:void(0)' id="dirTreeCancel" class='dialog_a white floatright'>取消</a>
+    <a href='javascript:void(0)' id="dirTreeConfirm" class='dialog_a blue floatright'>确认</a>
+
+</script>
+
+
+<script id="mock_upload_table" type="text/html">
+    <table id="uploadTable">
+        <tr>
+            <th>文件(夹)名</th>
+            <th>大小</th>
+            <th>上传目录</th>
+            <th>状态</th>
+        </tr>
+
+        <tr>
+            <td>123.png</td>
+            <td>18KB</td>
+            <td>我的文件</td>
+            <td>ok</td>
+        </tr>
+    </table>
 
 </script>
 

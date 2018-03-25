@@ -33,6 +33,7 @@ $(function () {
         $("#allFile").trigger("click")
     });
 
+    //初始化模板
     //根据后缀判断文件类型
     template.registerModifier('fileType', function (str) {
         if (str == "folder") {
@@ -70,6 +71,8 @@ $(function () {
         }
         return draw
     });
+
+
 
     //...状态管理...
     //获得左边选中的按钮的id
@@ -318,7 +321,7 @@ $(function () {
             if ($target.prop("id") == "allFile") {
                 AjaxCd(null,
                     function () {
-                        // drawTable(result_data);
+                        // drawFileTable(result_data);
                         ChangeItemTitle()
                         //移除全选按钮的状态，已选中归零
                         $("input#selectAllList").prop("checked", false)
@@ -336,7 +339,7 @@ $(function () {
                     });
             } else {
                 alert("尊敬的用户，查看" + titleMap[GetItemId()] + "功能正在开发中，敬请期待");
-                drawTable({
+                drawFileTable({
                     directory: []
                 });
             };
@@ -379,8 +382,8 @@ $(function () {
 
     //..表格控制..
     //  清除原有内容，将新内容绘入表格。dataDeep是文件深度。
-    //#file-list-table的属性data-deep在drawTable函数操作。外层不准操作！！！ 
-    function drawTable(data, dataDeep) {
+    //#file-list-table的属性data-deep在drawFileTable函数操作。外层不准操作！！！ 
+    function drawFileTable(data, dataDeep) {
         dataDeep == null ? dataDeep = 0 : dataDeep = dataDeep;
         //        console.log(resultList)
         //        var resultList=resultList;
@@ -487,6 +490,24 @@ $(function () {
         } else {
             $(".operate ul").addClass("hide");
         }
+    }
+
+    //上传按钮
+
+    //上传文件时会话框里面表格
+    function drawUploadTable() {
+
+        //TODO:fileName and fileSize
+
+        var table_tpl = document.getElementById("mock_upload_table").innerHTML;
+        var _HTML = template(table_tpl, {});
+        $('body').dialog({
+            id: 'uploadDialog',
+            title: '正在上传()个文件',
+            _con_HTML: _HTML,
+        }, ['dialog_upload'])
+
+        //TODO:ajax
     }
 
     //新建文件夹按钮
@@ -663,19 +684,21 @@ $(function () {
         })
 
 
-        var __dirTreeButtonHTML = $("#mock_dir_tree_button").html()
+        var _dirTreeButtonHTML = $("#mock_dir_tree_button").html()
         AjaxGetDirTree(function (dirTree) {
             var _dirTreeHTML = drawDirTreeUl(jqueryTreeScrollHeight, dirTree)
 
             //lazy single
             if ($modalDirTree == null) {
                 $modalDirTree = $("#modalDirTree").modal()
-                $modalDirTree.boxContainer({
+                $modalDirTree.dialog({
                     closeFunc: function () {
                         $modalDirTree.hide();
-                        $(".box_container").hide();
-                    }
-                }, _dirTreeHTML, __dirTreeButtonHTML);
+                        $(".dialog").hide();
+                    },
+                    _con_HTML: _dirTreeHTML,
+                    _button_HTML: _dirTreeButtonHTML,
+                });
                 jqueryTreeScroll()
             } else {
                 $modalDirTree.changeCon(_dirTreeHTML);
@@ -695,8 +718,8 @@ $(function () {
 
             $modalDirTree.find("a[data-deep='0']").addClass("ontree")
 
-            $(".box_container .box_container_con").addClass("border_grey_solid")
-            $(".box_container .box_container_button").addClass("box_container_button_dirTree")
+            $(".dialog .dialog_con").addClass("border_grey_solid")
+            $(".dialog .dialog_button").addClass("dialog_button_dirTree")
 
             $("#dirTreeNewFolder").bind("click", function () {
                 //TODO：new folder
@@ -966,7 +989,7 @@ $(function () {
                         data.map.directory = [];
                     }
                     $("#AjaxCdStatusMess").html("已获取" + data.map.directory.length + "个文件");
-                    drawTable(data.map, data.map.dataDeep);
+                    drawFileTable(data.map, data.map.dataDeep);
                     cb()
                 })
 

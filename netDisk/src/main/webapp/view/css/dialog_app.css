@@ -1,0 +1,42 @@
+/*box container按钮*/
+.dialog_button_dirTree{
+    height:60px;
+    margin: 10px auto;
+}
+
+.dialog_upload{
+    /*top:53%;
+    left:65%;*/
+    left:auto;
+    top:auto;
+    bottom:0px;
+    right: 30px;
+    border-radius: 9px 9px 0 0;
+    height: 528px;
+    width:833px;
+}
+
+.dialog_upload .title{
+	width:833px;
+}
+
+.dialog_upload .dialog_con{
+	width:833px;
+    margin: 0 auto;
+}
+
+#uploadTable{
+    text-align: left;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#uploadTable th {
+    padding: 18px 12px;
+}
+
+#uploadTable tr,
+#uploadTable td {
+    padding: 18px 12px;
+    border-bottom: 1px #cccccc solid;
+}
