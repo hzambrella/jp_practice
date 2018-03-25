@@ -75,23 +75,11 @@ public class DeleteFileServlet extends HttpServlet {
 			// 逻辑
 			File toDelete = new File(targetPath + File.separator + fileName);
 			if (!toDelete.exists()) {
-//				result.setCode(400);
-//				result.setMessage("待删除文件不存在");
-//				response.getWriter().print(JSON.toJSONString(result));
-//				System.out.println("log:[debug]" + targetPath + File.separator
-//						+ fileName);
-//				return;
 				failIds.put(String.valueOf(i),"待删除文件不存在");
 				continue;
 			}
 
 			if (!FileOperate.deleteFile(toDelete)) {
-//				result.setCode(500);
-//				result.setMessage("删除文件失败");
-//				response.getWriter().print(JSON.toJSONString(result));
-//				System.out.println("log:[debug]" + targetPath + File.separator
-//						+ fileName);
-//				return;
 				failIds.put(String.valueOf(i),"删除文件失败");
 			}
 		}

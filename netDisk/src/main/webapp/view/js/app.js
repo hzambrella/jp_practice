@@ -1,11 +1,15 @@
 $(function () {
     //...静态变量和全局变量...
+    //左边--item-title
     var titleMap = {
         "allFile": "全部文件",
         "imageFile": "图片",
         "textFile": "文档",
         "recycleFile": "回收站",
     }
+    //AjaxCd的状态。
+    var LoadingAjaxCd = "正在获取中...."
+    //按钮禁用/启用
     var disabledButtonFlag = false;
     var jqueryTreeScrollHeight = "200px"
 
@@ -123,7 +127,7 @@ $(function () {
     //无论那种情况，都要操作dirStack。别的地方不可操作这个对象
 
     //返回:对象类型  obj.dirname 目录名字  obj._backupHTML  改变前的html，用于ajax失败后恢复。
-    //mirror 改变前的dirStack,dirStack.rollBack(mirror)回滚。
+    //mirror 改变前的dirStack,ajax失败后，dirStack.rollBack(mirror)恢复原始状态。
     //ajax在外层写，写在这个函数后面。
 
     function ChangeItemTitle(back_num, title) {
@@ -203,6 +207,17 @@ $(function () {
         }
     }
 
+
+    function getItemTitle() {
+        var _backupHTML = $(".item-title").html();
+        var mirror = dirStack.getDataMirror();
+        return {
+            dirname: dirStack.getDirForAjax(),
+            _backupHTML: _backupHTML,
+            mirror: mirror,
+        }
+    }
+
     //状态栏的click事件 返回上层目录和返回上层文件
     $(".item-title").click(function (event) {
         $target = $(event.target);
@@ -224,7 +239,15 @@ $(function () {
         }
     })
 
+    //...上边...//
+    //..用户管理..
+    $("#logout").click(function () {
+        AjaxLogout()
+    })
+
     //...左边...
+
+    //条目
     $(".item-list").click(function (event) {
         var $target = $(event.target);
         // console.log($target.prop("id"));
@@ -490,7 +513,7 @@ $(function () {
                     if (failNameStr != "") {
                         // $.toast('文件' + failNameStr + '删除失败')
                         $modal.boxAlert({
-                            'title': '部分文件删除失败:',
+                            'title': '部分文件删除失败',
                             'content': failNameStr,
                             'needCancel': false,
                             'confirmFunc': function () {
@@ -634,17 +657,16 @@ $(function () {
                     var failNameStr = "";
                     for (i = 0; i < names.length; i++) {
                         if (failIds[i] == null || failIds[i] == "") {
-                            
+
                         } else {
                             failNameStr += names[i] + "(原因:" + failIds[i] + ")<br/>";
                         }
                     }
 
-                
                     if (failNameStr != "") {
                         // $.toast('文件' + failNameStr + '删除失败')
                         $modal.boxAlert({
-                            'title': '部分文件删除失败:',
+                            'title': '部分文件移动失败',
                             'content': failNameStr,
                             'needCancel': false,
                             'confirmFunc': function () {
@@ -656,6 +678,9 @@ $(function () {
                     } else {
                         $.toast('文件转移成功')
                     }
+
+                    //刷新列表的数据
+                    AjaxCd(getItemTitle)
                 })
 
             }
@@ -668,17 +693,16 @@ $(function () {
                     var failNameStr = "";
                     for (i = 0; i < names.length; i++) {
                         if (failIds[i] == null || failIds[i] == "") {
-      
+
                         } else {
                             failNameStr += names[i] + "(原因:" + failIds[i] + ")<br/>";
                         }
                     }
 
-                    console.log(failNameStr)
+                    // console.log(failNameStr)
                     if (failNameStr != "") {
-                        // $.toast('文件' + failNameStr + '删除失败')
                         $modal.boxAlert({
-                            'title': '部分文件删除失败:',
+                            'title': '部分文件复制失败',
                             'content': failNameStr,
                             'needCancel': false,
                             'confirmFunc': function () {
@@ -690,6 +714,9 @@ $(function () {
                     } else {
                         $.toast('文件复制成功')
                     }
+
+                    //刷新列表的数据
+                    AjaxCd(getItemTitle())
                 })
             }
 
@@ -816,9 +843,32 @@ $(function () {
         disabledButtonFlag = false
     }
 
-    //ajax
+    //...ajax...
+    //退出登录
+    function AjaxLogout() {
+        $.ajax({
+            type: 'post',
+            dataType: 'json',
+            url: '/netDisk/LogoutServlet',
+            success: function (data) {
+                $.toastForJavaAjaxRes(data, function () {
+                    location.replace("/netDisk/LoginServlet");
+                })
+            },
+            error: function (data, status, e) {
+                $.toastForAjaxErr(data,status,e)
+                $(".item-title").html(obj._backupHTML);
+                dirStack.rollBack(mirror)
+                $("#AjaxCdStatusMess").html("获取目录失败");
+                failcb(data, status, e)
+            }
+        })
+    }
+
+
     //查询某个目录下的全部文件
     function AjaxCd(obj, cb, failcb) {
+        $("#AjaxCdStatusMess").html(LoadingAjaxCd);
         if (obj == null) {
             obj = {
                 dirname: '',
@@ -845,16 +895,17 @@ $(function () {
                     if (data.map.directory == undefined) {
                         data.map.directory = [];
                     }
-
+                    $("#AjaxCdStatusMess").html("已获取" + data.map.directory.length + "个文件");
                     drawTable(data.map, data.map.dataDeep);
                     cb()
                 })
 
             },
             error: function (data, status, e) {
-                $.toastForAjaxErr(data)
+                $.toastForAjaxErr(data,status,e)
                 $(".item-title").html(obj._backupHTML);
-                dirStack.rollBack(mirror)
+                dirStack.rollBack(obj.mirror)
+                $("#AjaxCdStatusMess").html("获取目录失败");
                 failcb(data, status, e)
             }
         })
@@ -875,7 +926,7 @@ $(function () {
                 })
             },
             error: function (data, status, e) {
-                $.toastForAjaxErr(data)
+                $.toastForAjaxErr(data,status,e)
                 failcb(data, status, e)
             }
         })
@@ -902,7 +953,7 @@ $(function () {
                 })
             },
             error: function (data, status, e) {
-                $.toastForAjaxErr(data)
+                $.toastForAjaxErr(data,status,e)
                 failcb(data, status, e)
             }
         })
@@ -932,7 +983,7 @@ $(function () {
                 })
             },
             error: function (data, status, e) {
-                $.toastForAjaxErr(data)
+                $.toastForAjaxErr(data,status,e)
                 failcb(data, status, e)
             }
         })
@@ -965,7 +1016,7 @@ $(function () {
             },
             error: function (data, status, e) {
                 console.log(data, status, e)
-                $.toastForAjaxErr(data)
+                $.toastForAjaxErr(data,status,e)
                 failcb(data, status, e)
             }
         })
@@ -998,7 +1049,7 @@ $(function () {
                 })
             },
             error: function (data, status, e) {
-                $.toastForAjaxErr(data)
+                $.toastForAjaxErr(data,status,e)
                 failcb(data, status, e)
             }
         })
@@ -1032,7 +1083,7 @@ $(function () {
                 })
             },
             error: function (data, status, e) {
-                $.toastForAjaxErr(data)
+                $.toastForAjaxErr(data,status,e)
                 failcb(data, status, e)
             }
         })

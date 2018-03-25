@@ -76,69 +76,42 @@ public class CopyFileServlet extends HttpServlet {
 		String des = newPath.replace("/", File.separator);
 		Map<String,String> failIds=new HashMap<String,String>();
 		
+		// 新目录不存在就创建
+		String newDir = newDirName;
+		newDir = newDir.replace("/", File.separator);
+		FileOperate.newFolderIfNotExist(serverPath +userAccountMock, newDir);
+		
 		// 逻辑
 		for (int i=0;i<fileNames.length;i++){
 			String fileName=fileNames[i];
-			if ((newPath+File.separator+fileName).indexOf(orgPath+File.separator+fileName) >= 0) {
-//				result.setCode(400);
-//				result.setMessage("不能将文件复制到自身或其子目录下");
-//				response.getWriter().print(JSON.toJSONString(result));
-//				return;
-				failIds.put(String.valueOf(i),"不能将文件复制到自身或其子目录下");
-				continue;
-			}
-			
 			File fnew = new File(newPath + File.separator + fileName);
 			// TODO:auto rename
 			if (fnew.exists()) {
-//				result.setCode(400);
-//				result.setMessage("此目录下已存在同名文件");
-//				System.out.println("log:[debug]" + newPath + File.separator
-//						+ fileName);
-//				response.getWriter().print(JSON.toJSONString(result));
-//				return;
 				failIds.put(String.valueOf(i),"此目录下已存在同名文件");
 				continue;
 			}
 
 			File forg = new File(src + File.separator + fileName);
 			if (!forg.exists()) {
-//				result.setCode(400);
-//				result.setMessage("源文件不存在");
-//				System.out.println("log:[debug]" + orgPath + File.separator
-//						+ fileName);
-//				response.getWriter().print(JSON.toJSONString(result));
-//				return;
 				failIds.put(String.valueOf(i),"源文件不存在");
 				continue;
 			}
-			
-			// 新目录不存在就创建
-			String newDir = newDirName;
-			newDir = newDir.replace("/", File.separator);
-			FileOperate.newFolderIfNotExist(serverPath + userAccountMock, newDir);
-			
+
+			if ((des+File.separator+fileName).indexOf(src+File.separator+fileName) >= 0) {
+				failIds.put(String.valueOf(i),"不能将文件复制到自身或其子目录下");
+				continue;
+			}
+				
 			try {
 				boolean success=FileOperate.copyFile(src, des,fileName);
-				System.out.println("flag3");
 				if (!success){
-//					result.setCode(500);
-//					result.setMessage("复制文件出错");
-//					System.out.println("log:[debug]" + src+"->"+des);
-//					response.getWriter().print(JSON.toJSONString(result));
-//					return;
+
 					failIds.put(String.valueOf(i),"复制文件出错");
 					continue;
 				}
 			} catch (Exception e) {
-//				result.setCode(500);
-//				result.setMessage("复制文件出错");
-//				System.out.println("log:[debug]" + src+"->"+des);
-//				response.getWriter().print(JSON.toJSONString(result));
-//			
-//				e.printStackTrace();
-//				return;
 				failIds.put(String.valueOf(i),"复制文件出错");
+				e.printStackTrace();
 				continue;
 			}		
 		}

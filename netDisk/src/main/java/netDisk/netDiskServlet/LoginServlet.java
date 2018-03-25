@@ -16,7 +16,7 @@ import View.Result;
 import com.alibaba.fastjson.JSON;
 
 /**
- * Servlet implementation class LoginServlet
+ * Servlet implementation class LoginServlet µÇÂ¼
  */
 @WebServlet("/LoginServlet")
 public class LoginServlet extends HttpServlet {

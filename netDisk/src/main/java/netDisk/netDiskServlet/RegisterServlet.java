@@ -15,7 +15,7 @@ import View.Result;
 import com.alibaba.fastjson.JSON;
 
 /**
- * Servlet implementation class RegisterServlet
+ * Servlet implementation class RegisterServlet зЂВс
  */
 @WebServlet("/RegisterServlet")
 public class RegisterServlet extends HttpServlet {

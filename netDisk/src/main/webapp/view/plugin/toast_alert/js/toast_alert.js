@@ -20,11 +20,12 @@ $.extend({
         }, 1000)
     },
 
-    toastForAjaxErr: function (data) {
+    toastForAjaxErr: function (data,status,e) {
         var message = ""
         if ((data.statusText == "timeout" || data.statusText == "error") && data.status == 0) {
             $.toast("服务器无法链接接，请检查网络或稍后再试")
         } else {
+        	console.log(data,status,e);
             $.toast("系统服务器异常，请稍候再试")
         }
     },

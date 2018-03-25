@@ -82,53 +82,34 @@ public class MoveFileServlet extends HttpServlet {
 		Map<String,String> failIds=new HashMap<String,String>();
 		for (int i = 0; i < fileNames.length; i++) {
 			String fileName = fileNames[i];
-			if ((newPath + File.separator + fileName).indexOf(orgPath+File.separator+fileName) >= 0) {
-//				result.setCode(400);
-//				result.setMessage("不能将文件移动到自身或其子目录下");
-//				response.getWriter().print(JSON.toJSONString(result));
-//				return;
-				System.out.println(newPath + File.separator + fileName);
-				System.out.println(orgPath+File.separator+fileName);
-				failIds.put(String.valueOf(i), "不能将文件移动到自身或其子目录下");
+			File forg = new File(orgPath + File.separator + fileName);
+			if (!forg.exists()) {
+				failIds.put(String.valueOf(i), "源文件不存在");
 				continue;
 			}
 			
 			File fnew = new File(newPath + File.separator + fileName);
 			// TODO:auto rename
 			if (fnew.exists()) {
-//				result.setCode(400);
-//				result.setMessage("此目录下已存在同名文件");
-//				System.out.println("log:[debug]" + newPath + File.separator
-//						+ fileName);
-//				response.getWriter().print(JSON.toJSONString(result));
-//				return;
 				failIds.put(String.valueOf(i), "此目录下已存在同名文件");
 				continue;
 			}
+			
+			if ((newPath + File.separator + fileName).indexOf(orgPath+File.separator+fileName) >= 0) {
+				System.out.println(newPath + File.separator + fileName);
+				System.out.println(orgPath+File.separator+fileName);
+				failIds.put(String.valueOf(i), "不能将文件移动到自身或其子目录下");
+				continue;
+			}
+			
 			// 新目录不存在就创建
 			String newDir = newDirName;
 			newDir = newDir.replace("/", File.separator);
 			FileOperate.newFolderIfNotExist(serverPath + userAccountMock,
 					newDir);
 
-			File forg = new File(orgPath + File.separator + fileName);
-			if (!forg.exists()) {
-//				result.setCode(400);
-//				result.setMessage("源文件不存在");
-//				System.out.println("log:[debug]" + orgPath + File.separator
-//						+ fileName);
-//				response.getWriter().print(JSON.toJSONString(result));
-//				return;
-				failIds.put(String.valueOf(i), "源文件不存在");
-				continue;
-			}
-
 			boolean success = FileOperate.moveFile(orgPath, newPath, fileName);
 			if (!success) {
-//				result.setCode(500);
-//				result.setMessage("移动文件失败");
-//				response.getWriter().print(JSON.toJSONString(result));
-//				return;
 				failIds.put(String.valueOf(i), "移动文件失败");
 				continue;
 			}

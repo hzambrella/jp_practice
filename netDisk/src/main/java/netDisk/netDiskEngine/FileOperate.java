@@ -143,6 +143,7 @@ public class FileOperate {
 	 *            开头必须有斜杠
 	 */
 	public static void newFolderIfNotExist(String serverPath, String newPath) {
+//		System.out.println("newFolderIfNotExist:"+serverPath);
 		// System.out.println(newPath);
 		String splitNote = "/";
 		// 斜杠是转义字符。
@@ -209,6 +210,7 @@ public class FileOperate {
 		System.out.println(src + des + fileName);
 		src = src + File.separator + fileName;
 		File file1 = new File(src);
+		//源文件不存在，返回失败
 		if (!file1.exists()) {
 			return false;
 		}
@@ -222,22 +224,22 @@ public class FileOperate {
 				return false;
 			}
 			fileCopy(src, des);
-			System.out.println("flag2");
+
 			return true;
 		}
 
 		// 若目标是目录，把文件里面内容放进数组
 		File[] fs = file1.listFiles();
 
-		// 在目标目录新建同名文件夹来复制文件夹
-		des = des + fileName;
-		File file2 = new File(des + fileName);
+		// 在目标目录中新建同名文件夹，以此复制文件夹
+		des = des + File.separator+ fileName;
+		File file2 = new File(des);
 		if (!file2.exists()) {
 			file2.mkdirs();
 		}
 
 		boolean success = true;
-		// 遍历文件及文件夹
+		// 遍历文件夹里面的文件及文件夹
 		for (File f : fs) {
 			// 递归的地方
 			success = copyFile(src, des, f.getName());
