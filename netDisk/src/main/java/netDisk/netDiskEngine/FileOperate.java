@@ -1,14 +1,20 @@
 package netDisk.netDiskEngine;
 
+import java.awt.Image;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import javax.imageio.ImageIO;
+
+import com.alibaba.fastjson.JSON;
 
 import netDisk.DTO.DirTreeNode;
 import netDisk.DTO.FileInfo;
@@ -71,8 +77,10 @@ public class FileOperate {
 		if (f.isDirectory()) {
 			return "folder";
 		}
-		String[] split = f.getName().split(".");
-
+		String[] split = f.getName().split("[.]");
+		System.out.println(f.getName());
+		System.out.println(JSON.toJSON(split));
+		
 		if (split.length < 2) {
 			return "file";
 		} else {
@@ -346,4 +354,19 @@ public class FileOperate {
 
 		return dirNodeList;
 	}
+	
+	
+	//ÅÐ¶ÏÊÇ·ñÊÇÍ¼Æ¬
+    public static boolean isImage(File file) {
+        if (file == null||!file.exists()) {
+            return false;
+        }
+        
+        try {
+        	Image img = ImageIO.read(file);
+            return !(img == null || img.getWidth(null) <= 0 || img.getHeight(null) <= 0);
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }

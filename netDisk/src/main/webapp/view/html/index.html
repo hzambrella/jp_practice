@@ -35,20 +35,20 @@
 
 <body>
     <div class="top">
-        <img style="float: left; height: 60px; margin: 10px 10px" src="/netDisk/view/images/logo.png" onclick="alert('hz网盘!!')" />
+        <img id="logo" style="float: left; height: 60px; margin: 10px 10px" src="/netDisk/view/images/logo.png" />
         <div class="top_navigation" style="display: block; height: 60px; width: 1000px; margin: 10px 10px; float: left;"></div>
         <div class="user_info">
-            <img id="head_img" class="head_img" src="/netDisk/view/images/head_default.png" /> <span class="nickname">no_name21312313</span>
+            <img id="head_img" class="head_img" src="/netDisk/view/images/head_default.png" /> <span class="nickname">testUser</span>
 
             <div id="user_info_detail" class="user_info_detail">
                 <div class="user_info_detail_head">
                     <img class="head_img" src="/netDisk/view/images/head_default.png" />
-                    <span class="nickname">no_name21312313</span>
+                    <span class="nickname">testUser</span>
                 </div>
                 <!--<div class="user_info_detail_middle"></div>-->
                 <ul>
                     <li><a id="personal_info" href="javascript:void(0)">个人资料</a></li>
-                    <li><a id="help_center" href="javascript:void(0)">帮助中心</a></li>
+                    <li><a id="helpCenter" href="javascript:void(0)">帮助中心</a></li>
                     <li><a id="logout" href="javascript:void(0)">退出</a></li>
                 </ul>
             </div>
@@ -152,8 +152,8 @@
                 <td>
                     <div class="tbcol-1">
                         <input type="checkbox" class="selectFile" />
-                        <i class="fa fa-folder-o"></i>
-                        <span><%:=directory[i].name%></span>
+                        <i class="<%:fileType=directory[i].type%>"></i>
+                        <span filetype="<%:=directory[i].type%>"><%:=directory[i].name%></span>
                     </div>
                 </td>
                 <td><span><%:=directory[i].size%></span></td>
@@ -175,6 +175,7 @@
 <!--js-->
 <script src="/netDisk/view/js/main.js"></script>
 <script src="/netDisk/view/js/lib/jquery.hoverdelay.js"></script>
+<script src="/netDisk/view/js/lib/getFileTypeBySuffix.js"></script>
 <!--进度条-->
 <link rel="stylesheet" type="text/css" href="/netDisk/view/plugin/progress_bar/css/progress_bar.css">
 <script src="/netDisk/view/plugin/progress_bar/js/progress_bar.js"></script>
@@ -254,99 +255,6 @@
     <a href='javascript:void(0)' id="dirTreeCancel" class='box_container_a white floatright'>取消</a>
     <a href='javascript:void(0)' id="dirTreeConfirm" class='box_container_a blue floatright'>确认</a>
 
-</script>
-
-<!--mock dirTree 目录树的原始html  not use-->
-<script id="mock_dir_tree" type="text/html">
-    <!--<div class='dirtree_centent'>-->
-    <div class='treebox scrollXY' style="height:200px">
-        <div class='tree'>
-            <ul>
-                <li>
-                    <div class='close_menu'><span></span><a title='一级菜单'>一级菜单</a></div>
-                    <ul>
-                        <li>
-                            <div class='close_menu'><span></span><a title='二级菜单'>二级菜单</a></div>
-                            <ul>
-                                <div class='close_menu'><span></span><a title='二级菜单'>二级菜单</a></div>
-                                <ul>
-                                    <li>
-                                        <div class='close_menu'><span></span><a title='二级菜单'>二级菜单</a></div>
-                                        <ul>
-                                            <li>
-                                                <div class='close_menu'><span></span><a title='二级菜单'>二级菜单</a></div>
-                                                <ul>
-                                                    <li>
-                                                        <div class='close_menu'><span></span><a title='二级菜单'>二级菜单</a></div>
-                                                        <ul>
-                                                            <li>
-                                                                <a title='最后一层'>最后一层的结构有变化最后一层的结构有变化</a>
-                                                            </li>
-                                                        </ul>
-                                                    </li>
-                                                </ul>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </ul>
-                        </li>
-                        <li>
-                            <div class='close_menu'><span></span><a title='二级菜单'>二级菜单</a></div>
-                            <ul>
-                                <li><a title='最后一层'>最后一层的结构有变化最后一层的结构有变化</a></li>
-                                <li><a title='最后一层'>最后一层的结构有变化最后一层的结构有变化</a></li>
-                                <li><a title='最后一层'>最后一层的结构有变化最后一层的结构有变化</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
-
-                <li>
-                    <div class='close_menu'><span></span><a title='一级菜单'>一级菜单</a></div>
-                    <ul>
-                        <li>
-                            <div class='close_menu'><span></span><a title='二级菜单'>二级菜单</a></div>
-                            <ul>
-                                <li>
-                                    <div class='close_menu'><span></span><a title='三级菜单'>三级菜单</a></div>
-                                    <ul>
-                                        <li><a title='最后一层'>最后一层的结构有变化最后一层的结构有变化</a></li>
-                                        <li><a title='最后一层'>最后一层的结构有变化最后一层的结构有变化</a></li>
-                                        <li><a title='最后一层'>最后一层的结构有变化最后一层的结构有变化</a></li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </li>
-                        <li>
-                            <div class='close_menu'><span></span><a title='二级菜单'>二级菜单</a></div>
-                            <ul>
-                                <li>
-                                    <div class='close_menu'><span></span><a title='三级菜单'>三级菜单</a></div>
-                                    <ul>
-                                        <li><a title='最后一层'>最后一层的结构有变化最后一层的结构有变化</a></li>
-                                        <li><a title='最后一层'>最后一层的结构有变化最后一层的结构有变化</a></li>
-                                        <li><a title='最后一层'>最后一层的结构有变化最后一层的结构有变化</a></li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <div class='close_menu'><span></span><a title='三级菜单'>三级菜单</a></div>
-                                    <ul>
-                                        <li><a title='最后一层'>最后一层的结构有变化最后一层的结构有变化</a></li>
-                                        <li><a title='最后一层'>最后一层的结构有变化最后一层的结构有变化</a></li>
-                                        <li><a title='最后一层'>最后一层的结构有变化最后一层的结构有变化</a></li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
-                <li><a title='最后一层'>最后一层的结构有变化最后一层的结构有变化</a></li>
-
-            </ul>
-        </div>
-    </div>
-    <!--</div>-->
 </script>
 
 </html>

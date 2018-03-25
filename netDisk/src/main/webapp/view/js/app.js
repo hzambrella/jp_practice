@@ -33,6 +33,43 @@ $(function () {
         $("#allFile").trigger("click")
     });
 
+    //根据后缀判断文件类型
+    template.registerModifier('fileType', function (str) {
+        if (str == "folder") {
+            return "fa fa-folder-o"
+        }
+        var type = getFileTypeBySuffix(str)
+
+        var draw = 'fa fa-file-o';
+        switch (type) {
+            case 'image':
+                draw = 'fa fa-file-image-o';
+                break;
+            case 'video':
+                draw = 'fa fa-file-video-o';
+                break;
+            case 'document':
+            console.log(str)
+                if (str=="pdf"){
+                    draw='fa fa-file-pdf-o';
+                }else if(str=="xls"||str=="xlsx"){
+                    draw='fa fa-file-excel-o';
+                }else if (str=="doc"||str=="docx"){
+                    draw="fa fa-file-word-o";
+                }else{
+                    draw="fa fa-file-o"
+                }
+                break;
+            case 'music':
+                draw = 'fa fa-file-sound-o';
+                break;
+        }
+
+        if (str=='zip'){
+            draw='fa fa-file-zip-o'
+        }
+        return draw
+    });
 
     //...状态管理...
     //获得左边选中的按钮的id
@@ -245,6 +282,21 @@ $(function () {
         AjaxLogout()
     })
 
+    $("#helpCenter").click(function () {
+        $modal.boxAlert({
+            title: "帮助",
+            content: "敬请期待v2版本!!<br/> 新内容：自动重命名，排序，查看个人信息，归类，回收站，查看容量，文件类型精细判断。",
+            needCancel: false,
+            confirmFunc: function () {
+                $modal.hideModal();
+            },
+            cancelFunc: function () {
+                $modal.hideModal();
+            },
+        })
+        $modal.show();
+    })
+
     //...左边...
 
     //条目
@@ -332,11 +384,12 @@ $(function () {
         dataDeep == null ? dataDeep = 0 : dataDeep = dataDeep;
         //        console.log(resultList)
         //        var resultList=resultList;
+
         //清空原有内容
         $("#file-list-table").find("tr").not(".table-title").remove();
         //新内容渲染模板
         var table_tpl = document.getElementById("table_tpl").innerHTML;
-        var _HTML = template(table_tpl, data);
+        var _HTML = template(table_tpl, data)
         // console.log(_HTML);
         $("#file-list-table").append(_HTML);
         //刷新状态
@@ -397,6 +450,11 @@ $(function () {
         //checkbox有单独的事件，排除掉
         if ($target.is("input.selectFile")) {
             //do nothing
+            return
+        }
+
+        //非文件夹
+        if ($target.parent().find("span").attr("filetype") != "folder") {
             return
         }
 
@@ -519,7 +577,10 @@ $(function () {
                             'confirmFunc': function () {
                                 $modal.hideModal();
                                 // $("#allFile").trigger("click")
-                            }
+                            },
+                            cancelFunc: function () {
+                                $modal.hideModal();
+                            },
                         })
                         $modal.show();
                     } else {
@@ -568,7 +629,7 @@ $(function () {
         $target.append(_HTML);
         //让input 选中状态
         $target.find("input").select().focus();
-        //TODO:给按钮绑定监听
+
         $target.find(".rename_cancel").bind("click", function () {
             dorename(name)
             cancel_callback == null ? function () {} : cancel_callback();
@@ -627,6 +688,10 @@ $(function () {
                 $modalDirTree.changeTitle("复制到")
             }
 
+            //默认的叉叉按钮重新绑定事件
+            $modalDirTree.resetCloseFunc(function () {
+                $("#dirTreeCancel").trigger("click")
+            })
 
             $modalDirTree.find("a[data-deep='0']").addClass("ontree")
 
@@ -672,7 +737,10 @@ $(function () {
                             'confirmFunc': function () {
                                 $modal.hideModal();
                                 // $("#allFile").trigger("click")
-                            }
+                            },
+                            cancelFunc: function () {
+                                $modal.hideModal();
+                            },
                         })
                         $modal.show();
                     } else {
@@ -708,7 +776,10 @@ $(function () {
                             'confirmFunc': function () {
                                 $modal.hideModal();
                                 // $("#allFile").trigger("click")
-                            }
+                            },
+                            cancelFunc: function () {
+                                $modal.hideModal();
+                            },
                         })
                         $modal.show();
                     } else {
@@ -744,7 +815,6 @@ $(function () {
             $modalDirTree.hide();
             cancelCallback();
         })
-
     }
 
     //还原按钮
@@ -856,7 +926,7 @@ $(function () {
                 })
             },
             error: function (data, status, e) {
-                $.toastForAjaxErr(data,status,e)
+                $.toastForAjaxErr(data, status, e)
                 $(".item-title").html(obj._backupHTML);
                 dirStack.rollBack(mirror)
                 $("#AjaxCdStatusMess").html("获取目录失败");
@@ -902,7 +972,7 @@ $(function () {
 
             },
             error: function (data, status, e) {
-                $.toastForAjaxErr(data,status,e)
+                $.toastForAjaxErr(data, status, e)
                 $(".item-title").html(obj._backupHTML);
                 dirStack.rollBack(obj.mirror)
                 $("#AjaxCdStatusMess").html("获取目录失败");
@@ -926,7 +996,7 @@ $(function () {
                 })
             },
             error: function (data, status, e) {
-                $.toastForAjaxErr(data,status,e)
+                $.toastForAjaxErr(data, status, e)
                 failcb(data, status, e)
             }
         })
@@ -953,7 +1023,7 @@ $(function () {
                 })
             },
             error: function (data, status, e) {
-                $.toastForAjaxErr(data,status,e)
+                $.toastForAjaxErr(data, status, e)
                 failcb(data, status, e)
             }
         })
@@ -983,7 +1053,7 @@ $(function () {
                 })
             },
             error: function (data, status, e) {
-                $.toastForAjaxErr(data,status,e)
+                $.toastForAjaxErr(data, status, e)
                 failcb(data, status, e)
             }
         })
@@ -1016,7 +1086,7 @@ $(function () {
             },
             error: function (data, status, e) {
                 console.log(data, status, e)
-                $.toastForAjaxErr(data,status,e)
+                $.toastForAjaxErr(data, status, e)
                 failcb(data, status, e)
             }
         })
@@ -1049,7 +1119,7 @@ $(function () {
                 })
             },
             error: function (data, status, e) {
-                $.toastForAjaxErr(data,status,e)
+                $.toastForAjaxErr(data, status, e)
                 failcb(data, status, e)
             }
         })
@@ -1083,9 +1153,24 @@ $(function () {
                 })
             },
             error: function (data, status, e) {
-                $.toastForAjaxErr(data,status,e)
+                $.toastForAjaxErr(data, status, e)
                 failcb(data, status, e)
             }
         })
     }
+
+    $("#logo").click(function () {
+        $modal.boxAlert({
+            title: "产品信息",
+            content: "hz网盘<br/> by hzambrella<br/>qq:504489929有bug call me",
+            needCancel: false,
+            confirmFunc: function () {
+                $modal.hideModal();
+            },
+            cancelFunc: function () {
+                $modal.hideModal();
+            },
+        })
+        $modal.show();
+    })
 })

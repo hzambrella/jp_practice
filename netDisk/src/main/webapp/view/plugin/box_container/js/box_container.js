@@ -6,6 +6,10 @@
 //clearCon:clear content in box
 // changeCon:change content in box
 //changeTitle
+//resetCloseFunc:rebind close function for default close button example:        
+// $(selector).resetCloseFunc(function(){
+//         $("#close").trigger("click")
+// })
 $.fn.boxContainer = function (options, _con_HTML, _button_HTML) {
     var defaults = {
         'title': 'alert box',
@@ -47,6 +51,14 @@ $.fn.boxContainer = function (options, _con_HTML, _button_HTML) {
 
     $.fn.changeTitle = function (title) {
         $(".box_container .title p span.title").html(title);
+        return this;
+    }
+
+    $.fn.resetCloseFunc=function(cb){
+        this.find(".default_cancel").unbind();
+        this.find(".default_cancel").bind("click", function () {
+            cb()
+        });
         return this;
     }
 

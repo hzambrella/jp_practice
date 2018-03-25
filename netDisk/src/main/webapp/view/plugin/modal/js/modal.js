@@ -30,6 +30,7 @@
         return $(this);
     }
 
+//隐藏 modal同时删除里面内嵌的内容
     $.fn.hideModal=function(){
         $(this).children().remove()
         $(this).hide()
