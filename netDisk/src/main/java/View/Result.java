@@ -61,8 +61,6 @@ public class Result implements Serializable{
 	}
 
 	public String getMessage() {
-		//TODO:remove println
-		System.out.println(message);
 		return message;
 	}
 

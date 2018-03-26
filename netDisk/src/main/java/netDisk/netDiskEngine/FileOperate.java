@@ -77,8 +77,8 @@ public class FileOperate {
 			return "folder";
 		}
 		String[] split = f.getName().split("[.]");
-		System.out.println(f.getName());
-		System.out.println(JSON.toJSON(split));
+		//System.out.println(f.getName());
+		//System.out.println(JSON.toJSON(split));
 		
 		if (split.length < 2) {
 			return "file";
@@ -127,8 +127,8 @@ public class FileOperate {
 	 * @return
 	 */
 	public static boolean moveFile(String orgDir, String newDir, String fileName) {
-		System.out.println(orgDir + File.separator + fileName);
-		System.out.println(newDir + File.separator + fileName);
+		//System.out.println(orgDir + File.separator + fileName);
+		//System.out.println(newDir + File.separator + fileName);
 
 		// 目标目录不存在时，新建一个
 		// File fnew2 = new File(newDir);
@@ -188,8 +188,8 @@ public class FileOperate {
 	 * @return
 	 */
 	public static String renameFile(String dir, String orgName, String newName) {
-		 System.out.println(dir+File.separator+orgName);
-		 System.out.println(dir+File.separator+newName);
+		 //System.out.println(dir+File.separator+orgName);
+		 //System.out.println(dir+File.separator+newName);
 		File f = new File(dir + File.separator + orgName);
 		File fnew = new File(dir + File.separator + newName);
 
@@ -214,7 +214,7 @@ public class FileOperate {
 	public static boolean copyFile(String src, String des, String fileName)
 			throws Exception {
 		// 初始化文件复制
-		System.out.println(src + des + fileName);
+		//System.out.println(src + des + fileName);
 		src = src + File.separator + fileName;
 		File file1 = new File(src);
 		//源文件不存在，返回失败
@@ -266,17 +266,18 @@ public class FileOperate {
 		// BufferedOutputStream bos = new BufferedOutputStream(
 		// new FileOutputStream(des));
 		FileOutputStream fo = new FileOutputStream(des);
-		if (fin.available() <= 0) {
-			fo.close();
-			fin.close();
-			return;
+//		if (fin.available() <= 0) {
+//			fo.close();
+//			fin.close();
+//			return;
+//		}
+//		System.out.println(fin.available());
+		int len=-1;
+		byte[] bt = new byte[1024];// 缓冲区
+		while ((len=fin.read(bt)) != -1) {
+			fo.write(bt,0,len);
 		}
-		System.out.println(fin.available());
-		byte[] bt = new byte[fin.available()];// 缓冲区
-		while (fin.read(bt) != -1) {
-		}
-		;
-		fo.write(bt);
+		
 		// 关闭流
 		fin.close();
 		fo.close();

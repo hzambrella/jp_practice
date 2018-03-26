@@ -30,3 +30,22 @@ function getFileTypeBySuffix(suffix) {
 
     return suffix;
 }
+
+//输入int 类型的文件大小。
+//输出带单位的文件大小
+function formatFileSize(size){
+    size==null?size=0:size=size;
+    if (size<=0){
+        return 0;
+    }
+
+    if (size<1024){
+        return size+"B"
+    }else if (size<1024*1024){
+        return Math.round(size*100/1024)/100+"KB"
+    }else if (size<1024*1024*1024){
+        return Math.round(size*100/(1024*1024))/100+"MB"
+    }else{
+        return Math.round(size*100/(1024*1024*1024))/100+"GB"
+    }
+}

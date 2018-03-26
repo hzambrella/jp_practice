@@ -54,7 +54,7 @@ public class CdServlet extends HttpServlet {
 		if (targetPath == null) {
 			targetPath = "";
 		}
-		System.out.println("±àÂë¼ì²é" + targetPath);
+		//System.out.println("±àÂë¼ì²é" + targetPath);
 		// targetPath =new String(targetPath.getBytes("ISO8859-1"),"UTF-8");
 		int dataDeep = StringOperate.getSubStringNumFromString(targetPath);
 		// Âß¼­
@@ -64,7 +64,7 @@ public class CdServlet extends HttpServlet {
 		targetPath = targetPath.replace("/", File.separator);
 
 		try {
-			System.out.println(targetPath);
+			//System.out.println(targetPath);
 			List<FileInfo> directory = FileOperate.getFileDirectory(targetPath);
 			result.getMap().put("directory", directory);
 			result.getMap().put("dataDeep", dataDeep);
@@ -78,7 +78,7 @@ public class CdServlet extends HttpServlet {
 
 		// ½á¹û
 		response.getWriter().print(result.toJSON());
-		System.out.println(result.toJSON());
+		//System.out.println(result.toJSON());
 		return;
 	}
 

@@ -90,7 +90,7 @@ public class DeleteFileServlet extends HttpServlet {
 		result.getMap().put("failIds", failIds);
 		// ½á¹û
 		response.getWriter().print(result.toJSON());
-		System.out.println(result.toJSON());
+		//System.out.println(result.toJSON());
 		return;
 	}
 

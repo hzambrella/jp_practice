@@ -124,7 +124,7 @@ public class CopyFileServlet extends HttpServlet {
 		
 		result.getMap().put("failIds", failIds);
 		response.getWriter().print(result.toJSON());
-		System.out.println(result.toJSON());
+		//System.out.println(result.toJSON());
 		return;
 	}
 

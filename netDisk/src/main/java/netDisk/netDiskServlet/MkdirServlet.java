@@ -81,17 +81,8 @@ public class MkdirServlet extends HttpServlet {
 
 		// ½á¹û
 		response.getWriter().print(result.toJSON());
-		System.out.println(result.toJSON());
+		//System.out.println(result.toJSON());
 		return;
 	}
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
-//	protected void doPost(HttpServletRequest request,
-//			HttpServletResponse response) throws ServletException, IOException {
-//		doGet(request, response);
-//	}
 
 }

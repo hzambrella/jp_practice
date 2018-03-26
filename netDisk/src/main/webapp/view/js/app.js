@@ -50,7 +50,7 @@ $(function () {
                 draw = 'fa fa-file-video-o';
                 break;
             case 'document':
-                console.log(str)
+                //console.log(str)
                 if (str == "pdf") {
                     draw = 'fa fa-file-pdf-o';
                 } else if (str == "xls" || str == "xlsx") {
@@ -95,7 +95,7 @@ $(function () {
             $("#selectAllList").prop("checked", false)
         }
         //默认的
-        // console.log(action)
+        // //console.log(action)
         if (action == null) {
             //隐藏操作栏
             if (num <= 0) {
@@ -261,7 +261,7 @@ $(function () {
     //状态栏的click事件 返回上层目录和返回上层文件
     $(".item-title").click(function (event) {
         $target = $(event.target);
-        // console.log($target)
+        // //console.log($target)
         if ($target.is("a.dir_go_back") || $target.is("a#gobackToLast.dir_go_back")) {
             var dataDeep = $target.attr("data-deep")
             var obj = ChangeItemTitle(-dataDeep)
@@ -272,7 +272,7 @@ $(function () {
                 //fail 
 
             });
-            // console.log(obj)
+            // //console.log(obj)
 
         } else {
             return
@@ -305,8 +305,8 @@ $(function () {
     //条目
     $(".item-list").click(function (event) {
         var $target = $(event.target);
-        // console.log($target.prop("id"));
-        // console.log($target)
+        // //console.log($target.prop("id"));
+        // //console.log($target)
 
         //已选中的就return
         if ($target.hasClass("select")) {
@@ -351,7 +351,7 @@ $(function () {
     //checkbox全选和单选控制
     $("#file-list-table").click(function (event) {
         var $target = $(event.target);
-        // console.log($target,$target.is("input#selectAllList"));
+        // //console.log($target,$target.is("input#selectAllList"));
 
         //选中时触发的事件
         var checkboxAction = null
@@ -362,7 +362,7 @@ $(function () {
                 if (num <= 0) {
                     $(".operate #doRecycle").remove();
                 } else {
-                    console.log($(".operate .operate-file #doRecycle"))
+                    //console.log($(".operate .operate-file #doRecycle"))
                     if ($(".operate #doRecycle").length == 0) {
                         $(".operate").append("<a id='doRecycle' class='operate-common' href='javascript:void(0)'><i class='fa fa-recycle'></i>还原</a>")
                         $(".operate #doRecycle").bind("click", doRecycle)
@@ -385,7 +385,7 @@ $(function () {
     //#file-list-table的属性data-deep在drawFileTable函数操作。外层不准操作！！！ 
     function drawFileTable(data, dataDeep) {
         dataDeep == null ? dataDeep = 0 : dataDeep = dataDeep;
-        //        console.log(resultList)
+        //        //console.log(resultList)
         //        var resultList=resultList;
 
         //清空原有内容
@@ -393,7 +393,7 @@ $(function () {
         //新内容渲染模板
         var table_tpl = document.getElementById("table_tpl").innerHTML;
         var _HTML = template(table_tpl, data)
-        // console.log(_HTML);
+        // //console.log(_HTML);
         $("#file-list-table").append(_HTML);
         //刷新状态
         ShowSelectNum()
@@ -408,14 +408,14 @@ $(function () {
         //     if ($(this).html() == name) {
         //         reg = /\b\([\s\S]*\)$/;
         //         var st = reg.exec(name)
-        //          console.log(st,name)
+        //          //console.log(st,name)
         //         if (st!=null&&st.length != 0) {
         //             var st1 = st[0];
         //             var st2 = st1.substring(1, st1.length).substring(0, st1.length - 1)
         //             i=parseInt(st2) + 1;
         //             name = dealDupName(name.replace(reg,"("+i+")"));
         //         }else{
-        //             console.log(22)
+        //             //console.log(22)
         //             name=dealDupName(name+"("+1+")");
         //         }
         //     }
@@ -428,7 +428,7 @@ $(function () {
     $("#file-list-table").click(function (event) {
         clearTimeout(tabClickTimer)
         var $target = $(event.target);
-        // console.log($target)
+        // //console.log($target)
         //checkbox有单独的事件，排除掉
         if ($target.is("input.selectFile")) {
             //do nothing
@@ -483,7 +483,7 @@ $(function () {
     })
 
     //..操作栏控制..
-    //操作栏隐藏和显示。true为显示
+    // 操作栏隐藏和显示。true为显示
     function showOrHideOperateBar(show) {
         if (show) {
             $(".operate ul").removeClass("hide");
@@ -493,22 +493,180 @@ $(function () {
     }
 
     //上传按钮
+    $("#uploadFile").click(function () {
+        $("#fileUploadInput").trigger("click")
+    })
 
-    //上传文件时会话框里面表格
-    function drawUploadTable() {
+    //上传文件
+    var countUpload = 0; //为了更新上传会话框的文件状态而设置。为了方便选择，表中每行class为 file_第几个文件_countUpload，来区分重名的文件。
+    $("#fileUploadInput").change(function () {
+        //console.log("文件上传", $("#fileUploadInput").prop("files"))
+        files = $("#fileUploadInput").prop("files");
+        var list = [];
 
-        //TODO:fileName and fileSize
+        console.log(countUpload);
+        if (files.length != 0) {
+            countUpload++;
+            var countUploadLocal = countUpload;
+            var form = new FormData();
+            form.append("dirName", dirStack.getDirForAjax());
 
-        var table_tpl = document.getElementById("mock_upload_table").innerHTML;
-        var _HTML = template(table_tpl, {});
-        $('body').dialog({
-            id: 'uploadDialog',
-            title: '正在上传()个文件',
-            _con_HTML: _HTML,
-        }, ['dialog_upload'])
+            for (var i = 0; i < files.length; i++) {
+                form.append(files[i].name, files[i]);
+                list.push({
+                    name: files[i].name,
+                    size: formatFileSize(files[i].size),
+                    target: dirStack.toString(),
+                    countUpload: countUploadLocal,
+                })
+            }
 
-        //TODO:ajax
+            drawUploadTable(list)
+            var getProgree
+            var time = 500 //轮询间隔 0.5秒
+            var lastID = 0; //上个轮询的item。用处是上个item的百分比未到100%时，数据是下一个item时，更新前面的为100%。
+            var isDoPollFlag = false; //是否真的做了轮询，防止文件小传的太快了，没能更新会话框。
+
+            AjaxFileUpload(form, function () {
+                clearInterval(getProgree)
+                changeFileUploadTitle();
+                //怕文件小太快了，来不及轮询
+                if (!isDoPollFlag) {
+                    for (var k = 0; k < list.length; k++) {
+                        var s = "file_" + k + "_" + countUploadLocal;
+                        $("." + s).find(".status").html("ok");
+                        $("." + s).addClass("complete");
+                    }
+                    changeFileUploadTitle();
+                }
+            }, function () {
+                clearInterval(getProgree)
+                changeFileUploadTitle();
+            })
+
+            //轮询来查看进度
+            getProgree = setInterval(function () {
+                AjaxProgress(function (data) {
+                    if (data.map.item == undefined || data.map.item == null) {
+                        return;
+                    }
+                    //data.map.item=2代表第一个文件
+                    var i = data.map.item - 2;
+
+                    var classForSelect = "file_" + i + "_" + countUploadLocal;
+                    $toChangeTr = $("." + classForSelect);
+
+                    data.map.percent == null ? data.map.percent = 0 : data.map.percent = data.map.percent;
+                    if (data.map.percent == 100) {
+                        $toChangeTr.find(".status").html("ok");
+                        $toChangeTr.addClass("complete");
+                    } else {
+                        $toChangeTr.find(".status").html(data.map.percent + "%");
+                    }
+
+
+                    //前面文件轮询错过了到100%的结果时，更新到100%
+                    if (i != lastID) {
+                        for (var j = lastID; j < i; j++) {
+                            var s = "file_" + j + "_" + countUploadLocal;
+                            $("." + s).find(".status").html("ok");
+                            $("." + s).addClass("complete");
+                        }
+                    }
+
+                    lastID = i
+                    changeFileUploadTitle();
+                    isDoPollFlag = true;
+                    //若最后一个文件100%，结束轮询
+                    if (data.map.item - 1 == list.length && data.map.percent == 100) {
+                        clearInterval(getProgree)
+                        changeFileUploadTitle("上传完毕，正在等待上传结果中...")
+                    }
+                    //console.log(data.map.percent, data.map.item);
+                })
+            }, time)
+
+
+        }
+
+        //上传文件时会话框里面表格
+        function drawUploadTable(list) {
+            //TODO:fileName and fileSize
+            var data = {
+                list: [],
+            }
+            data.list = list
+            var table_tpl = document.getElementById("mock_upload_table").innerHTML;
+            var _HTML = template(table_tpl, data);
+
+
+            $uploadDialog = $("#uploadDialog")
+            if ($uploadDialog.length == 0) {
+                var _tableHTML =
+                    '<table id="uploadTable">' +
+                    '<tr class="table_title">' +
+                    '<th>文件(夹)名</th>' +
+                    ' <th>大小</th>' +
+                    '<th>上传目录</th>' +
+                    '<th>状态</th>' +
+                    '</tr>' +
+                    _HTML +
+                    '</table>'
+
+                $('body').dialog({
+                    id: 'uploadDialog',
+                    title: '正在上传(0/' + list.length + ')个文件',
+                    _con_HTML: _tableHTML,
+                }, ['dialog_upload'])
+
+                $("#uploadDialog").resetCloseFunc(function () {
+                    $("#uploadDialog").remove();
+                })
+            } else {
+                // var totalLen = getFileUploadTotalLen();
+                // //当文件上传成功后，给tr加上complete class,来表示成功数量
+                // var successLen = getFileUploadSuccessLen();
+                changeFileUploadTitle();
+                // var title = '正在上传(' + successLen + '/' + totalLen + ')个文件';
+                $("#uploadDialog").find("#uploadTable").append(_HTML);
+                // $("#uploadDialog").changeTitle(title);
+                $("#uploadDialog").show();
+            }
+            //TODO:ajax
+        }
+    })
+
+    //更改上传会话框的题目
+    function changeFileUploadTitle(title) {
+        if (title!= null) {
+            $("#uploadDialog").changeTitle(title);
+            return
+        }
+
+        var total = getFileUploadTotalLen()
+        var success = getFileUploadSuccessLen()
+        if (total == success) {
+            $("#uploadDialog").changeTitle("上传完成");
+        } else {
+            var title = '正在上传(' + success + '/' + total + ')个文件';
+            $("#uploadDialog").changeTitle(title);
+        }
+
+        //获得上传文件的总数量
+        function getFileUploadTotalLen() {
+            return $("#uploadDialog").find("#uploadTable").find(".list").length;
+        }
+
+        //获得上传成功的数量
+        function getFileUploadSuccessLen() {
+            return $("#uploadDialog").find("#uploadTable").find(".complete").length;
+        }
     }
+
+    // function setFileUploadSuccess(){
+
+    // }
+
 
     //新建文件夹按钮
     $("#newFolder").click(function (event) {
@@ -771,7 +929,7 @@ $(function () {
                     }
 
                     //刷新列表的数据
-                    AjaxCd(getItemTitle)
+                    AjaxCd(getItemTitle())
                 })
 
             }
@@ -790,7 +948,7 @@ $(function () {
                         }
                     }
 
-                    // console.log(failNameStr)
+                    // //console.log(failNameStr)
                     if (failNameStr != "") {
                         $modal.boxAlert({
                             'title': '部分文件复制失败',
@@ -959,6 +1117,56 @@ $(function () {
     }
 
 
+    //上传文件
+    function AjaxFileUpload(formData, cb, failcb) {
+        cb == null ? cb = function () {} : cb = cb;
+        failcb == null ? failcb = function () {} : failcb = failcb;
+        disabledAllButton()
+        $.toast("上传中，请耐心等待...", {
+            timeout: 0,
+        })
+        $.ajax({
+            type: 'post',
+            dataType: 'json',
+            url: '/netDisk/UploadServlet',
+            processData: false,
+            contentType: false,
+            data: formData,
+            success: function (data) {
+                $.toastForJavaAjaxRes(data, function () {
+                    $.toast("上传成功")
+                    enableAllButton();
+                    AjaxCd(getItemTitle())
+                    cb();
+                })
+            },
+            error: function (data, status, e) {
+                $.toastForceHide()
+                enableAllButton();
+                $.toastForAjaxErr(data, status, e)
+                $("#AjaxCdStatusMess").html("获取目录失败");
+                failcb(data, status, e)
+            }
+        })
+    }
+
+    //轮询文件进度
+    function AjaxProgress(cb, failcb) {
+        cb == null ? cb = function () {} : cb = cb;
+        failcb == null ? failcb = function () {} : failcb = failcb;
+        $.ajax({
+            type: 'get',
+            dataType: 'json',
+            url: '/netDisk/UploadServlet',
+            success: function (data) {
+                cb(data)
+            },
+            error: function (data, status, e) {
+                failcb(data, status, e)
+            }
+        })
+    }
+
     //查询某个目录下的全部文件
     function AjaxCd(obj, cb, failcb) {
         $("#AjaxCdStatusMess").html(LoadingAjaxCd);
@@ -1090,6 +1298,7 @@ $(function () {
 
     //删除ajax
     function AjaxDelete(dirname, fileNames, cb, failcb) {
+        disabledAllButton()
         $.toast("删除中..", {
             timeout: 0,
         })
@@ -1113,11 +1322,13 @@ $(function () {
             },
             success: function (data) {
                 $.toastForJavaAjaxRes(data, function () {
+                    enableAllButton()
                     cb(data);
                 })
             },
             error: function (data, status, e) {
-                console.log(data, status, e)
+                enableAllButton()
+                //console.log(data, status, e)
                 $.toastForAjaxErr(data, status, e)
                 failcb(data, status, e)
             }
@@ -1126,6 +1337,7 @@ $(function () {
 
     // 移动到到ajax
     function AjaxCopyTo(orgDirName, newDirName, fileNames, cb, failcb) {
+        disabledAllButton()
         $.toast("移动中..", {
             timeout: 0,
         })
@@ -1150,10 +1362,12 @@ $(function () {
             },
             success: function (data) {
                 $.toastForJavaAjaxRes(data, function () {
+                    enableAllButton()
                     cb(data);
                 })
             },
             error: function (data, status, e) {
+                enableAllButton()
                 $.toastForAjaxErr(data, status, e)
                 failcb(data, status, e)
             }
@@ -1163,6 +1377,7 @@ $(function () {
 
     // 复制到ajax
     function AjaxMoveTo(orgDirName, newDirName, fileNames, cb, failcb) {
+        disabledAllButton()
         $.toast("复制中..", {
             timeout: 0,
         })
@@ -1187,10 +1402,12 @@ $(function () {
             },
             success: function (data) {
                 $.toastForJavaAjaxRes(data, function () {
+                    enableAllButton()
                     cb(data);
                 })
             },
             error: function (data, status, e) {
+                enableAllButton()
                 $.toastForAjaxErr(data, status, e)
                 failcb(data, status, e)
             }

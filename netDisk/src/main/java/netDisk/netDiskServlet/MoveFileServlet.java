@@ -103,7 +103,7 @@ public class MoveFileServlet extends HttpServlet {
 			}
 			
 			if ((newPath + File.separator + fileName).indexOf(orgPath+File.separator+fileName) >= 0) {
-				System.out.println(newPath + File.separator + fileName);
+				//System.out.println(newPath + File.separator + fileName);
 				System.out.println(orgPath+File.separator+fileName);
 				failIds.put(String.valueOf(i), "不能将文件移动到自身或其子目录下");
 				continue;
@@ -125,7 +125,7 @@ public class MoveFileServlet extends HttpServlet {
 
 		// 结果
 		response.getWriter().print(result.toJSON());
-		System.out.println(result.toJSON());
+	
 		return;
 	}
 

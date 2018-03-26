@@ -84,8 +84,10 @@
         <div class="con-right">
             <!--操作栏-->
             <div class="operate">
-                <a class="operate-common" href="javascript:void(0)" id="uploadFile"><i
-					class="fa fa-upload"></i> 上传</a> <a class="operate-common" href="javascript:void(0)" id="newFolder"><i class="fa fa-plus"></i>
+                <a class="operate-common" href="javascript:void(0)" id="uploadFile">
+                    <iclass="fa fa-upload">
+                        </i> 上传</a>
+                <a class="operate-common" href="javascript:void(0)" id="newFolder"><i class="fa fa-plus"></i>
 					新建文件夹</a>
                 <ul class="operate-file hide">
                     <li><a id="downloadFile" href="javascript:void(0)"><i
@@ -175,12 +177,14 @@
         </div>
     </script>
 
+    <input id="fileUploadInput" type=file name=fileUploadInput / multiple><br/>
+
 </body>
 
 <!--js-->
 <script src="/netDisk/view/js/main.js"></script>
 <script src="/netDisk/view/js/lib/jquery.hoverdelay.js"></script>
-<script src="/netDisk/view/js/lib/getFileTypeBySuffix.js"></script>
+<script src="/netDisk/view/js/lib/file.js"></script>
 <!--进度条-->
 <link rel="stylesheet" type="text/css" href="/netDisk/view/plugin/progress_bar/css/progress_bar.css">
 <script src="/netDisk/view/plugin/progress_bar/js/progress_bar.js"></script>
@@ -264,22 +268,14 @@
 
 
 <script id="mock_upload_table" type="text/html">
-    <table id="uploadTable">
-        <tr>
-            <th>文件(夹)名</th>
-            <th>大小</th>
-            <th>上传目录</th>
-            <th>状态</th>
-        </tr>
-
-        <tr>
-            <td>123.png</td>
-            <td>18KB</td>
-            <td>我的文件</td>
-            <td>ok</td>
-        </tr>
-    </table>
-
+        <%for(var i = 0; i < list.length; i++) {%>
+            <tr class="list file_<%:=i%>_<%:=list[i].countUpload%>">
+                <td class="fileName"><%:=list[i].name%></td>
+                <td class="size"><%:=list[i].size%></td>
+                <td class="targetDir"><%:=list[i].target%></td>
+                <td class="status">等待上传</td>
+            </tr>
+        <%}%>
 </script>
 
 </html>

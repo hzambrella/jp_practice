@@ -72,7 +72,7 @@ public class GetDirTreeServlet extends HttpServlet {
 		
 		// ½á¹û
 		response.getWriter().print(result.toJSON());
-		System.out.println(result.toJSON());
+		//System.out.println(result.toJSON());
 		return;
 	}
 

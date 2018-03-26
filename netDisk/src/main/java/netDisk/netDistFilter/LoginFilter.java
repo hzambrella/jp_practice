@@ -42,7 +42,10 @@ public class LoginFilter implements Filter {
 		HttpServletRequest httpServletRequest = (HttpServletRequest) request;
 		HttpServletResponse httpServletResponse = (HttpServletResponse) response;
 		String url = httpServletRequest.getRequestURI();
-		System.out.println(url);
+		if (!(url.equals("/netDisk/UploadServlet")&&httpServletRequest.getMethod().equals("GET"))){
+			System.out.println(httpServletRequest.getMethod()+":"+url);
+		}
+		
 		//¾²Ì¬×ÊÔ´²»À¹½Ø
 		if (url.indexOf(".")!=-1){
 			chain.doFilter(request, response);
