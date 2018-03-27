@@ -18,11 +18,11 @@ import javax.servlet.http.HttpServletResponse;
 @WebFilter(filterName = "pageFilter", description = "不许直接访问html和jsp", urlPatterns = { "/*" })
 public class pageFilter implements Filter {
 
-    /**
-     * Default constructor. 
-     */
-    public pageFilter() {
-    }
+	/**
+	 * Default constructor.
+	 */
+	public pageFilter() {
+	}
 
 	/**
 	 * @see Filter#destroy()
@@ -33,18 +33,30 @@ public class pageFilter implements Filter {
 	/**
 	 * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
 	 */
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+	public void doFilter(ServletRequest request, ServletResponse response,
+			FilterChain chain) throws IOException, ServletException {
 		// place your code here
 
 		// pass the request along the filter chain
 		HttpServletRequest httpServletRequest = (HttpServletRequest) request;
 		HttpServletResponse httpServletResponse = (HttpServletResponse) response;
 		String url = httpServletRequest.getRequestURI();
-		if(url != null && (url.endsWith(".html")||(url.endsWith(".jsp")))){
-			httpServletResponse.sendRedirect(httpServletRequest.getContextPath());
+
+		if (url == null) {
+			httpServletResponse.sendRedirect(httpServletRequest
+					.getContextPath());
 			return;
 		}
-	
+
+		if (!(url.endsWith("login.html")||url.endsWith("login.jsp"))) {
+			if ((url.endsWith(".html") || (url.endsWith(".jsp")))) {
+				// 对直接访问html和jsp的请求,重定向到首页
+
+				httpServletResponse.sendRedirect(httpServletRequest
+						.getContextPath());
+				return;
+			}
+		}
 		chain.doFilter(request, response);
 	}
 

@@ -37,6 +37,7 @@ public class LoginServlet extends HttpServlet {
 		request.getServletContext()
 				.getRequestDispatcher("/view/html/login.html")
 				.forward(request, response);
+		return;
 	}
 
 	/**

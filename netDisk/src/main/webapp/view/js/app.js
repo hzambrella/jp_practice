@@ -103,8 +103,17 @@ $(function () {
             } else {
                 showOrHideOperateBar(true)
             }
-            //禁止重命名按钮
+            //选中大于1时禁止重命名
             enableRename(num <= 1);
+
+            //选中大于1时或选中文件夹时禁止下载按钮
+            if (num > 1) {
+                enableDownload(false);
+            } else if (num == 1) {
+                console.log($(".selectFile:checked").siblings("span").attr("filetype"))
+                enableDownload($(".selectFile:checked").siblings("span").attr("filetype") != "folder")
+            }
+
         } else {
             action(num);
         }
@@ -288,7 +297,22 @@ $(function () {
     $("#helpCenter").click(function () {
         $modal.boxAlert({
             title: "帮助",
-            content: "敬请期待v2版本!!<br/> 新内容：自动重命名，排序，查看个人信息，归类，回收站，查看容量，文件类型精细判断。",
+            content: "敬请期待v2版本!!<br/> 新内容：自动重命名，排序，查看个人信息，归类，回收站，查看容量，文件类型精细判断，多文件下载",
+            needCancel: false,
+            confirmFunc: function () {
+                $modal.hideModal();
+            },
+            cancelFunc: function () {
+                $modal.hideModal();
+            },
+        })
+        $modal.show();
+    })
+
+    $("#personalInfo").click(function () {
+        $modal.boxAlert({
+            title: "个人信息",
+            content: "暂无",
             needCancel: false,
             confirmFunc: function () {
                 $modal.hideModal();
@@ -504,7 +528,6 @@ $(function () {
         files = $("#fileUploadInput").prop("files");
         var list = [];
 
-        console.log(countUpload);
         if (files.length != 0) {
             countUpload++;
             var countUploadLocal = countUpload;
@@ -638,7 +661,7 @@ $(function () {
 
     //更改上传会话框的题目
     function changeFileUploadTitle(title) {
-        if (title!= null) {
+        if (title != null) {
             $("#uploadDialog").changeTitle(title);
             return
         }
@@ -667,7 +690,6 @@ $(function () {
 
     // }
 
-
     //新建文件夹按钮
     $("#newFolder").click(function (event) {
         // prepend
@@ -680,6 +702,7 @@ $(function () {
                 name: dealDupName("新建文件夹"),
                 size: "0KB",
                 modifiedTime: dateStr,
+                type: 'folder',
             }]
         }
 
@@ -707,7 +730,6 @@ $(function () {
 
     //下载按钮
     $("#downloadFile").click(function (event) {
-
         var $checked_el = $("#file-list-table .selectFile:checked");
         var names = [];
         $checked_el.each(function () {
@@ -716,8 +738,23 @@ $(function () {
         })
         //TODO：confirm
         //TODO：download
-        alert("下载" + names + "完毕！");
+        // alert("下载" + names + "完毕！");   // alert("下载" + names + "完毕！");
+        downloadFileByForm(dirStack.getDirForAjax(), names[0]);
     })
+
+    function downloadFileByForm(dirname, fileName) {
+        dirname == null ? dirname = "" : dirname = dirname;
+        if (fileName == null) {
+            $.toast("待下载文件名为空")
+            return;
+        }
+        var url = "/netDisk/DownloadServlet";
+
+        var form = $("<form></form>").attr("action", url).attr("method", "post");
+        form.append($("<input></input>").attr("type", "hidden").attr("name", "fileName").attr("value", fileName));
+        form.append($("<input></input>").attr("type", "hidden").attr("name", "dirName").attr("value", dirname));
+        form.appendTo('body').submit().remove();
+    }
 
     //删除按钮
     $("#deleteFile").click(function (event) {
@@ -799,6 +836,7 @@ $(function () {
 
     function rename($target, $name_el, confirm_callback, cancel_callback) {
         var name = $name_el.html();
+        var type = $name_el.attr("filetype")
         $name_el.remove();
         var table_rename_tpl = document.getElementById("table_rename").innerHTML;
         var _HTML = template(table_rename_tpl, {
@@ -823,7 +861,7 @@ $(function () {
 
         function dorename(new_name) {
             $target.find("div.rename").remove();
-            $target.append("<span>" + new_name + "</span>");
+            $target.append("<span filetype='" + type + "'" + ">" + new_name + "</span>");
             enableAllButton();
             return new_name;
         }
@@ -881,7 +919,7 @@ $(function () {
 
             $("#dirTreeNewFolder").bind("click", function () {
                 //TODO：new folder
-                alert("新建文件夹")
+                alert("正在开发中。。。")
             })
 
             $modalDirTree.show()
@@ -925,7 +963,20 @@ $(function () {
                         })
                         $modal.show();
                     } else {
-                        $.toast('文件转移成功')
+                        // $.toast('文件转移成功')
+                        $modal.boxAlert({
+                            'title': '文件转移成功',
+                            'content': '文件转移成功',
+                            'needCancel': false,
+                            'confirmFunc': function () {
+                                $modal.hideModal();
+                                // $("#allFile").trigger("click")
+                            },
+                            cancelFunc: function () {
+                                $modal.hideModal();
+                            },
+                        })
+                        $modal.show();
                     }
 
                     //刷新列表的数据
@@ -964,7 +1015,19 @@ $(function () {
                         })
                         $modal.show();
                     } else {
-                        $.toast('文件复制成功')
+                        $modal.boxAlert({
+                            'title': '文件复制成功',
+                            'content': '文件复制成功',
+                            'needCancel': false,
+                            'confirmFunc': function () {
+                                $modal.hideModal();
+                                // $("#allFile").trigger("click")
+                            },
+                            cancelFunc: function () {
+                                $modal.hideModal();
+                            },
+                        })
+                        $modal.show();
                     }
 
                     //刷新列表的数据
@@ -1134,7 +1197,19 @@ $(function () {
             data: formData,
             success: function (data) {
                 $.toastForJavaAjaxRes(data, function () {
-                    $.toast("上传成功")
+                    $modal.boxAlert({
+                        'title': '文件上传成功',
+                        'content': '文件上传成功',
+                        'needCancel': false,
+                        'confirmFunc': function () {
+                            $modal.hideModal();
+                            // $("#allFile").trigger("click")
+                        },
+                        cancelFunc: function () {
+                            $modal.hideModal();
+                        },
+                    })
+                    $modal.show();
                     enableAllButton();
                     AjaxCd(getItemTitle())
                     cb();
@@ -1335,10 +1410,10 @@ $(function () {
         })
     }
 
-    // 移动到到ajax
+    // 复制到ajax
     function AjaxCopyTo(orgDirName, newDirName, fileNames, cb, failcb) {
         disabledAllButton()
-        $.toast("移动中..", {
+        $.toast("复制中..", {
             timeout: 0,
         })
         orgDirName == null ? orgDirName = "" : orgDirName = orgDirName;
@@ -1375,10 +1450,11 @@ $(function () {
     }
 
 
-    // 复制到ajax
+
+    // 移动到ajax
     function AjaxMoveTo(orgDirName, newDirName, fileNames, cb, failcb) {
         disabledAllButton()
-        $.toast("复制中..", {
+        $.toast("移动中..", {
             timeout: 0,
         })
         orgDirName == null ? orgDirName = "" : orgDirName = orgDirName;
@@ -1415,9 +1491,11 @@ $(function () {
     }
 
     $("#logo").click(function () {
+        var content = "hz非常非常非常low的网盘<br/> 用文件夹存储用户的内容。正常的网盘不应该这样。会带来有很多问题的。" +
+            "<br/>by hzambrella qq:504489929有bug call me"
         $modal.boxAlert({
             title: "产品信息",
-            content: "hz网盘<br/> by hzambrella<br/>qq:504489929有bug call me",
+            content: content,
             needCancel: false,
             confirmFunc: function () {
                 $modal.hideModal();

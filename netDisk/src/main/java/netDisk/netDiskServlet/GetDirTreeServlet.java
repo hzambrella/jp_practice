@@ -38,21 +38,16 @@ public class GetDirTreeServlet extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 		String userAccount = (String) request.getSession(true).getAttribute(
 				"userAccount");
-		if (userAccount == null) {
-			request.getServletContext()
-					.getRequestDispatcher("/netDisk/LoginServlet")
-					.forward(request, response);
-		}
-		
-		// 通用
-//		String re=request.getParameter("1");
-//		if (null==re){
-//			response.sendError(400,"1111");
-//			return;
-//		}
 		response.setCharacterEncoding("utf-8");
 		Result result = new Result(200, "成功", new HashMap<String, Object>());
 
+		if (userAccount == null) {
+			result.setCode(302);
+			result.getMap().put("path", request.getContextPath()+"/LoginServlet");
+			response.getWriter().print(result.toJSON());
+			return;
+		}
+		
 		String serverPath=netDiskCfg.getDiskDir()+File.separator;
 
 		String targetPath = serverPath + userAccount;

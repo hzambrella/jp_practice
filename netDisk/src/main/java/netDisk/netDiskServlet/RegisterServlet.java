@@ -78,7 +78,7 @@ public class RegisterServlet extends HttpServlet {
 				String userName=nickName;
 
 				HttpSession session=request.getSession(true);
-				session.setAttribute("account", accountLogin);
+				session.setAttribute("userAccount", accountLogin);
 				session.setAttribute("userName", userName);
 					
 				response.getWriter().write(JSON.toJSONString(result));

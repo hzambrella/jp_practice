@@ -41,17 +41,20 @@ public class CopyFileServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		// 通用
-		String userAccount = (String) request.getSession(true).getAttribute(
-				"userAccount");
-		if (userAccount == null) {
-			request.getServletContext()
-					.getRequestDispatcher("/netDisk/LoginServlet")
-					.forward(request, response);
-		}
 		response.setCharacterEncoding("utf-8");
 		// response.setContentType("text/html;charset=utf-8");
 		Result result = new Result(200, "成功", new HashMap<String, Object>());
 
+		String userAccount = (String) request.getSession(true).getAttribute(
+				"userAccount");
+		
+		if (userAccount == null) {
+			result.setCode(302);
+			result.getMap().put("path", request.getContextPath()+"/LoginServlet");
+			response.getWriter().print(result.toJSON());
+			return;
+		}
+		
 		// 校验参数
 		String orgDirName = request.getParameter("orgDirName");
 		if (null == orgDirName) {

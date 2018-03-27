@@ -35,16 +35,18 @@ public class MkdirServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
+		response.setCharacterEncoding("utf-8");
+		Result result = new Result(200, "成功", new HashMap<String, Object>());
 		String userAccount = (String) request.getSession(true).getAttribute(
 				"userAccount");
 		if (userAccount == null) {
-			request.getServletContext()
-					.getRequestDispatcher("/netDisk/LoginServlet")
-					.forward(request, response);
+			result.setCode(302);
+			result.getMap().put("path", request.getContextPath()+"/LoginServlet");
+			response.getWriter().print(result.toJSON());
+			return;
 		}
 
-		response.setCharacterEncoding("utf-8");
-		Result result = new Result(200, "成功", new HashMap<String, Object>());
+
 
 		// 校验参数
 		String folderName = request.getParameter("folderName");

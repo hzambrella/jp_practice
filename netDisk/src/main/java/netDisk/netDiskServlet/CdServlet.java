@@ -36,18 +36,19 @@ public class CdServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-
-		String userAccount = (String) request.getSession(true).getAttribute(
-				"userAccount");
-		if (userAccount == null) {
-			request.getServletContext()
-					.getRequestDispatcher("/netDisk/LoginServlet")
-					.forward(request, response);
-		}
-
 		// 通用
 		response.setCharacterEncoding("utf-8");
 		Result result = new Result(200, "成功", new HashMap<String, Object>());
+
+		String userAccount = (String) request.getSession(true).getAttribute(
+				"userAccount");
+
+		if (userAccount == null) {
+			result.setCode(302);
+			result.getMap().put("path", request.getContextPath()+"/loginServlet");
+			response.getWriter().print(result.toJSON());
+			return;
+		}
 
 		// 校验参数
 		String targetPath = request.getParameter("dirname");
