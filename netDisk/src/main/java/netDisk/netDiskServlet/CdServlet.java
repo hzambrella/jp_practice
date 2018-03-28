@@ -34,7 +34,7 @@ public class CdServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	protected void doPost(HttpServletRequest request,
+	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		// Í¨ÓÃ
 		response.setCharacterEncoding("utf-8");
@@ -56,7 +56,7 @@ public class CdServlet extends HttpServlet {
 			targetPath = "";
 		}
 		//System.out.println("±àÂë¼ì²é" + targetPath);
-		// targetPath =new String(targetPath.getBytes("ISO8859-1"),"UTF-8");
+		targetPath =new String(targetPath.getBytes("ISO8859-1"),"UTF-8");
 		int dataDeep = StringOperate.getSubStringNumFromString(targetPath);
 		// Âß¼­
 		String serverPath = netDiskCfg.getDiskDir();

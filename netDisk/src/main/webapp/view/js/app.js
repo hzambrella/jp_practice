@@ -132,6 +132,7 @@ $(function () {
     //管理目录深度层次的数组。数组内容是目录层次。
     var dirStack = {
         data: [],
+        //用于打印
         toString: function () {
             var str = ""
             for (var i = 0; i < this.data.length; i++) {
@@ -139,8 +140,10 @@ $(function () {
             }
             return str;
         },
+        //给ajax提供目录,用于向后端请求 /xx/xx 。
         getDirForAjax: function () {
             var str = "";
+            //data[0]是放的左边栏的标题。所以这里忽略掉。
             for (var i = 1; i < this.data.length; i++) {
                 str += "/" + this.data[i]
             }
@@ -160,74 +163,53 @@ $(function () {
             return this.data.pop()
         },
         getDataMirror: function () {
-            var mirror = this.data;
+            var mirror = this.data.slice();
             return mirror;
         },
         rollBack: function (mirror) {
-            data = mirror;
+            data = mirror.slice();
         }
     };
 
     //通过左边栏、文件深度，更新右边表格的 item title
-    //title为null ,back_num<0或为null时，就是直接到初始层。用于左边栏切换。
-    //back_num>0时，就是往上层。back_num意味着往上多少。结合.file-list-table的data-deep属性。若超出了data-deep，就回到最初层。
-    //此时title 没有用
-    //back_num=0时，就是往下一层。title是目录名。
+    //title为null ,back_num=0或为null时，就是直接到初始层。用于左边栏切换。title不为空时，代表到目录/title[0]/title[1]/...。
+    //back_num>0时，就是往上层。back_num意味着往上多少。结合.file-list-table的data-deep属性。若超出了data-deep，就回到最初层。title为空。
+    //back_num<0时，就是往下一层。title是目录名。注意！单层格式是 title  多层格式是 [title1,title2]。向下的层数只和title有关。
     //无论那种情况，都要操作dirStack。别的地方不可操作这个对象
 
     //返回:对象类型  obj.dirname 目录名字  obj._backupHTML  改变前的html，用于ajax失败后恢复。
     //mirror 改变前的dirStack,ajax失败后，dirStack.rollBack(mirror)恢复原始状态。
     //ajax在外层写，写在这个函数后面。
-
     function ChangeItemTitle(back_num, title) {
-        back_num == null ? back_num = -1 : back_num = back_num;
-        title == null ? title = "未命名" : title = title;
+        back_num == null ? back_num = 0 : back_num = back_num;
+        //向下单层是字符串，为了方便下面处理转为数组
+
 
         //备份,ajax失败后可用于恢复$(".item-title").html(_backupHTML);
         var _backupHTML = $(".item-title").html();
         var mirror = dirStack.getDataMirror();
 
-        if (back_num < 0) {
+        if (back_num == 0) {
             //title为null ,back_num<0或为null时，就是直接到初始层。用于左边栏切换。
             var itemTitle = titleMap[GetItemId()];
             $("#itemTitle").html(itemTitle)
             $(".item-title ul").empty();
             $("#gobackToLast").remove();
-
             dirStack.reset(itemTitle)
-        } else if (back_num == 0) {
-            //back_num=0时，就是往下一层。title是目录名。
-            //原来的目录
-            var preTitle = $("#itemTitle").html();
-
-            //原来的data-deep -1
-            $lis = $(".item-title ul").find("li")
-            $lis.each(function () {
-                var data_deep = $(this).find("a").attr("data-deep")
-                $(this).find("a").attr("data-deep", parseInt(data_deep) - 1)
-            })
-
-            //返回上一级按钮
-            $gobackToLast = $(".item-title").find("#gobackToLast");
-            if ($gobackToLast.length == 0) {
-                var _gobackHTML = "<a id='gobackToLast' data-deep='-1' class='a_block dir_go_back' href='javascript:void(0)'>" +
-                    "返回上一级<span class='EKIHPEb'>|</span></a>";
-                $(".item-title ul").prepend(_gobackHTML)
+            if (title != null) {
+                if (title.constructor != Array) {
+                    title = [title];
+                }
+                getNextDir()
             }
-
-            //原来的title变成a
-            var _nextHTML = "<li><a data-deep='-1' class='a_block dir_go_back' href='javascript:void(0)'>" +
-                preTitle +
-                "</a><span class='KLxwHFb'>></span></li>"
-            $(".item-title ul").append(_nextHTML)
-            //设置title
-            $("#itemTitle ").html(title);
-
-            //data-deep
-            // var dataDeep = $("#file-list-table").attr("data-deep")
-            // $("#file-list-table").attr("data-deep",parseInt(dataDeep) + 1);
-
-            dirStack.push(title);
+        } else if (back_num < 0) {
+            //back_num<0时，就是往下一层。title是目录名。
+            if (title != null) {
+                if (title.constructor != Array) {
+                    title = [title];
+                }
+                getNextDir()
+            }
         } else if (back_num > 0) {
             var pretitle = ""
             $lis = $(".item-title ul").find("li")
@@ -254,7 +236,46 @@ $(function () {
             _backupHTML: _backupHTML,
             mirror: mirror,
         }
+
+        function getNextDir() {
+            for (var i = 0; i < title.length; i++) {
+
+                //原来的当前目录
+                var preTitle = $("#itemTitle").html();
+
+                //原来的data-deep -1
+                var $lis = $(".item-title ul").find("li")
+                $lis.each(function () {
+                    var data_deep = $(this).find("a").attr("data-deep")
+                    $(this).find("a").attr("data-deep", parseInt(data_deep) - 1)
+                })
+
+                //返回上一级按钮
+                var $gobackToLast = $(".item-title").find("#gobackToLast");
+                if ($gobackToLast.length == 0) {
+                    var _gobackHTML = "<a id='gobackToLast' data-deep='-1' class='a_block dir_go_back' href='javascript:void(0)'>" +
+                        "返回上一级<span class='EKIHPEb'>|</span></a>";
+                    $(".item-title ul").prepend(_gobackHTML)
+                }
+
+                //原来的title变成a
+                var _nextHTML = "<li><a data-deep='-1' class='a_block dir_go_back' href='javascript:void(0)'>" +
+                    preTitle +
+                    "</a><span class='KLxwHFb'>></span></li>"
+                $(".item-title ul").append(_nextHTML)
+                //设置title
+                $("#itemTitle ").html(title[i]);
+
+                //data-deep
+                // var dataDeep = $("#file-list-table").attr("data-deep")
+                // $("#file-list-table").attr("data-deep",parseInt(dataDeep) + 1);
+
+                dirStack.push(title[i]);
+            }
+        }
     }
+
+
 
 
     function getItemTitle() {
@@ -343,20 +364,10 @@ $(function () {
 
 
             if ($target.prop("id") == "allFile") {
-                AjaxCd(null,
-                    function () {
-                        // drawFileTable(result_data);
-                        ChangeItemTitle()
-                        //移除全选按钮的状态，已选中归零
-                        $("input#selectAllList").prop("checked", false)
-                        ShowSelectNum();
 
-                        //回收站隐藏掉新建和上传按钮
-                        if ($target.is("#recycleFile")) {
-                            $("#uploadFile,#newFolder").hide()
-                        } else {
-                            $("#uploadFile,#newFolder").show()
-                        }
+                AjaxCd(ChangeItemTitle(),
+                    function () {
+
                     },
                     function () {
 
@@ -496,7 +507,7 @@ $(function () {
             } else {
                 //下一页
                 //ChangeItemTitle(0,"111");
-                var obj = ChangeItemTitle(0, $target.parent().find("span").html());
+                var obj = ChangeItemTitle(-1, $target.parent().find("span").html());
                 AjaxCd(obj, function () {
                     //do nothing
                 }, function () {
@@ -1260,7 +1271,7 @@ $(function () {
         failcb == null ? failcb = function () {} : failcb = failcb;
 
         $.ajax({
-            type: "post",
+            type: "get",
             dataType: "json",
             url: "/netDisk/CdServlet",
             data: {
@@ -1272,7 +1283,23 @@ $(function () {
                         data.map.directory = [];
                     }
                     $("#AjaxCdStatusMess").html("已获取" + data.map.directory.length + "个文件");
+                    var lastDir = ""
                     drawFileTable(data.map, data.map.dataDeep);
+                    //移除全选按钮的状态，已选中归零
+                    $("input#selectAllList").prop("checked", false)
+                    ShowSelectNum();
+
+                    //历史记录,不是浏览器后退前进键得到的就保存
+                    if (!(obj.from!=null&&obj.from=="popstate")){
+                         window.history.pushState(obj.dirname, "")
+                    }
+
+                    //回收站隐藏掉新建和上传按钮
+                    if ("#recycleFile" == GetItemId()) {
+                        $("#uploadFile,#newFolder").hide()
+                    } else {
+                        $("#uploadFile,#newFolder").show()
+                    }
                     cb()
                 })
 
@@ -1506,4 +1533,25 @@ $(function () {
         })
         $modal.show();
     })
+
+    //控制返回键,对 ajaxCd造成的表格改变进行回退和前进
+    $(function () {
+        window.addEventListener("popstate", function (e) {
+            var dir = e.state;
+            if (dir != null) {
+                var sp = dir.split("/")
+                sp = sp.slice(1)
+                // console.log(sp)
+                var obj = ChangeItemTitle(0, sp);
+                //标识来自后退键。
+                obj.from="popstate"
+                AjaxCd(obj)
+            }
+
+        }, false);
+    });
+
+    // window.onpopstate=function(){
+    //      alert(JSON.stringify(window.history.state))
+    // }
 })
