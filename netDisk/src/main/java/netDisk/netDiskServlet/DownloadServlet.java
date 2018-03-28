@@ -35,12 +35,12 @@ public class DownloadServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		resp.setCharacterEncoding("utf-8");
-		
+
 		String userAccount = (String) req.getSession(true).getAttribute(
 				"userAccount");
-		
+
 		if (userAccount == null) {
-			resp.sendRedirect(req.getContextPath()+"/"+"LoginServlet");
+			resp.sendRedirect(req.getContextPath() + "/" + "LoginServlet");
 			return;
 		}
 
@@ -48,28 +48,36 @@ public class DownloadServlet extends HttpServlet {
 		if (dirName == null) {
 			dirName = "";
 		}
-		
+		dirName = dirName.replace("/", File.separator);
+		dirName = new String(dirName.getBytes("ISO8859-1"), "utf-8");
+
 		String fileName = req.getParameter("fileName");
-		fileName = fileName.replace("/", File.separator);
 		String serverPath = netDiskCfg.getDiskDir();
-		
-		String filePath=serverPath + File.separator + userAccount
-				+ File.separator + dirName + File.separator+fileName;
+		fileName = new String(fileName.getBytes("ISO8859-1"), "utf-8");
+
+		String filePath = serverPath + File.separator + userAccount + dirName
+				+ File.separator + fileName;
 		File file = new File(filePath);
-		
-		//TODO:提示页面
-		if (!file.exists()){
-			resp.sendRedirect(req.getContextPath());
-			return;
-		}
-		
-		if (file.isDirectory()){
+
+		// TODO:提示页面
+		if (!file.exists()) {
+			System.out.println("log[warn]" + filePath + "不存在");
 			resp.sendRedirect(req.getContextPath());
 			return;
 		}
 
+		if (file.isDirectory()) {
+			System.out.println("log[warn]" + filePath + "是目录");
+			resp.sendRedirect(req.getContextPath());
+			return;
+		}
+
+		System.out
+				.println("log[debug]" + "用户" + userAccount + "下载了" + filePath);
 		resp.setContentType("application/octet-stream");
-		resp.setHeader("Content-Disposition", "attachment;filename=" + fileName);
+		//下载后，文件名字中文部分不见了。这个解决方案网上说ie11不行
+		resp.setHeader("Content-Disposition", "attachment;filename="
+				+ new String(fileName.getBytes("utf-8"), "ISO8859-1"));
 		resp.setContentLength((int) file.length());
 
 		FileInputStream fis = null;
@@ -88,7 +96,7 @@ public class DownloadServlet extends HttpServlet {
 		} finally {
 			resp.getOutputStream().flush();
 			resp.getOutputStream().close();
-		
+
 		}
 	}
 

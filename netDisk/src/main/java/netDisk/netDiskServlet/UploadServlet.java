@@ -93,7 +93,8 @@ public class UploadServlet extends HttpServlet {
 					}
 				}
 			}
-
+			//处理中文乱码
+			fileDir=new String(fileDir.getBytes("ISO8859-1"),"utf-8");
 			// TODO :MD5 重名处理
 			// 再处理不在表单中的数据，就是上传的文件
 			for (FileItem item : list) {

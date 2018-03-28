@@ -52,7 +52,6 @@
 }
 
 /*ul button*/
-
 .operate .ul_inline {
     margin-top: 10px;
     padding: 0;
@@ -64,6 +63,11 @@
     padding: 8px 10px 2px 10px;
     color: #0066CC;
     border-color: #0066CC;
+}
+
+.operate .ul_inline .a_block.disabled {
+    opacity: 0.5;
+    color: grey;
 }
 
 #uploadFile {

@@ -533,6 +533,7 @@ $(function () {
     })
 
     //上传文件
+    //当文件上传成功后，给tr加上complete class,来统计成功数量。失败的话加上fail class，来统计失败的数量。
     var countUpload = 0; //为了更新上传会话框的文件状态而设置。为了方便选择，表中每行class为 file_第几个文件_countUpload，来区分重名的文件。
     $("#fileUploadInput").change(function () {
         //console.log("文件上传", $("#fileUploadInput").prop("files"))
@@ -569,13 +570,23 @@ $(function () {
                     for (var k = 0; k < list.length; k++) {
                         var s = "file_" + k + "_" + countUploadLocal;
                         $("." + s).find(".status").html("ok");
+                        $("." + s).removeClass("fail");
                         $("." + s).addClass("complete");
                     }
                     changeFileUploadTitle();
                 }
             }, function () {
                 clearInterval(getProgree)
-                changeFileUploadTitle();
+                setTimeout(function () {
+                    changeFileUploadTitle("上传文件失败");
+                    for (var j = lastID; j < i; j++) {
+                        var s = "file_" + j + "_" + countUploadLocal;
+                        $("." + s).find(".status").html("上传失败");
+                        $("." + s).addClass("fail");
+                        $("." + s).removeClass("complete");
+                    }
+                }, 200)
+
             })
 
             //轮询来查看进度
@@ -593,6 +604,7 @@ $(function () {
                     data.map.percent == null ? data.map.percent = 0 : data.map.percent = data.map.percent;
                     if (data.map.percent == 100) {
                         $toChangeTr.find(".status").html("ok");
+                        $("." + s).removeClass("fail");
                         $toChangeTr.addClass("complete");
                     } else {
                         $toChangeTr.find(".status").html(data.map.percent + "%");
@@ -604,6 +616,7 @@ $(function () {
                         for (var j = lastID; j < i; j++) {
                             var s = "file_" + j + "_" + countUploadLocal;
                             $("." + s).find(".status").html("ok");
+                            $("." + s).removeClass("fail");
                             $("." + s).addClass("complete");
                         }
                     }
@@ -1230,7 +1243,6 @@ $(function () {
                 $.toastForceHide()
                 enableAllButton();
                 $.toastForAjaxErr(data, status, e)
-                $("#AjaxCdStatusMess").html("获取目录失败");
                 failcb(data, status, e)
             }
         })
@@ -1290,8 +1302,8 @@ $(function () {
                     ShowSelectNum();
 
                     //历史记录,不是浏览器后退前进键得到的就保存
-                    if (!(obj.from!=null&&obj.from=="popstate")){
-                         window.history.pushState(obj.dirname, "")
+                    if (!(obj.from != null && obj.from == "popstate")) {
+                        window.history.pushState(obj.dirname, "")
                     }
 
                     //回收站隐藏掉新建和上传按钮
@@ -1544,7 +1556,7 @@ $(function () {
                 // console.log(sp)
                 var obj = ChangeItemTitle(0, sp);
                 //标识来自后退键。
-                obj.from="popstate"
+                obj.from = "popstate"
                 AjaxCd(obj)
             }
 
