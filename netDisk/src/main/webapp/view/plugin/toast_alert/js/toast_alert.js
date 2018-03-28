@@ -75,6 +75,9 @@
                 console.log("status:", status)
                 console.log("e:", e)
                 $.toast("页面解析数据异常")
+                setTimeout(function(){
+                    location.reload();
+                },2000)
             } else {
                 console.log("data:", data)
                 console.log("status:", status)

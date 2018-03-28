@@ -1,5 +1,4 @@
-//
-
+//每次显示dirTree都调用下面的函数，它的作用是隐藏下级菜单目录和监听展开按钮。否则不会隐藏。
 function jqueryTreeScroll(treeWidth){
 	treeWidth==null?treeWidth=80:treeWidth=treeWidth;
 	$(".close_menu").each(function(){

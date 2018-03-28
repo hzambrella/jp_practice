@@ -919,6 +919,7 @@ $(function () {
                 jqueryTreeScroll(120)
             } else {
                 $modalDirTree.changeCon(_dirTreeHTML);
+                jqueryTreeScroll(120)
             }
 
 
