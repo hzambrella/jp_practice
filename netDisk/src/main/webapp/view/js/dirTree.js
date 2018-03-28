@@ -17,7 +17,7 @@ function drawDirTreeUl(height, resultObj) {
         // }
         _subHTML = addChildNodeToDirTree(resultObj, "")
 
-        _HTML += "<ul>" +
+        _HTML += "<ul class='ul_common'>" +
             _subHTML +
             "</ul>" +
             "</div>" +
@@ -38,17 +38,17 @@ function addChildNodeToDirTree(resultObj, pretitle) {
     
     if (resultObj.childDirNode != null && resultObj.childDirNode.length != 0) {
         _childHTML += "<li>" +
-            "<div class='close_menu'><span></span><a title='" + nameInsert + "' data-deep=' " + resultObj.level + "'>" + "<i class='fa fa-folder' style='margin-right:2px'></i>" + resultObj.name + "</a></div>" +
+            "<div class='close_menu'><span></span><a class='a_block' title='" + nameInsert + "' data-deep=' " + resultObj.level + "'>" + "<i class='fa fa-folder' style='margin-right:2px'></i>" + resultObj.name + "</a></div>" +
             subDirTree(resultObj.childDirNode, nameInsert) + "</li>"
     } else {
         resultObj.name == null ? resultObj.name = "" : resultObj.name = resultObj.name
-        _childHTML += " <li class='leaf_node' style='padding-left:24px'><a title='" +nameInsert + "' data-deep='" + resultObj.level + "'>" + "<i class='fa fa-folder' style='margin-right:2px'></i>" + resultObj.name + "</a></li>"
+        _childHTML += " <li class='leaf_node' style='padding-left:24px'><a 'a_block' title='" +nameInsert + "' data-deep='" + resultObj.level + "'>" + "<i class='fa fa-folder' style='margin-right:2px'></i>" + resultObj.name + "</a></li>"
     }
     return _childHTML;
 
     //子树
     function subDirTree(childNodes, pretitle) {
-        var _subHTML = "<ul>"
+        var _subHTML = "<ul class='ul_common'>"
         //  console.log(childNodes)
         //  console.log(childNodes.length)
         for (var i = 0; i < childNodes.length; i++) {

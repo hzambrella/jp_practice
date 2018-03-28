@@ -25,6 +25,7 @@
     <script src="/netDisk/view/js/vendor/template.js"></script>
 
     <!--css-->
+    <link href="/netDisk/view/css/layout_tlr.css" rel="stylesheet" type="text/css" />
     <link href="/netDisk/view/css/main.css" rel="stylesheet" type="text/css" />
     <link href="/netDisk/view/css/app.css" rel="stylesheet" type="text/css" />
 
@@ -36,7 +37,7 @@
 <body>
     <div class="top">
         <dl>
-            <dt><img id="logo" style="float: left; height: 60px; margin: 10px 10px" src="/netDisk/view/images/logo.png" /></dt>
+            <dt><img id="logo" src="/netDisk/view/images/logo.png" /></dt>
             <!--<div class="top_navigation" style="display: block; height: 60px; width: 50%; margin: 10px 10px; float: left;"></div>-->
             <dd class="user_info">
                 <img id="head_img" class="head_img" src="/netDisk/view/images/head_default.png" /> <span class="nickname">testUser</span>
@@ -47,7 +48,7 @@
                         <span class="nickname">testUser</span>
                     </div>
                     <!--<div class="user_info_detail_middle"></div>-->
-                    <ul>
+                    <ul class="ul_common">
                         <li><a id="personalInfo" href="javascript:void(0)">个人资料</a></li>
                         <li><a id="helpCenter" href="javascript:void(0)">帮助中心</a></li>
                         <li><a id="logout" href="javascript:void(0)">退出</a></li>
@@ -62,14 +63,14 @@
         <!--left-->
         <div class="con-left">
             <div style="height: 480px; width: 100%">
-                <ul class="item-list">
-                    <li><a href="javascript:void(0)" id="allFile"><i
+                <ul class="ul_common item-list">
+                    <li><a class="a_block" ref="javascript:void(0)" id="allFile"><i
 							class="fa fa-files-o"></i> 全部文件</a></li>
-                    <li><a href="javascript:void(0)" id="textFile"><i
+                    <li><a class="a_block" href="javascript:void(0)" id="textFile"><i
 							class="fa fa-file-text-o"></i> 文档</a></li>
-                    <li><a href="javascript:void(0)" id="imageFile"><i
+                    <li><a class="a_block" href="javascript:void(0)" id="imageFile"><i
 							class="fa fa-photo"></i> 图片</a></li>
-                    <li><a href="javascript:void(0)" id="recycleFile"><i
+                    <li><a class="a_block" href="javascript:void(0)" id="recycleFile"><i
 							class="fa fa-trash"></i> 回收站</a></li>
                 </ul>
             </div>
@@ -84,19 +85,19 @@
         <div class="con-right">
             <!--操作栏-->
             <div class="operate">
-                <a class="operate-common" href="javascript:void(0)" id="uploadFile">
+                <a class="a_block operate-common" href="javascript:void(0)" id="uploadFile">
                     <iclass="fa fa-upload">
                         </i> 上传</a>
-                <a class="operate-common" href="javascript:void(0)" id="newFolder"><i class="fa fa-plus"></i>
+                <a class="a_block operate-common" href="javascript:void(0)" id="newFolder"><i class="fa fa-plus"></i>
 					新建文件夹</a>
-                <ul class="operate-file hide">
-                    <li><a id="downloadFile" href="javascript:void(0)"><i
+                <ul class="ul_common  ul_inline operate-file hide">
+                    <li><a class="a_block" id="downloadFile" href="javascript:void(0)"><i
 							class="fa fa-download"></i> 下载</a></li>
-                    <li><a id="deleteFile" href="javascript:void(0)"><i
+                    <li><a class="a_block" id="deleteFile" href="javascript:void(0)"><i
 							class="fa fa-trash"></i> 删除</a></li>
-                    <li><a id="renameFile" href="javascript:void(0)">重命名</a></li>
-                    <li><a id="copyFile" href="javascript:void(0)">复制到</a></li>
-                    <li><a id="moveFile" href="javascript:void(0)">移动到</a></li>
+                    <li><a class="a_block" id="renameFile" href="javascript:void(0)">重命名</a></li>
+                    <li><a class="a_block" id="copyFile" href="javascript:void(0)">复制到</a></li>
+                    <li><a class="a_block" id="moveFile" href="javascript:void(0)">移动到</a></li>
                 </ul>
             </div>
             <p></p>
@@ -142,7 +143,7 @@
     </div>
 
     <!--toast_alert-->
-    <div class="toast" id="toastAlert">
+    <div class="toast toastAlert">
         <div class="toast_text"></div>
     </div>
 
@@ -171,7 +172,7 @@
 
     <script id="table_rename" type="text/html">
         <div class="rename">
-            <input class="rename_input" type="text" value="<%:=name%>" autofocus/>
+            <input class="bea_input rename_input" type="text" value="<%:=name%>" autofocus/>
             <button class="rename_cancel"><i class="fa fa-close"></i></button>
             <button class="rename_confirm"><i class="fa fa-check"></i></button>
         </div>
@@ -259,10 +260,10 @@
 
 <!--目录树的操作按钮-->
 <script id="mock_dir_tree_button" type="text/html">
-    <a href='javascript:void(0)' id="dirTreeNewFolder" class='dialog_a white floatleft'>新建文件夹</a>
+    <a href='javascript:void(0)' id="dirTreeNewFolder" class='a_block dialog_a white floatleft'>新建文件夹</a>
 
-    <a href='javascript:void(0)' id="dirTreeCancel" class='dialog_a white floatright'>取消</a>
-    <a href='javascript:void(0)' id="dirTreeConfirm" class='dialog_a blue floatright'>确认</a>
+    <a href='javascript:void(0)' id="dirTreeCancel" class='a_block dialog_a white floatright'>取消</a>
+    <a href='javascript:void(0)' id="dirTreeConfirm" class='a_block dialog_a blue floatright'>确认</a>
 
 </script>
 

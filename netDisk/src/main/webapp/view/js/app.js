@@ -210,13 +210,13 @@ $(function () {
             //返回上一级按钮
             $gobackToLast = $(".item-title").find("#gobackToLast");
             if ($gobackToLast.length == 0) {
-                var _gobackHTML = "<a id='gobackToLast' data-deep='-1' class='dir_go_back' href='javascript:void(0)'>" +
+                var _gobackHTML = "<a id='gobackToLast' data-deep='-1' class='a_block dir_go_back' href='javascript:void(0)'>" +
                     "返回上一级<span class='EKIHPEb'>|</span></a>";
                 $(".item-title ul").prepend(_gobackHTML)
             }
 
             //原来的title变成a
-            var _nextHTML = "<li><a data-deep='-1' class='dir_go_back' href='javascript:void(0)'>" +
+            var _nextHTML = "<li><a data-deep='-1' class='a_block dir_go_back' href='javascript:void(0)'>" +
                 preTitle +
                 "</a><span class='KLxwHFb'>></span></li>"
             $(".item-title ul").append(_nextHTML)
@@ -388,7 +388,7 @@ $(function () {
                 } else {
                     //console.log($(".operate .operate-file #doRecycle"))
                     if ($(".operate #doRecycle").length == 0) {
-                        $(".operate").append("<a id='doRecycle' class='operate-common' href='javascript:void(0)'><i class='fa fa-recycle'></i>还原</a>")
+                        $(".operate").append("<a id='doRecycle' class='a_block operate-common' href='javascript:void(0)'><i class='fa fa-recycle'></i>还原</a>")
                         $(".operate #doRecycle").bind("click", doRecycle)
                     }
                 }

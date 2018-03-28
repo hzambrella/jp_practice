@@ -102,3 +102,36 @@
             }
         },
     })
+
+    $.fn.beToast = function (opt) {
+        var defaults = {
+            messageHTML: "<div class='toast_text'>this is toastAlert</div>",
+            fontSize: "1em",
+            timeout: 1000,
+        }
+        
+        var setting = $.extend({}, defaults, opt)
+        if (setting.timeOut <= 0) {
+            setting.timeOut = 500
+        }
+        var timeOut = null
+        clearTimeout(timeOut)
+
+        // $(".toast").css("display","block")
+        // $(".toast").css("opacity", "0")
+        $(this).css("opacity", "1")
+        $(this).css("font-size", setting.fontSize)
+        $(this).html(setting.messageHTML)
+
+
+        console.log($(".toast").css("opacity"))
+        $(this).css("opacity", "1")
+        timeOut = setTimeout(function () {
+            $(this).css("opacity", "0")
+        }, setting.timeout)
+
+
+        $.fn.changeCon = function (_HTML) {
+            $(this).html(_HTML)
+        }
+    }

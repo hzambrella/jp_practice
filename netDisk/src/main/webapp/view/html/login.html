@@ -21,15 +21,17 @@
     <!--<link rel="stylesheet" type="text/css" href="../plugin/toast_alert/css/toast_alert.css">
     <script src="../plugin/toast_alert/js/toast_alert.js"></script>-->
 
-    <!--tabs-->
-    <link href="/netDisk/view/css/tabs.css" rel="stylesheet" type="text/css" />
-    <script src="/netDisk/view/js/tabs.js"></script>
-   
+    <!--login_tabs-->
+    <link href="/netDisk/view/common/login_tabs/css/login_tabs.css" rel="stylesheet" type="text/css" />
+    <script src="/netDisk/view/common/login_tabs/js/login_tabs.js"></script>
+
     <!--css-->
     <link href="/netDisk/view/css/main.css" rel="stylesheet" type="text/css" />
-    <link href="/netDisk/view/css/login.css" rel="stylesheet" type="text/css" />
 
     <style type="text/css">
+        body {
+            background-color: #CCCCCC;
+        }
     </style>
 </head>
 
@@ -46,11 +48,11 @@
             <div class="show">
                 <form action="" id="loginForm" method="post" style="position: relative; width: 400px;margin: 50px auto 0px auto;">
                     <label class="inputlabel" for="accountLogin">账号:</label>
-                    <input class="input" type="text" id=accountLogin name="accountLogin" value="" /><br />
-                    <p  style="display:block;clear:both"></p>
-                    <label class="inputlabel" for="passwordLogin">密码:</label>
-                    <input class="input" type="password" id=passwordLogin name="passwordLogin" value="" /><br />
-                    <p  style="display:block;clear:both"></p>
+                    <input class="input" type="text" id=accountLogin name="accountLogin" value=""  placeholder="测试版,随便输"/><br />
+                    <p style="display:block;clear:both"></p>
+                    <label class="inputlabel" for="passwordLogin" >密码:</label>
+                    <input class="input" type="password" id=passwordLogin name="passwordLogin" value=""  placeholder="测试版,随便输"/><br />
+                    <p style="display:block;clear:both"></p>
                     <input class="checkbox" type="checkbox" style="margin:10px" id="remember" name="remember" />记住登录<br />
                     <a id="login" href="javascript:void(0)" style="margin-left:60px">确定</a>
                     <!--<input type="submit" style="display:none" id="loginSubmit" value="确定" /><br />-->
@@ -61,14 +63,14 @@
                 <!--TODO:解决label和input对齐的问题-->
                 <form action="" id="registerForm" method="post" action="" style="position: relative;width:400px;margin: 0 auto;">
                     <label class="inputlabel" for="accountRegister">账号:</label>
-                    <input class="input" type="text" id=accountRegister name="accountRegister" value="" /><br />
+                    <input class="input" type="text" id=accountRegister name="accountRegister" value=""  placeholder="测试版,随便输" /><br />
                     <label class="inputlabel" for="nickname">昵称:</label>
                     <input class="input" type="text" id=nickname name="nickname" value="" /><br />
-                    <label class="inputlabel" for="passwordRegister">密码:</label>
-                    <input class="input" type="password" id=passwordRegister name="passwordRegister" value="" /><br />
+                    <label class="inputlabel" for="passwordRegister" >密码:</label>
+                    <input class="input" type="password" id=passwordRegister name="passwordRegister" placeholder="测试版,随便输" value="" /><br />
                     <label class="inputlabel" for="passwordAgain">重输密码:</label>
                     <input class="input" type="password" id=passwordAgain name="passwordAgain" value="" /><br />
-                    <a id="register" href="javascript:void(0)" style="margin-left:60px" >确定</a>
+                    <a id="register" href="javascript:void(0)" style="margin-left:60px">确定</a>
                     <!--<input type="submit" style="display:none" id="registSubmit" value="确定" /><br />-->
                 </form>
             </div>
@@ -86,4 +88,5 @@
 
 <!--fontAwesome-->
 <link href="/netDisk/view/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+
 </html>
