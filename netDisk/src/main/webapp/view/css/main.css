@@ -120,6 +120,23 @@ ul.hide {
     text-decoration: none;
 }
 
+.bea_textarea{
+    background: #ffffff;
+    border-bottom-color: #ff6633;
+    border-bottom-width: 0px;
+    border-top-width: 0px;
+    border-left-width: 0px;
+    border-right-width: 0px;
+    color: #000000;
+    FONT-SIZE: 1.3em;
+    FONT-STYLE: normal;
+    FONT-VARIANT: normal;
+    FONT-WEIGHT: normal;
+    HEIGHT: 80%;
+    width: 100%;
+    LINE-HEIGHT: normal;
+}
+
 /*common*/
 
 /*边框*/

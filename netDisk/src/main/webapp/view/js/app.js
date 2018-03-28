@@ -275,9 +275,6 @@ $(function () {
         }
     }
 
-
-
-
     function getItemTitle() {
         var _backupHTML = $(".item-title").html();
         var mirror = dirStack.getDataMirror();
@@ -919,7 +916,7 @@ $(function () {
                     _con_HTML: _dirTreeHTML,
                     _button_HTML: _dirTreeButtonHTML,
                 });
-                jqueryTreeScroll()
+                jqueryTreeScroll(120)
             } else {
                 $modalDirTree.changeCon(_dirTreeHTML);
             }
@@ -941,9 +938,19 @@ $(function () {
             $(".dialog .dialog_con").addClass("border_grey_solid")
             $(".dialog .dialog_button").addClass("dialog_button_dirTree")
 
+            $("#dirTreeNewFolder").unbind();
             $("#dirTreeNewFolder").bind("click", function () {
-                //TODO：new folder
-                alert("正在开发中。。。")
+                $ontree = $modalDirTree.find(".ontree");
+                if ($ontree.length == 0) {
+                    $.toast("请先选择一个文件夹")
+                    return
+                }
+
+                if ($ontree) {
+                    dirTreeNewFolder($ontree, function (newDir, newFolderName,successcb,failcb) {
+                        AjaxMkdir(newDir, newFolderName,successcb,failcb)
+                    })
+                }
             })
 
             $modalDirTree.show()
@@ -958,7 +965,7 @@ $(function () {
             rebindConfirmAndCancelEventForDirTreeButton(confirmCallback)
 
             function moveFileConfirmCallback() {
-                var absolutePath = getAbsolutePathFromDirTree()
+                var absolutePath = $(".treebox .tree").find(".ontree").attr("title")
                 orgDirName = dirStack.getDirForAjax();
                 AjaxMoveTo(orgDirName, absolutePath, names, function (data) {
                     var failIds = data.map.failIds;
@@ -1010,7 +1017,7 @@ $(function () {
             }
 
             function copyConfirmCallback() {
-                var absolutePath = getAbsolutePathFromDirTree()
+                var absolutePath = $(".treebox .tree").find(".ontree").attr("title")
                 orgDirName = dirStack.getDirForAjax();
                 AjaxCopyTo(orgDirName, absolutePath, names, function (data) {
                     var failIds = data.map.failIds;
@@ -1058,15 +1065,14 @@ $(function () {
                     AjaxCd(getItemTitle())
                 })
             }
-
         })
     })
 
-    //从目录树中获得完整的目录
-    function getAbsolutePathFromDirTree() {
-        $ontree = $(".treebox .tree").find(".ontree")
-        return $ontree.attr("title")
-    }
+    //从目录树中获得完整的目录 bug
+    // function getAbsolutePathFromDirTree() {
+    //     $ontree = $(".treebox .tree").find(".ontree")
+    //     return $ontree.attr("title")
+    // }
 
     //重新绑定目录树box的确认和取消按钮事件
     function rebindConfirmAndCancelEventForDirTreeButton(confirmCallback, cancelCallback) {
@@ -1368,6 +1374,8 @@ $(function () {
             success: function (data) {
                 $.toastForJavaAjaxRes(data, function () {
                     cb();
+                }, function () {
+                    failcb();
                 })
             },
             error: function (data, status, e) {
@@ -1529,6 +1537,47 @@ $(function () {
         })
     }
 
+    //反馈ajax
+    function AjaxFeedback(text, cb, failcb) {
+        if (text == null) {
+            $.toast("反馈内容不能为空")
+            return;
+        }
+        cb == null ? cb = function () {} : cb = cb;
+        failcb == null ? failcb = function () {} : failcb = failcb;
+        console.log(text)
+        $.ajax({
+            url: '/netDisk/FeedbackServlet',
+            type: 'post',
+            dataType: 'JSON',
+            data: {
+                text: text,
+            },
+            success: function (data) {
+                $.toastForJavaAjaxRes(data, function () {
+                    $modal.boxAlert({
+                        'title': '反馈成功',
+                        'content': '感谢您的反馈！',
+                        'needCancel': false,
+                        'confirmFunc': function () {
+                            $modal.hideModal();
+                            // $("#allFile").trigger("click")
+                        },
+                        cancelFunc: function () {
+                            $modal.hideModal();
+                        },
+                    })
+                    $modal.show()
+                    cb(data);
+                })
+            },
+            error: function (data, status, e) {
+                $.toastForAjaxErr(data, status, e)
+                failcb(data, status, e)
+            }
+        })
+    }
+
     $("#logo").click(function () {
         var content = "hz非常非常非常low的网盘<br/> 用文件夹存储用户的内容。正常的网盘不应该这样。会带来有很多问题的。" +
             "<br/>by hzambrella qq:504489929有bug call me"
@@ -1566,4 +1615,29 @@ $(function () {
     // window.onpopstate=function(){
     //      alert(JSON.stringify(window.history.state))
     // }
+
+    $("#feedback").click(function () {
+        $("#feedbackDialog").dialog({
+            'id': 'fbDialog',
+            'title': '意见反馈',
+            _con_HTML: "<textarea class='bea_textarea' rows='10' cols='30' placeholder='填写您的意见' autofocus></textarea>",
+            _button_HTML: "<a href='javascript:void(0)'  class='cancel a_block dialog_a white floatright'>取消</a>" +
+                "<a href='javascript:void(0)' class='confirm a_block dialog_a blue floatright'>确认</a>",
+        })
+        $("#feedbackDialog").resetCloseFunc(function () {
+            $("#feedbackDialog").find("#fbDialog").remove();
+        })
+
+        $("#feedbackDialog").find(".cancel").bind("click", function () {
+            $("#feedbackDialog").find("#fbDialog").remove();
+        })
+
+        $("#feedbackDialog").find(".confirm").bind("click", function () {
+            var text = $("#feedbackDialog").find("textarea").val();
+            $("#feedbackDialog").find("#fbDialog").remove();
+            AjaxFeedback(text)
+        })
+
+        $("#feedbackDialog").show();
+    })
 })

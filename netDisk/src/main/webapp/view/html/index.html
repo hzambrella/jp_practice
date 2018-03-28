@@ -51,6 +51,7 @@
                     <ul class="ul_common">
                         <li><a id="personalInfo" href="javascript:void(0)">个人资料</a></li>
                         <li><a id="helpCenter" href="javascript:void(0)">帮助中心</a></li>
+                        <li><a id="feedback" href="javascript:void(0)">反馈</a></li>
                         <li><a id="logout" href="javascript:void(0)">退出</a></li>
                     </ul>
                 </div>
@@ -154,6 +155,8 @@
     <!--upload-->
     <div id="uploadTabs"></div>
 
+    <div id="feedbackDialog"></div>
+
     <script id="table_tpl" type="text/html">
         <%for(var i = 0; i < directory.length; i++) {%>
             <tr>
@@ -177,6 +180,16 @@
             <button class="rename_confirm"><i class="fa fa-check"></i></button>
         </div>
     </script>
+
+    <script id="dirTree_rename" type="text/html">
+        <div class="dirTreeRename" style="display:inline-block">
+            <i class='fa fa-folder' style='margin-right:2px'></i>
+            <input class="bea_input rename_input" type="text" value="<%:=name%>" autofocus/>
+            <button class="rename_cancel"><i class="fa fa-close"></i></button>
+            <button class="rename_confirm"><i class="fa fa-check"></i></button>
+        </div>
+    </script>
+
 
     <input id="fileUploadInput" style="display:none" type=file name=fileUploadInput / multiple><br/>
 
@@ -264,18 +277,23 @@
 
     <a href='javascript:void(0)' id="dirTreeCancel" class='a_block dialog_a white floatright'>取消</a>
     <a href='javascript:void(0)' id="dirTreeConfirm" class='a_block dialog_a blue floatright'>确认</a>
-
 </script>
 
 
 <script id="mock_upload_table" type="text/html">
-        <%for(var i = 0; i < list.length; i++) {%>
-            <tr class="list file_<%:=i%>_<%:=list[i].countUpload%>">
-                <td class="fileName"><%:=list[i].name%></td>
-                <td class="size"><%:=list[i].size%></td>
-                <td class="targetDir"><%:=list[i].target%></td>
-                <td class="status">等待上传</td>
-            </tr>
+    <%for(var i = 0; i < list.length; i++) {%>
+        <tr class="list file_<%:=i%>_<%:=list[i].countUpload%>">
+            <td class="fileName">
+                <%:=list[i].name%>
+            </td>
+            <td class="size">
+                <%:=list[i].size%>
+            </td>
+            <td class="targetDir">
+                <%:=list[i].target%>
+            </td>
+            <td class="status">等待上传</td>
+        </tr>
         <%}%>
 </script>
 

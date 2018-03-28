@@ -52,6 +52,7 @@
 }
 
 /*ul button*/
+
 .operate .ul_inline {
     margin-top: 10px;
     padding: 0;
@@ -140,6 +141,7 @@
 }
 
 /*table*/
+
 .file-list {
     width: 100%;
     height: 600px;
@@ -173,16 +175,20 @@
     display: inline;
 }
 
-.rename button {
+.rename_cancel,
+.rename_confirm {
     background-color: white;
     border: 2px solid #0099CC;
     border-radius: 2px;
     text-align: center;
     text-decoration: none;
+    cursor: pointer;
+}
+
+.rename button {
     padding: 2px;
     width: 30px;
     height: 30px;
-    cursor: pointer;
 }
 
 .rename .bea_input {
@@ -201,4 +207,12 @@
     background-color: #4287ed;
     color: white;
     padding: 12px 10px;
+}
+
+.leaf_node .rename_input {
+    width: 100px;
+}
+
+li.leaf_node {
+    padding-left: 24px;
 }

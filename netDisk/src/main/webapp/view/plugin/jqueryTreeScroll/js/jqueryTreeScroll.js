@@ -1,6 +1,7 @@
 //
 
-function jqueryTreeScroll(){
+function jqueryTreeScroll(treeWidth){
+	treeWidth==null?treeWidth=80:treeWidth=treeWidth;
 	$(".close_menu").each(function(){
 		$(this).siblings("ul").hide();
 	});
@@ -36,7 +37,7 @@ function jqueryTreeScroll(){
 		//document.title="最多字数："+Math.max.apply(null, items)+",最大层数："+Math.max.apply(null, parents);
 		text_num=Math.max.apply(null, items);
 		parent_num=Math.max.apply(null, parents);
-		$(".tree").width(parent_num*20+text_num*14+44);
+		$(".tree").width(parent_num*20+text_num*14+treeWidth); //.tree的宽度
 		scrollsXY(".scrollXY");	
 	}
 }

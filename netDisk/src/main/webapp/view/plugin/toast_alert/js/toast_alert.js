@@ -56,7 +56,6 @@
             $(".toast_text").text(message)
 
             if (setting.timeout > 0) {
-                console.log($(".toast").css("opacity"))
                 $(".toast").css("opacity", "1")
                 timeOut = setTimeout(function () {
                     $(".toast").css("opacity", "0")
@@ -85,20 +84,25 @@
         },
 
         //服务端需要定义response数据格式，code为状态码，message为信息。
-        toastForJavaAjaxRes: function (data, callback) {
+        toastForJavaAjaxRes: function (data, callback, failcb) {
             $.toastForceHide()
             //console.log(data,data.code)
             if (data.code == 200) {
                 callback()
-
             } else if (data.code == 302) {
                 if (data.map.path != null) {
                     location.replace(data.map.path)
                 } else {
                     $.toast("系统服务器异常，跳转失败，请稍候再试")
                 }
+                return;
             } else {
                 $.toast(data.message)
+                console.log(1)
+                if (failcb != null) {
+                    failcb()
+                }
+                return;
             }
         },
     })
@@ -109,7 +113,7 @@
             fontSize: "1em",
             timeout: 1000,
         }
-        
+
         var setting = $.extend({}, defaults, opt)
         if (setting.timeOut <= 0) {
             setting.timeOut = 500
