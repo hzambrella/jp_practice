@@ -16,7 +16,7 @@ $.extend({
 
         timeOut = setTimeout(function () {
             $(".toast").css("opacity", "0")
-        }, 1000)
+        }, 2000)
     },
 
     toastForAjaxErr: function (data) {

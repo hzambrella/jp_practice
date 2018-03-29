@@ -3,11 +3,6 @@
   <display-name>sweepFaceOL</display-name>
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
-    <welcome-file>index.htm</welcome-file>
-    <welcome-file>index.jsp</welcome-file>
-    <welcome-file>default.html</welcome-file>
-    <welcome-file>default.htm</welcome-file>
-    <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
   <servlet>
     <description></description>
@@ -39,4 +34,13 @@
     <servlet-name>compareFaceServlet</servlet-name>
     <url-pattern>/compareFaceServlet</url-pattern>
   </servlet-mapping>
+  <filter>
+    <display-name>nocacheFilter</display-name>
+    <filter-name>nocacheFilter</filter-name>
+    <filter-class>filter.nocacheFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>nocacheFilter</filter-name>
+    <url-pattern>/nocacheFilter</url-pattern>
+  </filter-mapping>
 </web-app>

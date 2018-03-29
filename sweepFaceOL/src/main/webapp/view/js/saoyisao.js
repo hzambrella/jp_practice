@@ -22,14 +22,22 @@ $(function () {
 
     function startScan() {
         $scanimg.scanimg("scanning")
-
-        $.ajaxFileUpload({
-            url: '/sweepFaceOL/sweepServlet', // servlet请求路径  
-            secureuri: false,
-            fileElementId: 'myfile', // 上传控件的id  
+        var files = $("#myfile").prop("files");
+        if(files.length<=0){
+        	$.toast("请选择一张图片");
+        	return;
+        }
+        form = new FormData();
+        form.append(files[0].name, files[0]);
+        
+        $.ajax({
+            url: '/sweepFaceOL/sweepServlet',
+            method: 'post',
             dataType: 'json',
-            // data : {username : $("#username").val()}, // 其它请求参数  
-            success: function (data, status) {
+            data: form,
+            contentType: false,
+             processData: false,
+            success: function (data) {
                 $.toastForJavaAjaxRes(data, function () {
                     getResult(data)
                 })
@@ -41,7 +49,7 @@ $(function () {
                 $scanimg.scanimg("stop")
                 $("#test_scan").enableButton()
             }
-        });
+        })
     }
 
     function getResult(data) {
@@ -71,11 +79,11 @@ $(function () {
         //情绪
         var $emotion = $attributes.emotion
         var $emotion_result = getEmotion($emotion)
-        console.log($age,$gender,$forMale,$forFeMale,$emotion_result)
-        _html="年龄:"+$age+"</br>"
-        +"性别:"+$gender+"</br>"
-        +"颜值:"+" 对男性："+$forMale+"   "+"对女性:"+$forFeMale+"</br>"
-        +"情绪(不是很准):"+$emotion_result+"</br>"
+        console.log($age, $gender, $forMale, $forFeMale, $emotion_result)
+        _html = "年龄:" + $age + "</br>" +
+            "性别:" + $gender + "</br>" +
+            "颜值:" + " 对男性：" + $forMale + "   " + "对女性:" + $forFeMale + "</br>" +
+            "情绪(不是很准):" + $emotion_result + "</br>"
         $("#result1").html(_html)
     }
 
@@ -90,12 +98,12 @@ $(function () {
     }
     //情绪结果
     function getEmotion(data) {
-        var $score=0;
-        var $likest_emotion='';
-        for (var key in data){
-            if (data[key]>$score){
-                $likest_emotion=key
-                $score=data[key]
+        var $score = 0;
+        var $likest_emotion = '';
+        for (var key in data) {
+            if (data[key] > $score) {
+                $likest_emotion = key
+                $score = data[key]
             }
         }
 

@@ -7,6 +7,12 @@
     <!--<meta name="viewport" content="width=device-width, initial-scale=1">-->
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+    <!--不缓存-->
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="expires" content="0">
+
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimal-ui" />
     <meta name="renderer" content="webkit" />
     <meta http-equiv="Cache-Control" content="no-siteapp" />
@@ -44,7 +50,9 @@
             <ul>
                 <li><a href="#tabs-1">扫一扫</a></li>
                 <li><a href="#tabs-2">对比识别</a></li>
+                <li><a href="#tabs-3">帮助</a></li>
             </ul>
+
             <div id="tabs-1">
                 <div style="position:relative">
                     <div id="scanimg1" class="scanimg"></div>
@@ -52,7 +60,7 @@
                 </div>
 
                 <div class="file_form">
-                    <form  method="post" enctype="multipart/form-data">
+                    <form method="post" enctype="multipart/form-data">
                         请选择图片：<input id="myfile" name="myfile" type="file" onchange="showPreview(this,'previewImg')" accept="image/jpg,image/jpeg,image/png"
                         />
                     </form>
@@ -60,14 +68,12 @@
 
                 <div class="operate1">
                     <button id="stop">stop</button>
-                    <button id="test_scan">scan it!</button>
+                    <button id="test_scan">点我开扫！</button>
                 </div>
                 <div id="result1" class="result_mess1 ui-widget-content" style="overflow:auto">
 
                 </div>
-
             </div>
-
 
             <div id="tabs-2">
                 <div style="position:relative">
@@ -81,13 +87,15 @@
                     <img id="addImg2" class="addImg" src="/sweepFaceOL/view/images/addPic.png" />
                 </div>
                 <div id="compare_img1" class="ui-helper-hidden">
-                    <form  method="post" enctype="multipart/form-data">
-                        <input id="compare_file1" type="file" name="上传证件图" onchange="showPreview(this,'addImg1')" accept="image/jpg,image/jpeg,image/png" />
+                    <form method="post" enctype="multipart/form-data">
+                        <input id="compare_file1" type="file" name="上传证件图" onchange="showPreview(this,'addImg1')" accept="image/jpg,image/jpeg,image/png"
+                        />
                     </form>
                 </div>
                 <div id="compare_img2" class="ui-helper-hidden">
-                    <form  method="post" enctype="multipart/form-data">
-                        <input id="compare_file2" type="file" name="上传待对比图" onchange="showPreview(this,'addImg2')" accept="image/jpg,image/jpeg,image/png" />
+                    <form method="post" enctype="multipart/form-data">
+                        <input id="compare_file2" type="file" name="上传待对比图" onchange="showPreview(this,'addImg2')" accept="image/jpg,image/jpeg,image/png"
+                        />
                     </form>
                 </div>
 
@@ -98,6 +106,14 @@
                 <div id="result2" class="result_mess2 ui-widget-content" style="overflow:auto;font-size:0.5em">
 
                 </div>
+            </div>
+
+            <div id="tabs-3">
+                <p>扫一扫：选张人脸照，可以得到年龄，性别，<span style="color:red">颜值(别太相信)</span>和情绪。不准别打我 o_0 </p>
+                 <br/>
+                <p>对比识别：选两张人脸照。来判断是不是一个人 </p>
+                <br/>
+                <p>by hzambrella 有bug联系qq 504489929</p>
             </div>
         </div>
     </div>
@@ -114,7 +130,7 @@
 <script src="/sweepFaceOL/view/js/lib/previewImg.js"></script>
 <script>
     var $tabs = $("#tabs").tabs({
-        heightStyle:"auto"
+        heightStyle: "auto"
     });
     // $("button ,input[type='submit']").button();
 </script>

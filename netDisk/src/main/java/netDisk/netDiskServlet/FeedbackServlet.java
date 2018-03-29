@@ -48,7 +48,7 @@ public class FeedbackServlet extends HttpServlet {
 				"userAccount");
 		response.setCharacterEncoding("utf-8");
 		// response.setContentType("text/html;charset=utf-8");
-		userAccount=null;
+
 		if (userAccount == null) {
 			result.setCode(302);
 			result.getMap().put("path",
