@@ -23,20 +23,20 @@ $(function () {
     function startScan() {
         $scanimg.scanimg("scanning")
         var files = $("#myfile").prop("files");
-        if(files.length<=0){
-        	$.toast("请选择一张图片");
-        	return;
+        if (files.length <= 0) {
+            $.toast("请选择一张图片");
+            return;
         }
         form = new FormData();
         form.append(files[0].name, files[0]);
-        
+
         $.ajax({
             url: '/sweepFaceOL/sweepServlet',
             method: 'post',
             dataType: 'json',
             data: form,
             contentType: false,
-             processData: false,
+            processData: false,
             success: function (data) {
                 $.toastForJavaAjaxRes(data, function () {
                     getResult(data)
