@@ -1,5 +1,10 @@
 //basicMap的样式
-basicMapStyle = {
+
+var ol3Style={
+    basicMapStyle:null,
+    featureStyleMap:null,
+};
+ol3Style.basicMapStyle = {
     'geoJSON': new ol.style.Style({
         fill: new ol.style.Fill({
             color: 'rgba(255, 255, 255, 0.6)'
@@ -13,7 +18,7 @@ basicMapStyle = {
 }
 
 //``Feature样式style生成``
-featureStyleMap = {
+ol3Style.featureStyleMap = {
     //数据层的layer
     'data': new ol.style.Style({
         //填充样式

@@ -7,7 +7,7 @@
 <title>Insert title here</title>
 </head>
 <body>
- test JSP<br/>
+ test framework JSP<br/>
  ${message}
 </body>
 </html>

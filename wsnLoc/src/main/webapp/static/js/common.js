@@ -22,5 +22,13 @@ var commonTool = {
         var dataURL = canvasEl.toDataURL("image/" + ext);
         console.log(dataURL)
         return dataURL;
+    },
+    //浅拷贝
+    copy: function (obj) {
+        var newobj = {};
+        for (var attr in obj) {
+            newobj[attr] = obj[attr];
+        }
+        return newobj;
     }
 }
