@@ -4,29 +4,38 @@ loadMapOpt = mock.getLoadMapOpt()
 
 //```地图相关```
 var ol3Map = {
+    //属性
     //ol.canvasMap
     map: null,
-    //初始化地图
-    init: createMap,
-    //旋转地图
-    rotate: rotateMap,
-    //测量距离，并按照比例尺转化为真实距离
-    getDistance: getDistance,
-    //``flag``
-    operateFlag: {},
-    //开启/关闭绘制图层
-    draw: draw,
+    prop: null,
+    //初始化地图参数
+    loadMapOpt: {
+        needDefaultEventListener: true,
+        x_min: 0,
+        x_max: 0,
+        y_min: 0,
+        y_max: 0,
+        zoom_min: 0,
+        zoom_max: 0,
+        basicMapSource: '',
+        basicMapType: '',
+        scale: '0:0',
+    },
     //可绘制层相关
     drawable: {
         sourceDrawable: null, //ol.source.Vector
         layerDrawable: null, //ol.layer.Vector
-        lastInteractionFeature: null, //最新一次画的要素
+        lastDrawedFeature: null, //最新一次画的要素
         draw: null, //ol.interaction.Draw
+        select: null, //ol.interaction.Select
+        modify: null, //ol.interaction.Modify
+        drawendCb: null,
         //传给draw方法的参数
         drawOpt: {
             isClear: false,
             interactionDrawOpt: {}, //ol.interaction.Draw.options
             drawendCb: function () {},
+            // name:'',//当前绘制的是什么(绘制的功能叫什么)，关系到drawend callback的调用
         },
         //drawend事件的回调函数的map
         drawendFuncMap: {
@@ -48,9 +57,37 @@ var ol3Map = {
             ol3Map.drawable.drawOptMap[key] = fun;
         },
     },
+    //``flag``
+    operateFlag: {},
+
+    //方法
+    //初始化地图
+    init: createMap,
+    //旋转地图
+    rotate: rotateMap,
+    //测量距离，并按照比例尺转化为真实距离
+    getDistance: getDistance,
+    //开启/关闭绘制图层
+    draw: draw,
+
+    // event: {
+    //     listenerMap: {
+    //         'click': null,
+    //         'pointermove': null,
+    //     },
+    //     bindUniqueEvent: bindUniqueEvent,
+    // }
 }
 
+var defaultProp = {
+    //上一个选择的要素
+    lastSelectedFeature: null,
+}
+
+//创建地图
 function createMap(containerId, loadMapOpt) {
+    ol3Map.prop = commonTool.copy(defaultProp)
+    ol3Map.layerDrawable = null;
     var mapGeoJSONData = loadMapOpt.basicMapSource;
     var extentBaseMap = [loadMapOpt.x_min, loadMapOpt.y_min, loadMapOpt.x_max, loadMapOpt.y_max];
 
@@ -82,9 +119,17 @@ function createMap(containerId, loadMapOpt) {
         })
     });
     ol3Map.map = map;
+    if (loadMapOpt.needDefaultEventListener) {
+        defaultEvent();
+    }
+
+    //增加一个可绘制图层
+    ol3Map.drawable.layerDrawable = new ol.layer.Vector();
+    map.addLayer(ol3Map.drawable.layerDrawable);
     return map
 }
 
+//旋转地图
 function rotateMap(isToLeft) {
     if (ol3Map.map == null) {
         return;
@@ -113,55 +158,76 @@ function getDistance(coordinates, scale) {
     return disCacu * actDis / picDis;
 }
 
-//drawOpt ol3Map.drawable.drawOpt
+// 绘制层 drawOpt ol3Map.drawable.drawOpt
 function draw(drawOpt) {
     var map = ol3Map.map;
-    if (map == null) {
-        return
-    }
+    if (map == null) return;
 
     if (drawOpt.isClear) {
+        //清除最后绘制的要素记录
+        ol3Map.drawable.lastDrawedFeature = null;
         //清除画板
         map.removeInteraction(ol3Map.drawable.draw);
         ol3Map.drawable.draw = null;
         ol3Map.drawable.sourceDrawable = null;
         ol3Map.drawable.layerDrawable.setSource(ol3Map.drawable.sourceDrawable);
-        ol3Map.drawable.lastInteractionFeature = null;
+        //修改工具清除
+        map.removeInteraction(ol3Map.drawable.select)
+        map.removeInteraction(ol3Map.drawable.modify)
+        ol3Map.drawable.select = null;
+        ol3Map.drawable.modify = null;
     } else {
-        if (null != ol3Map.drawable.draw) {
-            map.removeInteraction(ol3Map.drawable.draw);
-        }
-
+        //清空上个功能绘制的最新要素
+        ol3Map.drawable.lastDrawedFeature = null;
+        // else if (drawOpt.isModify) {
         ol3Map.drawable.sourceDrawable = new ol.source.Vector();
-
-        if (null == ol3Map.drawable.layerDrawable) {
-            ol3Map.drawable.layerDrawable = new ol.layer.Vector({
-                source: ol3Map.drawable.sourceDrawable,
-            });
-            map.addLayer(ol3Map.drawable.layerDrawable);
-        } else {
-            ol3Map.drawable.layerDrawable.setSource(ol3Map.drawable.sourceDrawable);
-        }
-
+        // if (null == ol3Map.drawable.layerDrawable) {
+        //     ol3Map.drawable.layerDrawable = new ol.layer.Vector({
+        //         source: ol3Map.drawable.sourceDrawable,
+        //     });
+        //     map.addLayer(ol3Map.drawable.layerDrawable);
+        // } else {
+        //     //清空原来的source
+        //     ol3Map.drawable.layerDrawable.setSource(null)
+        //     ol3Map.drawable.layerDrawable.setSource(ol3Map.drawable.sourceDrawable);
+        // }
+        ol3Map.drawable.layerDrawable.setSource(null)
+        ol3Map.drawable.layerDrawable.setSource(ol3Map.drawable.sourceDrawable);
         drawOpt.interactionDrawOpt.source = ol3Map.drawable.sourceDrawable;
 
+        //处理之前的draw
+        //清空ol.interaction.Draw的drawend事件，以便重新绑定
+        if (ol3Map.drawable.draw != null) {
+            ol3Map.drawable.draw.un('drawend', ol3Map.drawable.drawendCb)
+        }
+        map.removeInteraction(ol3Map.drawable.draw);
+
+        //创建新的draw
         ol3Map.drawable.draw = new ol.interaction.Draw(
             drawOpt.interactionDrawOpt
         )
-        map.addInteraction(ol3Map.drawable.draw);
-        if (drawOpt.drawendCb != null) {
+        //重新设置drawend事件
+        ol3Map.drawable.drawendCb = drawOpt.drawendCb;
+
+        if (ol3Map.drawable.drawendCb != null) {
             ol3Map.drawable.draw.on('drawend', function (event) {
-                drawOpt.drawendCb(ol3Map.drawable.draw, event)
+                ol3Map.drawable.drawendCb(ol3Map.drawable.draw, event)
             })
         }
+        map.addInteraction(ol3Map.drawable.draw);
     }
 }
 
-//``创建地图``
-//TODO:ajax
-var containerId = 'hzMapTest'
-ol3Map.init(containerId, loadMapOpt)
-
+// function bindUniqueEvent(type, listener) {
+//     var map = ol3Map.map
+//     if (map == null) return;
+//     var orgListener = ol3Map.event.listenerMap[type]
+//     if (orgListener != null) {
+//         map.un(type, orgListener)
+//     }
+//     listenerMap[type] = listener
+//     map.on(type, listener)
+// }
 
 //``地图旋转``
 document.getElementById("rotateLeft").onclick = function () {
@@ -172,39 +238,123 @@ document.getElementById("rotateRight").onclick = function () {
     ol3Map.rotate(false)
 }
 
-//```可绘制层 测量距离```
+//```可绘制层```
+registDefaultDraw()
+//预设测距的draw。
+function registDefaultDraw() {
+    ol3Map.drawable.setDrawOptMap("rangeDis", {
+        type: 'LineString',
+        style: ol3Style.featureStyleMap['interaction'],
+        maxPoints: 2,
+    })
+
+    ol3Map.drawable.setDrawendFuncMap('rangeDis', function (draw, event) {
+        currentFeature = event.feature; //获得当前绘制的要素
+
+        if (ol3Map.drawable.draw != null && ol3Map.drawable.sourceDrawable != null && ol3Map.drawable.lastDrawedFeature != null) {
+            ol3Map.drawable.sourceDrawable.removeFeature(ol3Map.drawable.lastDrawedFeature);
+        }
+        ol3Map.drawable.lastDrawedFeature = currentFeature;
+        var geo = currentFeature.getGeometry(); //获得要素的几何信息
+        var coordinates = geo.getCoordinates(); //获得几何坐标
+        var dis = ol3Map.getDistance(coordinates, loadMapOpt.scale)
+        $("#drawResult").text(dis);
+    })
+}
+
+// 选择所绘制的对象(功能)
 $('#draw').on("change", function () {
-    initDefaultDrawOptMap()
     var drawOpt = commonTool.copy(ol3Map.drawable.drawOpt);
     drawOpt.isClear = (this.value == 'clear');
-    drawOpt.interactionDrawOpt = ol3Map.drawable.drawOptMap[this.value];
-    drawOpt.drawendCb = ol3Map.drawable.drawendFuncMap[this.value]
-    ol3Map.draw(drawOpt);
 
-    //预设一些draw，有测距。
-    function initDefaultDrawOptMap() {
-        ol3Map.drawable.setDrawOptMap("rangeDis", {
-            type: 'LineString',
-            style: ol3Style.featureStyleMap['interaction'],
-            maxPoints: 2,
-        })
-
-        ol3Map.drawable.setDrawendFuncMap('rangeDis', function (draw, event) {
-            currentFeature = event.feature; //获得当前绘制的要素
-
-            if (ol3Map.drawable.lastInteractionFeature != null) {
-                ol3Map.drawable.sourceDrawable.removeFeature(ol3Map.drawable.lastInteractionFeature);
-            }
-            ol3Map.drawable.lastInteractionFeature = currentFeature;
-            var geo = currentFeature.getGeometry(); //获得要素的几何信息
-            var coordinates = geo.getCoordinates(); //获得几何坐标
-            var dis = ol3Map.getDistance(coordinates, loadMapOpt.scale)
-            $("#drawResult").text(dis);
-        })
+    //若切换前是修改状态
+    $('#doDraw').prop('checked', true)
+    if (ol3Map.drawable.select != null || ol3Map.drawable.modify != null) {
+        if (ol3Map.drawable.select.getActive() || ol3Map.drawable.modify.getActive()) {
+            if (ol3Map.drawable.select != null) ol3Map.drawable.select.setActive(false);
+            if (ol3Map.drawable.modify != null) ol3Map.drawable.modify.setActive(false);
+            if (ol3Map.drawable.draw != null) map.addInteraction(ol3Map.drawable.draw);
+        }
     }
+
+    if (!drawOpt.isClear) {
+        $('#drawOperate').removeClass('hide')
+
+        drawOpt.interactionDrawOpt = ol3Map.drawable.drawOptMap[this.value];
+        drawOpt.drawendCb = ol3Map.drawable.drawendFuncMap[this.value];
+    } else {
+        $('#drawOperate').addClass('hide')
+    }
+
+    ol3Map.draw(drawOpt);
 })
 
-//``测试要素图层``
+var doDrawDealerMap = {
+    'doDraw': function (map) {
+        if (ol3Map.drawable.select != null) {
+            ol3Map.drawable.select.setActive(false)
+            ol3Map.drawable.select.un('select', doDeleteToFeature)
+        }
+        if (ol3Map.drawable.modify != null) ol3Map.drawable.modify.setActive(false)
+        if (ol3Map.drawable.layerDrawable != null &&
+            ol3Map.drawable.sourceDrawable != null &&
+            ol3Map.drawable.draw != null) {
+            map.addInteraction(ol3Map.drawable.draw);
+        }
+    },
+    'doModify': function (map) {
+        getSelectAndModify()
+        ol3Map.drawable.select.un('select', doDeleteToFeature)
+    },
+    'doDelete': function (map) {
+        ol3Map.drawable.lastDrawedFeature = null;
+        getSelectAndModify()
+        ol3Map.drawable.select.on('select', doDeleteToFeature)
+    },
+}
+
+function doDeleteToFeature(e) {
+    if (e.target.getFeatures() != null && e.target.getFeatures().getLength() > 0) {
+        e.target.getFeatures().forEach(function (el) {
+            console.log(el)
+            ol3Map.drawable.sourceDrawable.removeFeature(el)
+        })
+    }
+    
+}
+
+function getSelectAndModify() {
+    map.removeInteraction(ol3Map.drawable.draw);
+    if (ol3Map.drawable.select == null) {
+        ol3Map.drawable.select = new ol.interaction.Select({
+            style: ol3Style.featureStyleMap['selected'],
+        })
+        map.addInteraction(ol3Map.drawable.select)
+    }
+
+    if (ol3Map.drawable.modify == null) {
+        ol3Map.drawable.modify = new ol.interaction.Modify({
+            features: ol3Map.drawable.select.getFeatures(),
+        })
+        map.addInteraction(ol3Map.drawable.modify)
+    }
+    ol3Map.drawable.select.setActive(true)
+    ol3Map.drawable.modify.setActive(true)
+}
+
+
+$('#drawOperate').on('click', function (e) {
+    var map = ol3Map.map;
+    if (map == null) return;
+    $target = $(e.target)
+    if ($target.prop("tagName") != "INPUT") {
+        return
+    }
+    var dealer = doDrawDealerMap[$target.attr('value')]
+    if (dealer != null) dealer(map);
+})
+
+//``测试要素图层  显示地图的范围``
 var testData = {
     p1: [loadMapOpt.x_min, loadMapOpt.y_min],
     p2: [loadMapOpt.x_max, loadMapOpt.y_min],
@@ -264,63 +414,65 @@ $("#showExtendOfMap").click(function (event) {
 })
 
 //``地图事件监听``
-var lastSelectedFeature;
-defaultEvent();
-
 function defaultEvent() {
     var map = ol3Map.map;
-    if (map == null) {
-        alert(1)
-        return;
+    if (map == null) return;
+
+    map.on('click', defaultol3ClickListener)
+    map.on('pointermove', defaultol3pointermoveListener)
+}
+
+function defaultol3ClickListener(event) {
+    var map = ol3Map.map;
+    if (map == null) return;
+    // console.log(event.coordinate)
+    // 探测feature
+    var feature = map.forEachFeatureAtPixel(event.pixel, function (feature, layer) {
+        return feature
+    })
+    if (feature) {
+        if (feature.get('type') == 'data') {
+            if (ol3Map.lastSelectedFeature != null) {
+                ol3Map.lastSelectedFeature.setStyle(ol3Style.featureStyleMap[ol3Map.lastSelectedFeature.get('type')])
+            }
+            feature.setStyle(ol3Style.featureStyleMap['selected'])
+            ol3Map.lastSelectedFeature = feature;
+        }
     }
-    map.on('click', function (event) {
-        // console.log(event.coordinate)
-        //探测feature
-        var feature = map.forEachFeatureAtPixel(event.pixel, function (feature, layer) {
+
+    // 探测layer 有getImageData的跨域问题
+    // var layer = map.forEachLayerAtPixel(event.pixel, function (layer) {
+    //     return layer
+    // })
+
+    // if (layer) {
+    //     console.log("覆盖物:", layer, layer.getPosition())
+    // }
+}
+
+//地图的指针移动事件
+function defaultol3pointermoveListener(e) {
+    var map = ol3Map.map;
+    if (map == null) return;
+    var pixel = map.getEventPixel(e.originalEvent)
+    var isFeature = map.hasFeatureAtPixel(pixel)
+    var cursorStyle = {
+        'data': 'pointer',
+    }
+    var cursor = '';
+
+    if (isFeature) {
+        var feature = map.forEachFeatureAtPixel(pixel, function (feature, layer) {
             return feature
         })
-        if (feature) {
-            if (feature.get('type') == 'data') {
-                if (lastSelectedFeature != null) {
-                    lastSelectedFeature.setStyle(ol3Style.featureStyleMap[lastSelectedFeature.get('type')])
-                }
-                feature.setStyle(ol3Style.featureStyleMap['selected'])
-                lastSelectedFeature = feature;
-            }
+
+        var c = cursorStyle[feature.get('type')]
+        if (c) {
+            cursor = c;
         }
+    }
 
-        //探测layer 有getImageData的跨域问题
-        // var layer = map.forEachLayerAtPixel(event.pixel, function (layer) {
-        //     return layer
-        // })
-
-        // if (layer) {
-        //     console.log("覆盖物:", layer, layer.getPosition())
-        // }
-    })
-
-    //地图的指针移动事件
-    map.on('pointermove', function (e) {
-        var pixel = map.getEventPixel(e.originalEvent)
-        var isFeature = map.hasFeatureAtPixel(pixel)
-        var cursorStyle = {
-            'data': 'pointer',
-        }
-        var cursor = '';
-
-        if (isFeature) {
-            var feature = map.forEachFeatureAtPixel(pixel, function (feature, layer) {
-                return feature
-            })
-
-            var c = cursorStyle[feature.get('type')]
-            if (c) {
-                cursor = c;
-            }
-        }
-
-        map.getTargetElement().style.cursor = cursor;
-    })
+    map.getTargetElement().style.cursor = cursor;
 }
 
 //``提示工具``
@@ -332,58 +484,9 @@ $('.ol-rotate-reset, .ol-attribution button[title]').tooltip({
     placement: 'left'
 });
 
-//```overlay相关```
-//覆盖物图标地址
-var overlayImageUrlMap = {
-    'default': 'static/images/overlay/geolocation_marker.png',
-    'head': 'static/images/overlay/geolocation_marker_heading.png',
-}
-
-var overlayCommon = {
-    //添加一个overlay,coordinate,坐标，[x,y],name:名字,id:id
-    //type:overlay类型
-    //default: blank
-    //head:带箭头的
-    add: function (coordinate, name, id, type) {
-        coordinate == null ? coordinate = [0, 0] : coordinate = coordinate;
-        name == null ? name = '' : name = name;
-        var el = document.createElement('div')
-        el.className = 'marker'
-        if (id != null) el.id = id;
-        type == null ? type = 'default' : type = type;
-        el.title = '标注点：' + name
-        labelEl = document.getElementById('label')
-        labelEl.appendChild(el)
-
-        var imgEl = document.createElement('img')
-        imgEl.addClass = "overlay"
-        imgEl.src = overlayImageUrlMap[type]
-
-        el.appendChild(imgEl)
-
-        var nameel = document.createElement('span')
-        nameel.className = 'address'
-        nameel.innerText = name
-        el.appendChild(nameel)
-
-        var marker = new ol.Overlay({
-            position: coordinate,
-            positioning: 'center-center',
-            element: el,
-            stopEvent: false,
-        })
-        map.addOverlay(marker)
-        return marker
-    },
-    //旋转overlay  overlay是ol.Overlay angle是度为单位的角度，如30度就是30
-    rotate: function (overlay, angle) {
-        $imgEl = $(overlay.getElement()).find('img')
-        commonTool.rotateImg($imgEl, angle)
-    }
-}
-
 // ```定位相关```
 $('#location').click(function (event) {
+    //TODO: ajax
     var position = mock.getPosition();
     var map = ol3Map.map;
     if (map == null) {
@@ -393,8 +496,8 @@ $('#location').click(function (event) {
     if (!this.checked) {
         map.getOverlays().clear()
     } else {
-        var marker = overlayCommon.add(position, 'haha', null, 'head')
-        overlayCommon.rotate(marker, 45)
+        var marker = ol3Style.overlayCommon.add(position, 'haha', null, 'head')
+        ol3Style.overlayCommon.rotate(marker, 45)
     }
 })
 

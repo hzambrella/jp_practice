@@ -9,8 +9,9 @@ var mock = {
         zoom_max = 6.2;
         basicMapSource = 'map/data/C_chain3.json';
         basicMapType = 'geoJSON';
-        scale='3.5:1' //比例尺 图上距离(mm):实际距离(m)
+        scale = '3.5:1' //比例尺 图上距离(mm):实际距离(m)
         return {
+            needDefaultEventListener: true,
             x_min: x_min,
             x_max: x_max,
             y_min: y_min,
@@ -19,10 +20,10 @@ var mock = {
             zoom_max: zoom_max,
             basicMapSource: basicMapSource,
             basicMapType: basicMapType,
-            scale:scale,
+            scale: scale,
         }
     },
-    getPosition:function() {
-        return [200,200]
+    getPosition: function () {
+        return [200, 200]
     }
 }

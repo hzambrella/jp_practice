@@ -1,5 +1,5 @@
 .map {
-    height: 900px;
+    height: 800px;
     width: 90%;
     position: relative;
     border-style: solid;
@@ -46,4 +46,8 @@
     font-size: 14px;
     font-weight: bold;
     /*text-shadow: black 0.1em 0.2em 0.2em;*/
+}
+
+.hide{
+    display: none;
 }
