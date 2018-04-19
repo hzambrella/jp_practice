@@ -20,6 +20,7 @@ var ol3Map = {
         basicMapSource: '',
         basicMapType: '',
         scale: '0:0',
+        canDebug: false,
     },
     //可绘制层相关
     drawable: {
@@ -162,6 +163,13 @@ function createMap(containerId, loadMapOpt) {
     ol3Map.map = map;
     if (loadMapOpt.needDefaultEventListener) {
         defaultEvent();
+    }
+
+    console.log(loadMapOpt)
+    if (loadMapOpt.canDebug){
+        $('#doDebug').css('display','block')
+    }else{
+         $('#doDebug').css('display','none')
     }
 
     //重置可绘制图层
@@ -654,15 +662,19 @@ $('#location').click(function (event) {
     }
 })
 
+//```debug```
 // doDebug()
-//debug
-function doDebug() {
-    var map = ol3Map.map;
-    if (map == null) {
-        return
-    }
+// function doDebug() {
+//     var map = ol3Map.map;
+//     if (map == null) {
+//         return
+//     }
 
-    map.getView().on('change:resolution', function () {
-        console.log(map.getView().getZoom());
-    })
-}
+//     map.getView().on('change:resolution', function () {
+//         console.log(map.getView().getZoom());
+//     })
+// }
+
+$("#doDebug").click(function () {
+    $("#debug").dialog('open')
+})

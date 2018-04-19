@@ -21,6 +21,7 @@ var mock = {
             basicMapSource: basicMapSource,
             basicMapType: basicMapType,
             scale: scale,
+            canDebug:true,
         }
     },
     getPosition: function () {

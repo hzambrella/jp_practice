@@ -21,11 +21,18 @@
     <script src="https://cdn.bootcss.com/popper.js/1.12.5/umd/popper.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
 
+    <!--jqueryui-->
+    <link rel="stylesheet" href="http://apps.bdimg.com/libs/jqueryui/1.10.4/css/jquery-ui.min.css">
+    <script src="http://apps.bdimg.com/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="http://apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+
     <!--mock-->
     <script src="/wsnLoc/static/js/mock/mock.js" type="text/javascript"></script>
 
     <!--css-->
+    <link href="/wsnLoc/static/css/map.css" rel="stylesheet" />
     <link href="/wsnLoc/static/css/app.css" rel="stylesheet" />
+    <link href="/wsnLoc/static/css/font-awesome.min.css" rel="stylesheet" />
   </head>
 
   <body>
@@ -33,10 +40,9 @@
 
     <div id="hzMapTest" class="map center">
       <div id="viewOperate">
-        <button class="center" id="rotateLeft">向左旋转</button>
-        <button class="center" id="rotateRight">向右旋转</button>
-        <input id=ranging type="checkbox" value="doDraw"/>
-        <label for='ranging' value="doDraw" >测距</label>
+        <button id="rotateLeft" title="向左旋转"><i class='fa fa-rotate-left'></i></button>
+        <button id="rotateRight" title="向右旋转"><i class='fa fa-rotate-right'></i></button>
+        <button id="doDebug" title="调试"><i class='fa fa-gear'></i></button>
       </div>
 
       <div id="mousePosition"></div>
@@ -45,13 +51,15 @@
     <div id="label" style="display:none">
     </div>
 
-    <div id="dataTest" class="center">
+    <div id="debug" title="调试工具">
       <form class='draw'>
         <input type="checkbox" id="showExtendOfMap" class="center">extent数据</input>
         <input type="checkbox" id="location" class="center">获取位置</input>
+        <input id=ranging type="checkbox" value="doDraw" />
+        <label for='ranging' value="doDraw">测距</label>
       </form>
       <form class='draw'>
-        <label>绘制 &nbsp;</label>
+        <label>绘制:</label>
         <select id="draw">
         <option value="clear">清空绘制</option>
         <option value="rangeDis">测距</option>
@@ -68,17 +76,25 @@
         <input id=doDelete type="radio" name="drawOperate" value="doDelete" />
         <label for='doDelete' value="doDelete">删除要素</label>
       </form>
+      <div class="center" style="clear:both">
+        打印结果：
+        <p class="center" id="drawResult"></p>
+      </div>
     </div>
 
-    <div class="center" style="clear:both">
-      打印结果：
-      <p class="center" id="drawResult"></p>
-    </div>
+
 
     <script src="/wsnLoc/static/js/map_style.js" type="text/javascript"></script>
     <script src="/wsnLoc/static/js/map_common.js" type="text/javascript"></script>
     <script src="/wsnLoc/static/js/app_vector.js" type="text/javascript"></script>
-    <script type="text/javascript"></script>
+
+    <script type="text/javascript">
+      $(function () {
+        $("#debug").dialog({
+          autoOpen: false
+        });
+      })
+    </script>
 
   </body>
 

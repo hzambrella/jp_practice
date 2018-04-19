@@ -1,53 +1,7 @@
-.map {
-    height: 800px;
-    width: 90%;
-    position: relative;
-    border-style: solid;
-    /*background-color: #cccccc;*/
-}
-
 .center {
     margin: 0 auto;
 }
 
-#viewOperate {
-    bottom: 10px;
-    position: absolute;
-    z-index: 200;
-}
-
-#mousePosition {
-    bottom: 30px;
-    position: absolute;
-    z-index: 200;
-}
-
-.custom-mouse-position {
-    color: black;
-}
-
-#dataTest {
-    margin: 5px auto;
-}
-
-.marker {
-    width: 20px;
-    height: 20px;
-    /*border: 1.5px solid #088;
-    border-radius: 10px;
-    background-color: #0FF;
-    opacity: 0.5;*/
-    /*background-image: '/images/geolocation_marker.png';*/
-}
-
-.address {
-    text-decoration: none;
-    color: grey;
-    font-size: 14px;
-    font-weight: bold;
-    /*text-shadow: black 0.1em 0.2em 0.2em;*/
-}
-
-.hide{
+.hide {
     display: none;
 }
