@@ -30,5 +30,36 @@ var commonTool = {
             newobj[attr] = obj[attr];
         }
         return newobj;
+    },
+    deepClone: function (obj) {
+        if (obj==null){
+            return null;
+        }
+        var newObj = obj.constructor === Array ? [] : {};;
+        $.extend(true, newObj, obj);
+        return newObj;
+
     }
 }
+
+//有问题
+var deepCloneObj = function (obj) {
+    var newobj = obj.constructor === Array ? [] : {};
+
+    if (typeof obj !== 'object') {
+        return obj;
+    }
+    // else if (window.JSON) {
+    //     str = JSON.stringify(obj), //系列化对象
+    //         newobj = JSON.parse(str); //还原
+    // } 
+    else {
+        for (var i in obj) {
+            console.log(obj, obj[i])
+            newobj[i] = typeof obj[i] === 'object' ?
+                deepCloneObj(obj[i]) : obj[i];
+        }
+    }
+    // console.log(newobj)
+    return newobj;
+};

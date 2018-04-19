@@ -35,8 +35,10 @@
       <div id="viewOperate">
         <button class="center" id="rotateLeft">向左旋转</button>
         <button class="center" id="rotateRight">向右旋转</button>
-
+        <input id=ranging type="checkbox" value="doDraw"/>
+        <label for='ranging' value="doDraw" >测距</label>
       </div>
+
       <div id="mousePosition"></div>
     </div>
 
@@ -68,7 +70,7 @@
       </form>
     </div>
 
-    <div class="center"  style="clear:both">
+    <div class="center" style="clear:both">
       打印结果：
       <p class="center" id="drawResult"></p>
     </div>
