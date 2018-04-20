@@ -14,7 +14,10 @@ var ol3Style = {
         //type:overlay的类型:
         //default: blank
         //head:带箭头的
-        add: function (coordinate, name, id, type) {
+        add: function (map, coordinate, name, id, type) {
+            if (map == null) {
+                return;
+            }
             coordinate == null ? coordinate = [0, 0] : coordinate = coordinate;
             name == null ? name = '' : name = name;
             var el = document.createElement('div')

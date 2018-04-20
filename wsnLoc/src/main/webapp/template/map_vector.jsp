@@ -55,8 +55,8 @@
       <form class='draw'>
         <input type="checkbox" id="showExtendOfMap" class="center">extent数据</input>
         <input type="checkbox" id="location" class="center">获取位置</input>
-        <input id=ranging type="checkbox" value="doDraw" />
-        <label for='ranging' value="doDraw">测距</label>
+        <input id=doRange type="checkbox" value="doRange" />
+        <label for='doRange' value="doRange">测距</label>
       </form>
       <form class='draw'>
         <label>绘制:</label>
