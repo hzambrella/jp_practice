@@ -2,6 +2,7 @@ package com.hzpj.indoor.chainType.tool;
 
 import java.util.ArrayList;
 
+import com.hzpj.indoor.chainType.model.Anchor;
 import com.hzpj.indoor.chainType.model.NodeDegree;
 import com.hzpj.indoor.chainType.model.Point;
 
@@ -9,7 +10,7 @@ public class MockAnchorData {
 	private Point[] boundaryIn;
 	private Point[] boundaryOut;
 	private NodeDegree d;
-
+	
 	public MockAnchorData(Point[] boundaryIn, Point[] boundaryOut, NodeDegree d) {
 		super();
 
@@ -53,33 +54,32 @@ public class MockAnchorData {
 		cxIns=MathTool.round(cxIns, 5);
 		cyIns=MathTool.round(cyIns, 5);
 
-
-
-
 		int nodeNumIn = (int) Math.floor(rangeIn / d.getL());
 		// int nodeNumOut = (int) Math.floor(rangeOut / d.getL());
+		//System.out.println(nodeNumIn+" "+rangeIn);
 
 		ArrayList<double[]> result = new ArrayList<double[]>();
 		double[] inNext = { boundaryIn[0].getX(), boundaryIn[0].getY() };
-		result.add(new double[] { boundaryIn[0].getX(), boundaryIn[0].getY() });
+		
+//		result.add(new double[] { boundaryIn[0].getX(), boundaryIn[0].getY() });
 		double[] outFirstProjection = MathTool.getProjectivePoint(
 				boundaryOut[0], boundaryOut[1], boundaryIn[0]).toDouble();
+		
 		double[] outNext = { outFirstProjection[0] + cxIns,
 				outFirstProjection[1] + cyIns };
-
-		System.out.println(nodeNumIn);
-		System.out.println(yInIns);
-
+		result.add(outNext);
+			
 		for (int i = 0; i < nodeNumIn - 1; i++) {
 			inNext = new double[] { inNext[0] + xInIns, inNext[1] + yInIns };
-			result.add(new double[] { inNext[0], inNext[1] });
+//			result.add(new double[] { inNext[0], inNext[1] });
+			result.add(inNext);
 
 			outNext = new double[] { outNext[0] + xOutIns, outNext[1] + yOutIns };
-			result.add(new double[] { outNext[0], outNext[1] });
+//			result.add(new double[] { outNext[0], outNext[1] });
+			result.add(outNext);
 		}
 
-		result.add(new double[] { boundaryIn[1].getX(), boundaryIn[1].getY() });
-
+//		result.add(new double[] { boundaryIn[1].getX(), boundaryIn[1].getY() });
 		return result;
 	}
 }

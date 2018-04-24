@@ -32,13 +32,20 @@ var commonTool = {
         return newobj;
     },
     deepClone: function (obj) {
-        if (obj==null){
+        if (obj == null) {
             return null;
         }
         var newObj = obj.constructor === Array ? [] : {};;
         $.extend(true, newObj, obj);
         return newObj;
 
+    },
+    round: function (data, precise) {
+        precise = Math.round(precise)
+        if (precise <= 0) {
+            return data;
+        }
+        return Math.round(data * Math.pow(10, precise)) / Math.pow(10, precise)
     }
 }
 
