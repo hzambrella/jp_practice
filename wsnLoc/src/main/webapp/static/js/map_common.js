@@ -1,4 +1,14 @@
-//地图管理器
+// 对外
+// ol3Map 地图管理器
+// ol3DefaultAttr 属性的默认值
+// drawVals 绘制层管理器
+// drawToolVals 绘制工具管理器
+// ol3MapEvent 地图事件管理器(若需要覆盖原来事件就用这个。建议还是直接map.on())
+// dataLayerVals 数据层管理器
+// commonPopup 通用的popup
+
+
+//```地图管理器```
 var ol3Map = {
     map: null,
     //底图
@@ -27,6 +37,9 @@ var ol3Map = {
         modify: null,
         select: null,
     },
+    //定位用的
+    geolocation: null,
+
     //坐标转换  
     //建筑坐标construct 工程师图纸的坐标 
     //逻辑坐标logic  用于算法的坐标
@@ -34,24 +47,24 @@ var ol3Map = {
     //建筑坐标和逻辑坐标互转时，原点一致 A/X=scale
     transform: {
         C2L: function (C) {
-            var precise=ol3Map.transform.getPercise()
+            var precise = ol3Map.transform.getPercise()
             var scaleSp = ol3Map.transform.checkScale()
             var picDis = parseFloat(scaleSp[0])
             var actDis = parseFloat(scaleSp[1])
             var L = [0, 0];
-            L[0] = commonTool.round(C[0] * actDis / picDis,precise);
-            L[1] =  commonTool.round(C[1] * actDis / picDis,precise);
+            L[0] = commonTool.round(C[0] * actDis / picDis, precise);
+            L[1] = commonTool.round(C[1] * actDis / picDis, precise);
             return L;
         },
         L2C: function (L) {
-             var precise=ol3Map.transform.getPercise()
+            var precise = ol3Map.transform.getPercise()
             var scaleSp = ol3Map.transform.checkScale()
             var picDis = parseFloat(scaleSp[0])
             var actDis = parseFloat(scaleSp[1])
             var C = [0, 0];
-            C[0] = commonTool.round( L[0] * picDis / actDis,precise);
-            C[1] =  commonTool.round(L[1] * picDis / actDis,precise);
-          
+            C[0] = commonTool.round(L[0] * picDis / actDis, precise);
+            C[1] = commonTool.round(L[1] * picDis / actDis, precise);
+
             return C;
         },
         checkScale: function () {
@@ -65,8 +78,8 @@ var ol3Map = {
             }
             return scaleSp;
         },
-        getPercise:function() {
-            if (ol3Map.baseMapLayer.loadMapOpt  && ol3Map.baseMapLayer.loadMapOpt.precise) {
+        getPercise: function () {
+            if (ol3Map.baseMapLayer.loadMapOpt && ol3Map.baseMapLayer.loadMapOpt.precise) {
                 return 3;
             }
             return ol3Map.baseMapLayer.loadMapOpt.precise;
@@ -100,7 +113,7 @@ var ol3Map = {
 }
 
 
-//属性的默认值
+//```属性的默认值```
 var ol3DefaultAttr = {
     loadMapOpt: {
         precise: 3, //坐标精度，小数点后面几位
@@ -119,7 +132,7 @@ var ol3DefaultAttr = {
     },
 }
 
-//绘制层管理器
+//```绘制层管理器```
 var drawVals = {
     defaultVal: {
         opt: {
@@ -171,7 +184,7 @@ var drawVals = {
         ol3Map.drawMapLayer.keyNow = key;
     },
     superStop: function (key) {
-        console.log(1)
+        $("#printResult").text("");
         drawToolVals.get(ol3Map.drawToolLayer.keyNow).stop();
         $("#drawTool").addClass('hide');
         ol3Map.drawMapLayer.source.clear();
@@ -181,7 +194,7 @@ var drawVals = {
     },
 }
 
-//绘制工具管理器
+//```绘制工具管理器```
 var drawToolVals = {
     defaultVal: {
         opt: {},
@@ -215,13 +228,14 @@ var drawToolVals = {
 
     },
     superStop: function (key) {
+        $("#printResult").text("");
         ol3Map.drawToolLayer.keyNow = 'doDraw'
         ol3Map.drawToolLayer.lastDrawedFeature = null;
         $("#doDraw").prop('checked', true);
     },
 }
 
-//地图事件管理器
+//```地图事件管理器```
 var ol3MapEvent = {
     eventCollection: {},
     get: function (key) {
@@ -263,7 +277,7 @@ var ol3MapEvent = {
 }
 
 
-//数据层管理器
+//```数据层管理器```
 var dataLayerVals = {
     defaultOpt: {
         source: null,
@@ -272,8 +286,8 @@ var dataLayerVals = {
         refreshWhenLoad: false,
     },
     dataLayerCollection: {},
-    //方法
 
+    //方法
     get: function () {
         return dataLayerVals.dataLayerCollection[key];
     },
@@ -346,9 +360,10 @@ var dataLayerVals = {
         }
     },
     refreshData: function (key) {
-        dataLayerVals.dataLayerCollection[key].refreshData();
+        var result = dataLayerVals.dataLayerCollection[key].refreshData();
+        return result;
     },
-    refreshAll: function () {
+    refreshAllWhenLoad: function () {
         for (var daKey in dataLayerVals.dataLayerCollection) {
             if (dataLayerVals.dataLayerCollection[daKey].refreshWhenLoad) {
                 dataLayerVals.dataLayerCollection[daKey].refreshData();
@@ -357,6 +372,103 @@ var dataLayerVals = {
     },
     defaultDataLayerVals: _defaultDataLayerRegist,
 }
+
+//```覆盖物管理```
+//覆盖物图标地址
+var overlayCommonImageUrlMap = {
+    'default': 'static/images/overlay/geolocation_marker.png',
+    // 'head': 'static/images/overlay/geolocation_marker_heading.png',
+    'head': 'static/images/overlay/arrow.png',
+    'man_stop': 'static/images/overlay/man_walk.png',
+    'man_walk': 'static/images/overlay/man_walk.png',
+}
+
+var overlayVals = {
+    defaultOpt: {},
+    overlayMap: {},
+    //new 一个通用的overlay对象并返回。若需要添加到地图就调用map.addOverlay
+    //若需要特殊的覆盖物，还是调用ol的方法
+    newCommon: _overlayCommonNew,
+    //获得覆盖物
+    get: function (key) {
+        return overlayVals.overlayMap[key];
+    },
+    //修改覆盖物
+    set: function (key, overlay) {
+        overlayVals.overlayMap[key] = overlay;
+    },
+    //删除覆盖物
+    remove: function (key) {
+        overlayVals.overlayMap[key] = null;
+    },
+    //旋转覆盖物
+    rotate: _overlayCommonRotate,
+    defaultOverlayVals: _defaultOverlayVals,
+}
+
+//``提示工具``
+$('.ol-zoom-in, .ol-zoom-out').tooltip({
+    placement: 'right'
+});
+
+$('.ol-rotate-reset, .ol-attribution button[title]').tooltip({
+    placement: 'left'
+});
+
+// ```定位相关```
+//模拟debug
+$('#location').click(function (event) {
+    var map = ol3Map.getMap()
+    //TODO: ajax
+    var position = ol3Map.transform.L2C(mock.getPosition());
+    var map = ol3Map.map;
+    if (map == null) {
+        return;
+    }
+    var marker = overlayVals.get('localization')
+    if (!this.checked) {
+        map.removeOverlay(marker)
+    } else {
+        marker.setPosition(position);
+        map.addOverlay(marker)
+        // ol3Style.overlayCommon.rotate(marker, 45)
+    }
+})
+
+//```地图范围```
+$("#doDebug").click(function () {
+    if (ol3Map.baseMapLayer.loadMapOpt.canDebug)
+        $("#debug").dialog('open');
+})
+
+//```popup```
+var commonPopup = {
+    container: document.getElementById('popup'),
+    content: document.getElementById('popup-content'),
+    closer: document.getElementById('popup-closer'),
+    closeCB: function () {},
+    setCloseCB: function (cb) {
+        commonPopup.closeCB = cb;
+    },
+    show: function (position, _HTML) {
+        var popupOverlay = overlayVals.get('commonPopup')
+        popupOverlay.setPosition(position)
+        commonPopup.content.innerHTML = _HTML;
+        var map = ol3Map.getMap();
+        map.addOverlay(popupOverlay);
+    },
+}
+
+commonPopup.closer.onclick = function () {
+    var popupOverlay = overlayVals.get('commonPopup')
+    popupOverlay.setPosition(undefined);
+    commonPopup.closer.blur();
+    var map = ol3Map.getMap();
+    map.removeOverlay(popupOverlay);
+    commonPopup.closeCB();
+    return false;
+};
+
 
 //```地图```
 function _initMap(containerId, isDebug) {
@@ -382,6 +494,7 @@ function _initMap(containerId, isDebug) {
 
     ol3Map.interaction.select = new ol.interaction.Select({
         style: ol3Style.featureStyleMap['selected'],
+        hitTolerance: 5,
     })
 
     ol3Map.interaction.modify = new ol.interaction.Modify({
@@ -399,6 +512,8 @@ function _initMap(containerId, isDebug) {
     }
 
     dataLayerVals.defaultDataLayerVals();
+    overlayVals.defaultOverlayVals();
+
     return map;
 }
 
@@ -446,8 +561,21 @@ function _loadMap(loadMapOpt) {
     })
     map.setView(view)
 
+    //geoLocation
+    //```定位```
+    // Geolocation Control
+    var geolocation = new ol.Geolocation({
+        projection: view.getProjection(),
+    });
+    map.geolocation = geolocation;
+
+    geolocation.on('error', function () {
+        alert('geolocation error');
+        // FIXME we should remove the coordinates in positions
+    });
+
     //数据层
-    dataLayerVals.refreshAll()
+    dataLayerVals.refreshAllWhenLoad()
 
     //debug
     if (loadMapOpt.canDebug) {
@@ -525,7 +653,7 @@ function _defaultDrawRegist() {
             var geo = currentFeature.getGeometry(); //获得要素的几何信息
             var coordinates = geo.getCoordinates(); //获得几何坐标
             var dis = ol3Map.getDistance(coordinates, ol3Map.baseMapLayer.loadMapOpt.scale)
-            $("#drawResult").text(dis);
+            $("#printResult").text(dis);
         },
         start: function () {
             drawVals.superStart('rangeDis');
@@ -554,6 +682,39 @@ function _defaultDrawRegist() {
         },
     }
     drawVals.set('drawAnchor', anchorDrawOpt);
+
+    //绘制移动点
+    var moveDrawOpt = {
+        opt: {
+            source: ol3Map.drawMapLayer.source,
+            type: 'Point',
+            style: ol3Style.featureStyleMap['interaction'],
+        },
+        drawend: function (event) {
+            var currentFeature = event.feature;
+            var featureNum = ol3Map.drawMapLayer.source.getFeatures().length;
+            currentFeature.set('order', featureNum)
+        },
+        start: function () {
+            drawVals.superStart('drawMove');
+        },
+        stop: function () {
+            var source = ol3Map.drawMapLayer.source;
+            
+            var featuresArray = source.getFeatures();
+            var coordinates = new Array(featuresArray.length);
+            for (var key in featuresArray) {
+                var f=featuresArray[key];
+                var coordinate = f.getGeometry().getCoordinates()
+                var order=f.get('order')
+                var lcoordinate = ol3Map.transform.C2L(coordinate)
+                coordinates[order]=lcoordinate;
+            }
+            console.log(JSON.stringify(coordinates));
+            drawVals.superStop('drawMove');
+        },
+    }
+    drawVals.set('drawMove', moveDrawOpt);
 }
 
 // 选择所绘制的对象(功能)
@@ -587,7 +748,7 @@ function _defaultDrawToolRegist() {
         var geo = currentFeature.getGeometry(); //获得要素的几何信息
         var coordinates = geo.getCoordinates(); //获得几何坐标
         var dis = ol3Map.getDistance(coordinates, ol3Map.baseMapLayer.loadMapOpt.scale)
-        $("#drawResult").text(dis);
+        $("#printResult").text(dis);
     }
 
     var doRangeVal = {
@@ -665,10 +826,14 @@ function _defaultDrawToolRegist() {
     drawToolVals.set('doDelete', deleteOpt);
 
     function doDeleteToFeature(e) {
-        if (e.target.getFeatures() && e.target.getFeatures().getLength() > 0) {
-            e.target.getFeatures().forEach(function (el) {
-                ol3Map.drawMapLayer.source.removeFeature(el)
-            })
+        var features = e.target.getFeatures();
+        console.log(features)
+        if (features && features.getLength() > 0) {
+            if (features != undefined) {
+                features.forEach(function (el) {
+                    ol3Map.drawMapLayer.source.removeFeature(el)
+                })
+            }
         }
     }
 }
@@ -709,7 +874,9 @@ $("#doRange").on('change', function () {
 function _defaultClickEvent(event) {
     var map = ol3Map.map;
     if (map == null) return;
-    console.log(ol3Map.transform.C2L(event.coordinate))
+    if (ol3Map.baseMapLayer.loadMapOpt.canDebug) {
+        console.log("login:", ol3Map.transform.C2L(event.coordinate), "constructor", event.coordinate)
+    }
     // 探测feature
     // var feature = map.forEachFeatureAtPixel(event.pixel, function (feature, layer) {
     //     return feature
@@ -816,67 +983,63 @@ $("#showExtendOfMap").click(function (event) {
     }
 })
 
-//``提示工具``
-$('.ol-zoom-in, .ol-zoom-out').tooltip({
-    placement: 'right'
-});
 
-$('.ol-rotate-reset, .ol-attribution button[title]').tooltip({
-    placement: 'left'
-});
+//```覆盖物```
+//添加一个overlay,coordinate,坐标，[x,y],name:覆盖物的名字,id:就是el的id
+//type:overlay的类型:
+//default: blank
+//head:带箭头的
+function _overlayCommonNew(coordinate, name, id, type) {
+    var map = ol3Map.getMap();
+    coordinate == null ? coordinate = [0, 0] : coordinate = coordinate;
+    name == null ? name = '' : name = name;
+    var el = document.createElement('div')
+    el.className = 'marker'
+    if (id != null) el.id = id;
+    type == null ? type = 'default' : type = type;
+    el.title = '标注点：' + name
+    labelEl = document.getElementById('label')
+    labelEl.appendChild(el)
 
-// ```定位相关```
-$('#location').click(function (event) {
-    //TODO: ajax
-    var position = ol3Map.transform.L2C(mock.getPosition());
-    var map = ol3Map.map;
-    if (map == null) {
-        return;
-    }
+    var imgEl = document.createElement('img')
+    imgEl.addClass = "overlay"
+    imgEl.src = overlayCommonImageUrlMap[type]
 
-    if (!this.checked) {
-        map.getOverlays().clear()
-    } else {
-        var marker = ol3Style.overlayCommon.add(map, position, 'haha', null, 'head')
-        ol3Style.overlayCommon.rotate(marker, 45)
-    }
-})
+    el.appendChild(imgEl)
 
-//```地图范围```
-$("#doDebug").click(function () {
-    $("#debug").dialog('open')
-})
+    var nameel = document.createElement('span')
+    nameel.className = 'address'
+    nameel.innerText = name
+    el.appendChild(nameel)
 
-//```popup```
-var commonPopup = {
-    container: document.getElementById('popup'),
-    content: document.getElementById('popup-content'),
-    closer: document.getElementById('popup-closer'),
-    closeCB:function(){},
-    setCloseCB:function(cb){
-        commonPopup.closeCB=cb;
-    },
-    show: function (position, _HTML) {
-        popupOverlay.setPosition(position)
-        commonPopup.content.innerHTML = _HTML;
-        var map = ol3Map.getMap();
-        map.addOverlay(popupOverlay);
-    },
+    var marker = new ol.Overlay({
+        position: coordinate,
+        positioning: 'center-center',
+        element: el,
+        stopEvent: false,
+    })
+    // map.addOverlay(marker)
+    return marker
 }
 
-var popupOverlay = new ol.Overlay({
-    element: commonPopup.container,
-    autoPan: true,
-    autoPanAnimation: {
-        duration: 250
-    }
-})
+//旋转overlay  overlay是ol.Overlay angle是度为单位的角度，如30度就是30
+function _overlayCommonRotate(overlay, angle) {
+    $imgEl = $(overlay.getElement()).find('img')
+    commonTool.rotateImg($imgEl, angle)
+}
 
-commonPopup.closer.onclick = function () {
-    popupOverlay.setPosition(undefined);
-    commonPopup.closer.blur();
+function _defaultOverlayVals() {
     var map = ol3Map.getMap();
-    map.removeOverlay(popupOverlay);
-    commonPopup.closeCB();
-    return false;
-};
+    var center = map.getView().getCenter();
+    var popupOverlay = new ol.Overlay({
+        element: commonPopup.container,
+        autoPan: true,
+        autoPanAnimation: {
+            duration: 250
+        }
+    })
+
+    var localization = overlayVals.newCommon(center, 'haha', null, 'head')
+    overlayVals.set('commonPopup', popupOverlay)
+    overlayVals.set('localization', localization)
+}

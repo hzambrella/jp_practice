@@ -89,6 +89,7 @@ public class TestCreateAnchorNode {
 		result.addAll(resultB);
 
 		// 特殊
+		//左下、左上的小段
 		double[][] resultLB = new double[][] { { v[0], c[0] },
 				{ v[0] - d.getL(), c[0] },
 				// { v[0] - 2 * d.getL(), c[0] },
@@ -115,7 +116,8 @@ public class TestCreateAnchorNode {
 		for (double[] dd : resultLT) {
 			result.add(dd);
 		}
-
+		
+		//右上右下补一个
 		// System.out.println(JSON.toJSON(rt));
 		result.add(rt);
 		result.add(rb);

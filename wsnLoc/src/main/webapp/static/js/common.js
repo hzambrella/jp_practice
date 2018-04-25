@@ -46,6 +46,29 @@ var commonTool = {
             return data;
         }
         return Math.round(data * Math.pow(10, precise)) / Math.pow(10, precise)
+    },
+    // convert radians to degrees
+    radToDeg: function (rad) {
+        return rad * 360 / (Math.PI * 2);
+    },
+    // convert degrees to radians
+    degToRad: function (deg) {
+        return deg * Math.PI * 2 / 360;
+    },
+    // modulo for negative values
+    mod: function (n) {
+        return ((n % (2 * Math.PI)) + (2 * Math.PI)) % (2 * Math.PI);
+    },
+    //13位时间戳转时间字符串
+    timestampToTime: function (timestamp) {
+        var date = new Date(timestamp); //时间戳为10位需*1000，时间戳为13位的话不需乘1000
+        Y = date.getFullYear() + '-';
+        M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+        D = date.getDate() + ' ';
+        h = date.getHours() + ':';
+        m = date.getMinutes() + ':';
+        s = date.getSeconds();
+        return Y + M + D + h + m + s;
     }
 }
 

@@ -17,10 +17,13 @@ $(function () {
         app();
     }
 
+
+
     function app() {
         //所有锚节点
         dataLayerVals.add('anchor', ol3Style.featureStyleMap['anchor'], anchor.refreshData)
-        dataLayerVals.refreshData('anchor')
+        var anchorLenght = dataLayerVals.refreshData('anchor')
+
         $('#showAnchor').click(function (event) {
             var map = ol3Map.getMap();
             var layer = dataLayerVals.getLayer('anchor');
@@ -33,12 +36,150 @@ $(function () {
             if (!this.checked) {
                 map.removeLayer(layer)
                 map.un('click', anchor.clickEvent)
+                $("#printResult").text("");
             } else {
                 map.addLayer(layer)
                 map.on('click', anchor.clickEvent)
+                $("#printResult").text(anchorLenght);
             }
         })
-    }
+
+        var geolocation = map.geolocation;
+        var view = map.getView();
+        var marker = overlayVals.get('localization');
+        //存储轨迹的地理信息
+        var positions = new ol.geom.LineString([],
+            /** @type {ol.geom.GeometryLayout} */
+            ('XYZM'));
+        //xyzm  z是角度， m是时间
+        var previousM = 0;
+        //采样时间
+        var deltaMean = 500; // the geolocation sampling period mean in ms
+        map.addOverlay(marker)
+
+        $("#simulateLocate").on('click', function () {
+            //TODO:ajax
+
+            var coordinates = commonTool.deepClone(mock.getMove().data);
+            var first = coordinates.shift();
+            simulatePositionChange(first);
+            var prevDate = first.timestamp;
+
+            function geolocate() {
+                var position = coordinates.shift();
+                if (!position) {
+
+                    // map.un('postcompose', postcompose);
+                    return;
+                }
+                var newDate = position.timestamp;
+                simulatePositionChange(position);
+                window.setTimeout(function () {
+                    prevDate = newDate;
+                    geolocate();
+                }, (newDate - prevDate) / 0.5);
+            }
+
+            geolocate();
+            // map.on('postcompose', postcompose);
+            // map.render();
+
+            // function postcompose(){
+            //     updateView()
+            // }
+
+        })
+
+        function simulatePositionChange(position) {
+            var coords = position.coords;
+            geolocation.set('accuracy', coords.accuracy);
+            geolocation.set('heading', commonTool.degToRad(coords.heading));
+            var c = ol3Map.transform.L2C([coords.x, coords.y]);
+            geolocation.set('position', c);
+            geolocation.set('speed', coords.speed);
+            geolocation.changed();
+        }
+
+        // Listen to position changes
+        geolocation.on('change', function () {
+            var position = geolocation.getPosition();
+            var accuracy = geolocation.getAccuracy();
+            var heading = geolocation.getHeading() || 0;
+            var speed = geolocation.getSpeed() || 0;
+            var m = Date.now();
+
+            addPosition(position, heading, m, speed);
+
+            var coords = positions.getCoordinates();
+            var len = coords.length;
+            if (len >= 2) {
+                deltaMean = (coords[len - 1][3] - coords[0][3]) / (len - 1);
+            }
+        });
+
+        function addPosition(position, heading, m, speed) {
+            var x = position[0];
+            var y = position[1];
+      
+            var fCoords = positions.getCoordinates();
+            var previous = fCoords[fCoords.length - 1];
+            var prevHeading = previous && previous[2];
+            if (prevHeading) {
+                var headingDiff = heading - commonTool.mod(prevHeading);
+
+                // force the rotation change to be less than 180°让旋转角度小于180    
+                if (Math.abs(headingDiff) > Math.PI) {
+                    var sign = (headingDiff >= 0) ? 1 : -1;
+                    headingDiff = -sign * (2 * Math.PI - Math.abs(headingDiff));
+                }
+                heading = prevHeading + headingDiff;
+            }
+            positions.appendCoordinate([x, y, heading, m]);
+
+            // only keep the 20 last coordinates 只存20个
+            positions.setCoordinates(positions.getCoordinates().slice(-20));
+
+            // FIXME use speed instead
+            // if (heading && speed) {
+            //     markerEl.src = 'data/geolocation_marker_heading.png';
+            // } else {
+            //     markerEl.src = 'data/geolocation_marker.png';
+            // }
+            // use sampling period to get a smooth transition
+
+            updateView()
+
+            function updateView() {
+                var m = Date.now() - deltaMean * 1.5;
+                m = Math.max(m, previousM);
+                previousM = m;
+                // interpolate position along positions LineString
+                var c = positions.getCoordinateAtM(m, true);
+                // console.log("uopdateView:", c);
+                if (c) {
+                    view.setCenter(getCenterWithHeading(c, -c[2], view.getResolution()));
+                    view.setRotation(-c[2]);
+                    marker.setPosition([c[0], c[1]]);
+                }
+
+                function getCenterWithHeading(position, rotation, resolution) {
+                    var size = map.getSize();
+                    var height = size[1];
+
+                    return [
+                        position[0] - Math.sin(rotation) * height * resolution * 1 / 4,
+                        position[1] + Math.cos(rotation) * height * resolution * 1 / 4
+                    ];
+                }
+            }
+
+        } //addPosition
+
+
+
+    } //app()
+
+
 })
 
 var anchor = {
@@ -77,9 +218,11 @@ function _anchorDataRefresh() {
             nodeFeatures.push(nodeFeature)
         }
     }
+
     var source = dataLayerVals.getSource('anchor')
     source.clear();
     source.addFeatures(nodeFeatures);
+    return anchors.length;
 }
 
 function _anchorMapClickEvent(event) {

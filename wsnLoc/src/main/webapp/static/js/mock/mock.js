@@ -29,10 +29,64 @@ var mock = {
     },
     getAllAnchor: function () {
         return mockAnchorData;
+    },
+    getMove: function () {
+        var timestamp = (new Date()).valueOf();
+        var array = mockOrgData;
+        var md = {
+            data: [],
+        };
+
+        var defaultCoor = {
+            "coords": {
+                "speed": 1.7330950498580933,
+                "accuracy": 5,
+                "altitudeAccuracy": 8,
+                "altitude": 238,
+                "x": 5.868668798362713,
+                "heading": 0,
+                "y": 45.64444874417562
+            },
+            "timestamp": 1394788264972
+        }
+        var lastHeading = 0;
+        for (var key in array) {
+            var heading = lastHeading;
+            key=parseInt(key)
+            if (key != array.length - 1) {
+                if (array[key + 1][0] == array[key][0]) {
+                    if (array[key + 1][1] >= array[key][1]) {
+                        heading = 90
+                    } else {
+                        heading = -90
+                    }
+                } else {
+                    // k是斜率的倒数，这样地图旋转的角度才正确。
+                    var k = (array[key + 1][0] - array[key][0])/(array[key + 1][1] - array[key][1]) 
+                    // console.log(array[key + 1][1] - array[key][1],array[key + 1][0] - array[key][0],k)
+                    heading = Math.atan(k) * 180 / Math.PI
+                }
+            }
+            
+            console.log(heading);
+            var nowObj = {
+                "coords": {
+                    "x": array[key][0],
+                    "y": array[key][1],
+                    "heading": heading,
+                },
+                "timestamp": timestamp,
+            }
+            var newObj = {};
+            $.extend(true, newObj, defaultCoor, nowObj);
+            md.data.push(newObj);
+            timestamp = timestamp + 500
+            lastHeading = heading;
+        }
+        return md;
     }
 }
 
 var mockData = {
-  
 
 }

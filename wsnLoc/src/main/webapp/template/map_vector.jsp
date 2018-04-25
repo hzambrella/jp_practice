@@ -38,7 +38,8 @@
     <script src="/wsnLoc/static/vendor/clipboard/clipboard.min.js" type="text/javascript"></script>
     <!--mock-->
     <script src="/wsnLoc/static/js/mock/mock.js" type="text/javascript"></script>
-     <script src="/wsnLoc/static/js/mock/anchorData.js" type="text/javascript"></script>
+    <script src="/wsnLoc/static/js/mock/anchorData.js" type="text/javascript"></script>
+        <script src="/wsnLoc/static/js/mock/moveData.js" type="text/javascript"></script>
 
     <!--css-->
     <link href="/wsnLoc/static/css/map.css" rel="stylesheet" />
@@ -81,6 +82,7 @@
         <option value="clear">清空绘制</option>
         <option value="rangeDis">测距</option>
         <option value="drawAnchor">绘制锚节点</option>
+         <option value="drawMove">绘制移动点</option>
       </select>
       </form>
       <form id="drawTool" class='draw hide' style='margin-left:5px'>
@@ -95,11 +97,11 @@
       </form>
       <div class="center" style="clear:both">
         打印结果：
-        <p class="center" id="drawResult"></p>
+        <p class="center" id="printResult"></p>
       </div>
     </div>
-  <button class="btnClip" id='testClip' data-clipboard-text="3" style='display:none'>Copy</button>
-
+    <button class="btnClip" id='testClip' data-clipboard-text="3" style='display:none'>Copy</button>
+    <button id="simulateLocate">simulate</button>
     <script src="/wsnLoc/static/js/map_style.js" type="text/javascript"></script>
     <script src="/wsnLoc/static/js/map_common.js" type="text/javascript"></script>
     <script src="/wsnLoc/static/js/app_vector.js" type="text/javascript"></script>
@@ -112,8 +114,7 @@
       })
 
       var clipboard = new ClipboardJS('.btnClip');
-      clipboard.on('success', function (e) {
-      });
+      clipboard.on('success', function (e) {});
 
       clipboard.on('error', function (e) {
         alert('复制异常')
