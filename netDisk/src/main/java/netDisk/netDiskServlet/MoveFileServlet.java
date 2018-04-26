@@ -104,9 +104,11 @@ public class MoveFileServlet extends HttpServlet {
 				continue;
 			}
 			
-			if ((newPath + File.separator + fileName).indexOf(orgPath+File.separator+fileName) >= 0) {
-				//System.out.println(newPath + File.separator + fileName);
-				System.out.println(orgPath+File.separator+fileName);
+//			if ((newPath + File.separator + fileName).indexOf(orgPath+File.separator+fileName) >= 0) {
+			if(FileOperate.isSelfOrChildDir(orgPath, newPath, fileName)){
+			//System.out.println(newPath + File.separator + fileName);
+//				System.out.println("log[warn]"+orgPath+File.separator+fileName);
+//				System.out.println("log[warn]"+newPath+File.separator+fileName);
 				failIds.put(String.valueOf(i), "不能将文件移动到自身或其子目录下");
 				continue;
 			}

@@ -356,7 +356,11 @@ public class FileOperate {
 	}
 	
 	
-	//判断是否是图片
+	/**判断是否是图片
+	 * 
+	 * @param file
+	 * @return
+	 */
     public static boolean isImage(File file) {
         if (file == null||!file.exists()) {
             return false;
@@ -368,5 +372,41 @@ public class FileOperate {
         } catch (Exception e) {
             return false;
         }
+    }
+    
+    /**判断是否是自身或者子目录。用于移动和复制文件的判断。
+     * 
+     * @param srcPath 待移动文件的初始目录
+     * @param desPath 待移动文件的目标目录
+     * @param fileName 待移动文件的文件名
+     * @return boolean true为是。
+     */
+    public static boolean isSelfOrChildDir(String srcPath,String desPath,String fileName){
+    	srcPath=srcPath+File.separator+fileName;
+    	desPath=desPath+File.separator+fileName;
+    	
+    	boolean is=true;
+		String splitNote = "/";
+		// 斜杠是转义字符。
+		if (File.separator.equals("\\")) {
+			splitNote = "\\\\";
+		}
+    	String[]s=srcPath.split(splitNote);
+    	String[]d=desPath.split(splitNote);
+    	
+    	//初始目录深度大于目标目录，一定不是往子目录或自身目录移动
+    	if (s.length>d.length){
+    		return false;
+    	}
+    	
+    	//某个深度目录名不一样就是
+    	for (int i=0;i<s.length;i++){
+    		if (!s[i].equals(d[i])){
+    			is=false;
+    			break;
+    		}
+    	}
+    	
+		return is;
     }
 }

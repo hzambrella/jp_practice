@@ -30,6 +30,12 @@ var mock = {
     getAllAnchor: function () {
         return mockAnchorData;
     },
+
+    //mock heading 。当前的点到下一个点的矢量。
+    //地图旋转角度：矢量与地图y正半轴的夹角。角度符号和x符号一致。
+    //ol3 旋转角度设置传入的是弧度。
+    //相当于 y轴x轴互换
+    //计算角度 arccos的到角度。然后根据x的正负判断角度的正负。角度绝对值不超过180
     getMove: function () {
         var timestamp = (new Date()).valueOf();
         var array = mockOrgData;
@@ -52,23 +58,34 @@ var mock = {
         var lastHeading = 0;
         for (var key in array) {
             var heading = lastHeading;
-            key=parseInt(key)
+
+            // if (key != array.length - 1) {
+            //     if (array[key + 1][0] == array[key][0]) {
+            //         if (array[key + 1][1] >= array[key][1]) {
+            //             heading = 90
+            //         } else {
+            //             heading = -90
+            //         }
+            //     } else {
+            //         // k是斜率的倒数，这样地图旋转的角度才正确。
+            //         var k = (array[key + 1][0] - array[key][0])/(array[key + 1][1] - array[key][1]) 
+            //         // console.log(array[key + 1][1] - array[key][1],array[key + 1][0] - array[key][0],k)
+            //         heading = Math.atan(k) * 180 / Math.PI
+            //     }
+            // }
             if (key != array.length - 1) {
-                if (array[key + 1][0] == array[key][0]) {
-                    if (array[key + 1][1] >= array[key][1]) {
-                        heading = 90
-                    } else {
-                        heading = -90
-                    }
-                } else {
-                    // k是斜率的倒数，这样地图旋转的角度才正确。
-                    var k = (array[key + 1][0] - array[key][0])/(array[key + 1][1] - array[key][1]) 
-                    // console.log(array[key + 1][1] - array[key][1],array[key + 1][0] - array[key][0],k)
-                    heading = Math.atan(k) * 180 / Math.PI
+                key = parseInt(key)
+                var distance = commonTool.math.distance([array[key + 1], array[key]]);
+                if (distance != 0) {
+                    var cos = (array[key + 1][1] - array[key][1]) / distance;
+                    var radians = Math.acos(cos);
+                    var heading = commonTool.math.radToDeg(radians);
+                }
+
+                if (array[key + 1][0] - array[key][0] < 0) {
+                    heading = -heading;
                 }
             }
-            
-            console.log(heading);
             var nowObj = {
                 "coords": {
                     "x": array[key][0],
@@ -84,7 +101,7 @@ var mock = {
             lastHeading = heading;
         }
         return md;
-    }
+    } //getMove
 }
 
 var mockData = {

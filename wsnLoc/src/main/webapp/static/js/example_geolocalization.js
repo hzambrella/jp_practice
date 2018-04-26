@@ -133,7 +133,7 @@ function getCenterWithHeading(position, rotation, resolution) {
   ];
 }
 
-var previousM = 0;
+
 
 function updateView() {
   // use sampling period to get a smooth transition

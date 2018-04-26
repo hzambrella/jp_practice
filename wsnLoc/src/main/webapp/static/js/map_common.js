@@ -52,8 +52,8 @@ var ol3Map = {
             var picDis = parseFloat(scaleSp[0])
             var actDis = parseFloat(scaleSp[1])
             var L = [0, 0];
-            L[0] = commonTool.round(C[0] * actDis / picDis, precise);
-            L[1] = commonTool.round(C[1] * actDis / picDis, precise);
+            L[0] = commonTool.math.round(C[0] * actDis / picDis, precise);
+            L[1] = commonTool.math.round(C[1] * actDis / picDis, precise);
             return L;
         },
         L2C: function (L) {
@@ -62,8 +62,8 @@ var ol3Map = {
             var picDis = parseFloat(scaleSp[0])
             var actDis = parseFloat(scaleSp[1])
             var C = [0, 0];
-            C[0] = commonTool.round(L[0] * picDis / actDis, precise);
-            C[1] = commonTool.round(L[1] * picDis / actDis, precise);
+            C[0] = commonTool.math.round(L[0] * picDis / actDis, precise);
+            C[1] = commonTool.math.round(L[1] * picDis / actDis, precise);
 
             return C;
         },
@@ -90,7 +90,7 @@ var ol3Map = {
     init: _initMap,
     //重置attr
     resetAttr: function () {
-        ol3Map.attr = commonTool.deepClone(ol3DefaultAttr);
+        ol3Map.attr = commonTool.util.deepClone(ol3DefaultAttr);
     },
     //获得map 若map不存在，调用init并返回
     getMap: function () {
@@ -105,7 +105,7 @@ var ol3Map = {
 
     //旋转地图  isToLeft是否向左  radians在原有旋转角度下继续旋转的弧度，正数。
     rotate: _rotateMap,
-    // //测量距离，并按照比例尺转化为真实距离 [[x0,y0],[x1,y1]]和比例尺
+    // //测量距离，并按照比例尺转化为真实距离 [[x0,y0],[x1,y1]](建筑坐标！！！)和比例尺
     getDistance: _getDistance,
 
     // //改变draw
@@ -377,8 +377,8 @@ var dataLayerVals = {
 //覆盖物图标地址
 var overlayCommonImageUrlMap = {
     'default': 'static/images/overlay/geolocation_marker.png',
-    // 'head': 'static/images/overlay/geolocation_marker_heading.png',
-    'head': 'static/images/overlay/arrow.png',
+    'head': 'static/images/overlay/geolocation_marker_heading.png',
+    'move_head': 'static/images/overlay/arrow.png',
     'man_stop': 'static/images/overlay/man_walk.png',
     'man_walk': 'static/images/overlay/man_walk.png',
 }
@@ -415,25 +415,7 @@ $('.ol-rotate-reset, .ol-attribution button[title]').tooltip({
     placement: 'left'
 });
 
-// ```定位相关```
-//模拟debug
-$('#location').click(function (event) {
-    var map = ol3Map.getMap()
-    //TODO: ajax
-    var position = ol3Map.transform.L2C(mock.getPosition());
-    var map = ol3Map.map;
-    if (map == null) {
-        return;
-    }
-    var marker = overlayVals.get('localization')
-    if (!this.checked) {
-        map.removeOverlay(marker)
-    } else {
-        marker.setPosition(position);
-        map.addOverlay(marker)
-        // ol3Style.overlayCommon.rotate(marker, 45)
-    }
-})
+
 
 //```地图范围```
 $("#doDebug").click(function () {
@@ -469,6 +451,194 @@ commonPopup.closer.onclick = function () {
     return false;
 };
 
+// ```定位相关```
+//模拟debug
+$('#location').click(function (event) {
+    var map = ol3Map.getMap()
+    //TODO: ajax
+    var position = ol3Map.transform.L2C(mock.getPosition());
+    var map = ol3Map.map;
+    if (map == null) {
+        return;
+    }
+    var marker = overlayVals.get('localization')
+    if (!this.checked) {
+        map.removeOverlay(marker)
+    } else {
+        marker.setPosition(position);
+        map.addOverlay(marker)
+        // ol3Style.overlayCommon.rotate(marker, 45)
+    }
+})
+
+//```定位之模拟移动方式```
+var ol3MapSimulateMove = {
+    // 存储轨迹的地理信息xyzm  z是角度， m是时间
+    positions: null,
+    previousM: 0,
+    //采样时间
+    deltaMean: 500,
+    //移动模拟数据，通过ajax获得
+    coordinates: null,
+    //timeOut,用于周期性移动覆盖物
+    runningTimer: null,
+    //停止上面的属性
+    reset: function () {
+        ol3MapSimulateMove.positions = new ol.geom.LineString([],
+            /** @type {ol.geom.GeometryLayout} */
+            ('XYZM'));
+        ol3MapSimulateMove.previousM = 0;
+        ol3MapSimulateMove.deltaMean = 500;
+        ol3MapSimulateMove.coordinates = null;
+        ol3MapSimulateMove.runningTimer = null;
+    }
+}
+
+
+$("#simulateLocate").on('click', function () {
+    var map = ol3Map.getMap();
+    var geolocation = ol3Map.geolocation;
+    var view = map.getView();
+    var moveMarker = overlayVals.get('move');
+    //TODO:ajax
+    if ($('#simulateLocate').hasClass('running')) {
+        $('#simulateLocate').removeClass('running')
+        stop()
+    } else {
+        $('#simulateLocate').addClass('running')
+        start()
+    }
+
+    function start() {
+        $("#simulateLocate").text('stop')
+        ol3MapSimulateMove.reset();
+        console.log(ol3MapSimulateMove.coordinates)
+        ol3MapSimulateMove.coordinates = commonTool.util.deepClone(mock.getMove().data);
+        var first = ol3MapSimulateMove.coordinates.shift();
+        simulatePositionChange(first);
+        var prevDate = first.timestamp;
+
+        function geolocate() {
+            var position = ol3MapSimulateMove.coordinates.shift();
+            if (!position) {
+                // stop()
+                // map.un('postcompose', postcompose);
+                return;
+            }
+            var newDate = position.timestamp;
+            simulatePositionChange(position);
+            ol3MapSimulateMove.runningTimer = setTimeout(function () {
+                prevDate = newDate;
+                geolocate();
+            }, (newDate - prevDate)*0.1);
+        }
+
+        geolocate();
+        // map.on('postcompose', postcompose);
+        // map.render();
+
+        // function postcompose(){
+        //     updateView()
+        // }
+    }
+
+    function stop() {
+        $("#simulateLocate").text('simulate')
+        clearTimeout(ol3MapSimulateMove.runningTimer)
+        map.removeOverlay(moveMarker)
+    }
+
+    function simulatePositionChange(position) {
+        var coords = position.coords;
+        geolocation.set('accuracy', coords.accuracy);
+        geolocation.set('heading', commonTool.math.degToRad(coords.heading));
+        var c = ol3Map.transform.L2C([coords.x, coords.y]);
+        geolocation.set('position', c);
+        geolocation.set('speed', coords.speed);
+        geolocation.changed();
+    }
+})
+
+//模拟移动的 geolocation change事件
+function geolocationSimulateChange() {
+    var geolocation = ol3Map.geolocation;
+
+    var position = geolocation.getPosition();
+    var accuracy = geolocation.getAccuracy();
+    var heading = geolocation.getHeading() || 0;
+    var speed = geolocation.getSpeed() || 0;
+    var m = Date.now();
+    addPosition(position, heading, m, speed);
+
+    var coords = ol3MapSimulateMove.positions.getCoordinates();
+    var len = coords.length;
+    if (len >= 2) {
+        ol3MapSimulateMove.deltaMean = (coords[len - 1][3] - coords[0][3]) / (len - 1);
+    }
+
+
+    function addPosition(position, heading, m, speed) {
+        var x = position[0];
+        var y = position[1];
+
+        var fCoords = ol3MapSimulateMove.positions.getCoordinates();
+        var previous = fCoords[fCoords.length - 1];
+        var prevHeading = previous && previous[2];
+        if (prevHeading) {
+            var headingDiff = heading - commonTool.math.mod(prevHeading);
+
+            // force the rotation change to be less than 180°让旋转角度小于180    
+            if (Math.abs(headingDiff) > Math.PI) {
+                var sign = (headingDiff >= 0) ? 1 : -1;
+                headingDiff = -sign * (2 * Math.PI - Math.abs(headingDiff));
+            }
+            heading = prevHeading + headingDiff;
+        }
+        ol3MapSimulateMove.positions.appendCoordinate([x, y, heading, m]);
+
+        // only keep the 20 last coordinates 只存20个
+        ol3MapSimulateMove.positions.setCoordinates(ol3MapSimulateMove.positions.getCoordinates().slice(-20));
+
+        // FIXME use speed instead
+        // if (heading && speed) {
+        //     markerEl.src = 'data/geolocation_marker_heading.png';
+        // } else {
+        //     markerEl.src = 'data/geolocation_marker.png';
+        // }
+        // use sampling period to get a smooth transition
+
+        updateView()
+
+        function updateView() {
+            var m = Date.now() - ol3MapSimulateMove.deltaMean * 1.5;
+            m = Math.max(m, ol3MapSimulateMove.previousM);
+            ol3MapSimulateMove.previousM = m;
+            // interpolate position along positions LineString
+            var c = ol3MapSimulateMove.positions.getCoordinateAtM(m, true);
+            // console.log("uopdateView:", c);
+            if (c) {
+                var view = ol3Map.getMap().getView()
+                view.setCenter(getCenterWithHeading(c, -c[2], view.getResolution()));
+                view.setRotation(-c[2]);
+                var moveMarker = overlayVals.get('move');
+                moveMarker.setPosition([c[0], c[1]]);
+                if (!map.getOverlayById(moveMarker.getId())) {
+                    map.addOverlay(moveMarker)
+                } else {}
+            }
+
+            function getCenterWithHeading(position, rotation, resolution) {
+                var size = map.getSize();
+                var height = size[1];
+
+                return [
+                    position[0] - Math.sin(rotation) * height * resolution * 1 / 4,
+                    position[1] + Math.cos(rotation) * height * resolution * 1 / 4
+                ];
+            }
+        }
+    } //addPosition
+}
 
 //```地图```
 function _initMap(containerId, isDebug) {
@@ -513,6 +683,19 @@ function _initMap(containerId, isDebug) {
 
     dataLayerVals.defaultDataLayerVals();
     overlayVals.defaultOverlayVals();
+
+    //geoLocation
+    //```定位```
+    // Geolocation Control
+    var geolocation = new ol.Geolocation();
+    ol3Map.geolocation = geolocation;
+    // Listen to position changes
+    geolocation.on('change', geolocationSimulateChange)
+
+    geolocation.on('error', function () {
+        alert('geolocation error');
+        // FIXME we should remove the coordinates in positions
+    });
 
     return map;
 }
@@ -561,18 +744,8 @@ function _loadMap(loadMapOpt) {
     })
     map.setView(view)
 
-    //geoLocation
-    //```定位```
-    // Geolocation Control
-    var geolocation = new ol.Geolocation({
-        projection: view.getProjection(),
-    });
-    map.geolocation = geolocation;
-
-    geolocation.on('error', function () {
-        alert('geolocation error');
-        // FIXME we should remove the coordinates in positions
-    });
+    var geolocation = ol3Map.geolocation;
+    geolocation.setProjection(projectionBaseMap);
 
     //数据层
     dataLayerVals.refreshAllWhenLoad()
@@ -609,7 +782,7 @@ document.getElementById("rotateRight").onclick = function () {
     ol3Map.rotate(false)
 }
 
-//计算距离 coordinates[[x0,y0],[x1,y1]]  scale 是字符串类型：“mm:m”
+//计算距离 coordinates[[x0,y0],[x1,y1]] 是建筑坐标！！！ scale 是字符串类型：“mm:m”
 //返回-1说明计算失败。可能是比例尺有问题,坐标数组长度有问题等
 //返回m为单位的距离
 function _getDistance(coordinates, scale) {
@@ -624,7 +797,7 @@ function _getDistance(coordinates, scale) {
 
     var picDis = parseFloat(scaleSp[0])
     var actDis = parseFloat(scaleSp[1])
-    var disCacu = Math.sqrt(Math.pow(coordinates[0][0] - coordinates[1][0], 2) + Math.pow(coordinates[0][1] - coordinates[1][1], 2))
+    var disCacu = commonTool.math.distance(coordinates)
     if (picDis == 0) return -1;
     return disCacu * actDis / picDis;
 }
@@ -700,15 +873,15 @@ function _defaultDrawRegist() {
         },
         stop: function () {
             var source = ol3Map.drawMapLayer.source;
-            
+
             var featuresArray = source.getFeatures();
             var coordinates = new Array(featuresArray.length);
             for (var key in featuresArray) {
-                var f=featuresArray[key];
+                var f = featuresArray[key];
                 var coordinate = f.getGeometry().getCoordinates()
-                var order=f.get('order')
+                var order = f.get('order')
                 var lcoordinate = ol3Map.transform.C2L(coordinate)
-                coordinates[order]=lcoordinate;
+                coordinates[order] = lcoordinate;
             }
             console.log(JSON.stringify(coordinates));
             drawVals.superStop('drawMove');
@@ -827,7 +1000,6 @@ function _defaultDrawToolRegist() {
 
     function doDeleteToFeature(e) {
         var features = e.target.getFeatures();
-        console.log(features)
         if (features && features.getLength() > 0) {
             if (features != undefined) {
                 features.forEach(function (el) {
@@ -985,17 +1157,17 @@ $("#showExtendOfMap").click(function (event) {
 
 
 //```覆盖物```
-//添加一个overlay,coordinate,坐标，[x,y],name:覆盖物的名字,id:就是el的id
+//添加一个overlay,coordinate,坐标，[x,y],name:覆盖物的名字,overlayId 覆盖物的id,lId:就是el的id
 //type:overlay的类型:
 //default: blank
 //head:带箭头的
-function _overlayCommonNew(coordinate, name, id, type) {
+function _overlayCommonNew(coordinate, name, overlayId, elId, type) {
     var map = ol3Map.getMap();
     coordinate == null ? coordinate = [0, 0] : coordinate = coordinate;
     name == null ? name = '' : name = name;
     var el = document.createElement('div')
     el.className = 'marker'
-    if (id != null) el.id = id;
+    if (elId != null) el.id = elId;
     type == null ? type = 'default' : type = type;
     el.title = '标注点：' + name
     labelEl = document.getElementById('label')
@@ -1013,6 +1185,7 @@ function _overlayCommonNew(coordinate, name, id, type) {
     el.appendChild(nameel)
 
     var marker = new ol.Overlay({
+        id: overlayId,
         position: coordinate,
         positioning: 'center-center',
         element: el,
@@ -1025,13 +1198,14 @@ function _overlayCommonNew(coordinate, name, id, type) {
 //旋转overlay  overlay是ol.Overlay angle是度为单位的角度，如30度就是30
 function _overlayCommonRotate(overlay, angle) {
     $imgEl = $(overlay.getElement()).find('img')
-    commonTool.rotateImg($imgEl, angle)
+    commonTool.image.rotateImg($imgEl, angle)
 }
 
 function _defaultOverlayVals() {
     var map = ol3Map.getMap();
     var center = map.getView().getCenter();
     var popupOverlay = new ol.Overlay({
+        id: commonPopup,
         element: commonPopup.container,
         autoPan: true,
         autoPanAnimation: {
@@ -1039,7 +1213,9 @@ function _defaultOverlayVals() {
         }
     })
 
-    var localization = overlayVals.newCommon(center, 'haha', null, 'head')
+    var localization = overlayVals.newCommon(center, 'haha', 'localization', null, 'head')
+    var move = overlayVals.newCommon(center, 'haha', 'move', null, 'move_head')
     overlayVals.set('commonPopup', popupOverlay)
     overlayVals.set('localization', localization)
+    overlayVals.set('move', move)
 }

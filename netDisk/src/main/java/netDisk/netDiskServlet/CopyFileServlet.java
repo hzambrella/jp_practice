@@ -106,7 +106,8 @@ public class CopyFileServlet extends HttpServlet {
 				continue;
 			}
 
-			if ((des+File.separator+fileName).indexOf(src+File.separator+fileName) >= 0) {
+//			if ((des+File.separator+fileName).indexOf(src+File.separator+fileName) >= 0) {
+			if(FileOperate.isSelfOrChildDir(src, des, fileName)){
 				failIds.put(String.valueOf(i),"不能将文件复制到自身或其子目录下");
 				continue;
 			}

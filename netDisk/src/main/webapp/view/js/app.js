@@ -1579,7 +1579,7 @@ $(function () {
         })
     }
 
-    $("#logo").click(function () {
+    $("#logo,#productInfo").click(function () {
         var content = "hz非常非常非常low的网盘<br/> 用文件夹存储用户的内容。正常的网盘不应该这样。会带来有很多问题的。" +
             "<br/>by hzambrella qq:504489929有bug call me"
         $modal.boxAlert({
