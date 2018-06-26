@@ -5,7 +5,7 @@
 	id="WebApp_ID" version="2.5">
 	<display-name>wsnLoc</display-name>
 	<welcome-file-list>
-		<welcome-file>template/map_vector.jsp</welcome-file>
+		<welcome-file>template/load.jsp</welcome-file>
 	</welcome-file-list>
 
 	<servlet-mapping>

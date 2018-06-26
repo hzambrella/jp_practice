@@ -376,11 +376,11 @@ var dataLayerVals = {
 //```覆盖物管理```
 //覆盖物图标地址
 var overlayCommonImageUrlMap = {
-    'default': 'static/images/overlay/geolocation_marker.png',
-    'head': 'static/images/overlay/geolocation_marker_heading.png',
-    'move_head': 'static/images/overlay/arrow.png',
-    'man_stop': 'static/images/overlay/man_walk.png',
-    'man_walk': 'static/images/overlay/man_walk.png',
+    'default': '/wsnLoc/static/images/overlay/geolocation_marker.png',
+    'head': '/wsnLoc/static/images/overlay/geolocation_marker_heading.png',
+    'move_head': '/wsnLoc/static/images/overlay/arrow.png',
+    'man_stop': '/wsnLoc/static/images/overlay/man_walk.png',
+    'man_walk': '/wsnLoc/static/images/overlay/man_walk.png',
 }
 
 var overlayVals = {
@@ -484,6 +484,7 @@ var ol3MapSimulateMove = {
     runningTimer: null,
     //停止上面的属性
     reset: function () {
+        $('#simulateMoveSpeed').val(1)
         ol3MapSimulateMove.positions = new ol.geom.LineString([],
             /** @type {ol.geom.GeometryLayout} */
             ('XYZM'));
@@ -512,7 +513,6 @@ $("#simulateLocate").on('click', function () {
     function start() {
         $("#simulateLocate").text('stop')
         ol3MapSimulateMove.reset();
-        console.log(ol3MapSimulateMove.coordinates)
         ol3MapSimulateMove.coordinates = commonTool.util.deepClone(mock.getMove().data);
         var first = ol3MapSimulateMove.coordinates.shift();
         simulatePositionChange(first);
@@ -520,6 +520,7 @@ $("#simulateLocate").on('click', function () {
 
         function geolocate() {
             var position = ol3MapSimulateMove.coordinates.shift();
+            var speed = 1 / $('#simulateMoveSpeed').val()
             if (!position) {
                 // stop()
                 // map.un('postcompose', postcompose);
@@ -530,7 +531,7 @@ $("#simulateLocate").on('click', function () {
             ol3MapSimulateMove.runningTimer = setTimeout(function () {
                 prevDate = newDate;
                 geolocate();
-            }, (newDate - prevDate)*0.1);
+            }, (newDate - prevDate) * speed);
         }
 
         geolocate();
@@ -587,7 +588,7 @@ function geolocationSimulateChange() {
         if (prevHeading) {
             var headingDiff = heading - commonTool.math.mod(prevHeading);
 
-            // force the rotation change to be less than 180°让旋转角度小于180    
+            // force the rotation change to be less than 180°  让旋转角度小于180    
             if (Math.abs(headingDiff) > Math.PI) {
                 var sign = (headingDiff >= 0) ? 1 : -1;
                 headingDiff = -sign * (2 * Math.PI - Math.abs(headingDiff));
@@ -620,6 +621,11 @@ function geolocationSimulateChange() {
                 var view = ol3Map.getMap().getView()
                 view.setCenter(getCenterWithHeading(c, -c[2], view.getResolution()));
                 view.setRotation(-c[2]);
+                // view.animate({
+                //     rotation:-c[2],
+                //     duration:500,
+                // })
+                
                 var moveMarker = overlayVals.get('move');
                 moveMarker.setPosition([c[0], c[1]]);
                 if (!map.getOverlayById(moveMarker.getId())) {
@@ -644,6 +650,9 @@ function geolocationSimulateChange() {
 function _initMap(containerId, isDebug) {
     isDebug == null ? isDebug = false : isDebug = isDebug;
     var map = new ol.CanvasMap({
+        controls: ol.control.defaults().extend([
+            new ol.control.FullScreen()
+        ]),
         target: containerId,
     });
     ol3Map.map = map;
@@ -770,7 +779,12 @@ function _rotateMap(isToLeft, radians) {
     radians = Math.abs(radians);
 
     var view = ol3Map.map.getView();
-    isToLeft ? view.setRotation(view.getRotation() - radians) : view.setRotation(view.getRotation() + radians);
+    // isToLeft ? view.setRotation(view.getRotation() - radians) : view.setRotation(view.getRotation() + radians);
+    if (isToLeft) radians = -radians;
+    view.animate({
+        rotation: view.getRotation() + radians,
+        duration: 200,
+    });
 }
 
 //``地图旋转``

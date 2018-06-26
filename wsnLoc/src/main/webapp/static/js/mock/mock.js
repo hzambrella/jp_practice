@@ -7,7 +7,7 @@ var mock = {
             y_max = 300;
         zoom_min = 2.2;
         zoom_max = 6.2;
-        basicMapSource = 'map/data/C_chain4.json';
+        basicMapSource = '/wsnLoc/map/data/C_chain4.json';
         basicMapType = 'geoJSON';
         scale = '3.5:1' //比例尺 图上距离(mm):实际距离(m) 3.5:1000
         return {

@@ -6,6 +6,29 @@
     /*background-color: #cccccc;*/
 }
 
+/* position the rotate control lower than usual */
+
+.ol-rotate {
+    top: 3em;
+}
+
+/*全屏*/
+/*.map:-moz-full-screen {
+    height: 100%;
+}
+
+.map:-webkit-full-screen {
+    height: 100%;
+}
+
+.map:-ms-fullscreen {
+    height: 100%;
+}
+
+.map:fullscreen {
+    height: 100%;
+}*/
+
 .marker {
     width: 20px;
     height: 20px;

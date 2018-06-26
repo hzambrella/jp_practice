@@ -39,7 +39,7 @@
     <!--mock-->
     <script src="/wsnLoc/static/js/mock/mock.js" type="text/javascript"></script>
     <script src="/wsnLoc/static/js/mock/anchorData.js" type="text/javascript"></script>
-        <script src="/wsnLoc/static/js/mock/moveData.js" type="text/javascript"></script>
+    <script src="/wsnLoc/static/js/mock/moveData.js" type="text/javascript"></script>
 
     <!--css-->
     <link href="/wsnLoc/static/css/map.css" rel="stylesheet" />
@@ -101,7 +101,16 @@
       </div>
     </div>
     <button class="btnClip" id='testClip' data-clipboard-text="3" style='display:none'>Copy</button>
-    <button id="simulateLocate">simulate</button>
+    <div style="padding:1px">
+      <button id="simulateLocate">simulate</button>
+      <label>速度放大(缩小)倍数:</label>
+      <select id="simulateMoveSpeed">   
+        <option value=0.5>0.5倍</option>
+        <option value=1 selected="selected" >1倍</option>
+        <option value=2>2倍</option>
+        <option value=5>5倍</option>
+      </select>
+    </div>
     <script src="/wsnLoc/static/js/map_style.js" type="text/javascript"></script>
     <script src="/wsnLoc/static/js/map_common.js" type="text/javascript"></script>
     <script src="/wsnLoc/static/js/app_vector.js" type="text/javascript"></script>
