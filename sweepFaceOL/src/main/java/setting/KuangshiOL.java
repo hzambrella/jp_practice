@@ -194,6 +194,7 @@ public class KuangshiOL {
 								+ JSON.toJSONString(wrongResp));
 						return wrongResp;
 					}
+					//System.out.println(respString);
 					CmpRespSucc cmpRes = JSON.parseObject(respString,
 							new TypeReference<CmpRespSucc>() {
 							});

@@ -122,11 +122,17 @@ $(function () {
             }
             var $confidence = $result.confidence
             if (0 == $confidence) {
-                return result_text, 0
+                return {
+                    "text": result_text,
+                    "confidence": 0
+                }
             }
 
             if (undefined == $result.thresholds) {
-                return result_text, 0
+                return {
+                    "text": result_text,
+                    "confidence": 0
+                }
             }
             var thresholds = $result.thresholds
             if ($confidence < thresholds["1e-3"]) {
@@ -138,7 +144,7 @@ $(function () {
             } else if ($confidence > thresholds["1e-5"]) {
                 result_text = "同一个人"
             }
-
+            
             return {
                 "text": result_text,
                 "confidence": $confidence
