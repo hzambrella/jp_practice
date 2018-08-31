@@ -2,6 +2,14 @@ $(function () {
     var $scanimg = $("#scanimg1").scanimg({
         speed_time: 1000
     })
+
+    $("#previewImg").click(function(event){
+        //阻止浏览器的默认事件。比如手机端会放大图片。然而我们只想触发按钮选择照片
+        event.preventDefault();
+        $("#myfile").trigger("click");
+    })
+
+
     $(".operate1").click(function (event) {
         var $target = $(event.target);
         // console.log($target)
@@ -41,7 +49,6 @@ $(function () {
                 $.toastForJavaAjaxRes(data, function () {
                     getResult(data)
                 })
-                $scanimg.scanimg("stop")
                 $("#test_scan").enableButton()
             },
             error: function (data, status, e) {
@@ -85,6 +92,7 @@ $(function () {
             "颜值:" + " 对男性：" + $forMale + "   " + "对女性:" + $forFeMale + "</br>" +
             "情绪(不是很准):" + $emotion_result + "</br>"
         $("#result1").html(_html)
+        $scanimg.scanimg("stop")
     }
 
     var map_result = {

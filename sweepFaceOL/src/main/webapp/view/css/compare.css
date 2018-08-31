@@ -11,4 +11,11 @@
 .result_mess2 {
     height: 100px;
     width: 100%;
+    overflow:auto;
+    font-size:1em;
+}
+
+.operate2 button{
+    width:120px;
+    height:40px;
 }

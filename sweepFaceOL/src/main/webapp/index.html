@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>sweep face online</title>
+    <title>在线测颜值,测相似度</title>
     <!--<link href="/sweepFaceOL/view/css/style.css" rel='stylesheet' type='text/css' />-->
     <!--<meta name="viewport" content="width=device-width, initial-scale=1">-->
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -46,20 +46,21 @@
 <body>
     <div class="main-panel">
         <div class="ui-widget-header app-title">在线人脸"扫一扫"</div>
-        <div id="tabs">
+        <div id="tabs" class="tabs">
             <ul>
-                <li><a href="#tabs-1">扫一扫</a></li>
-                <li><a href="#tabs-2">对比识别</a></li>
-                <li><a href="#tabs-3">帮助</a></li>
+                <li><a href="#tabs-1">扫颜值</a></li>
+                <li><a href="#tabs-2">相似度</a></li>
+                <li><a href="#tabs-3">帮助信息</a></li>
             </ul>
 
             <div id="tabs-1">
+                <p>快来测测你的颜值吧!(娱乐而已,不要相信!要相信内在美和才华)</p>
                 <div style="position:relative">
                     <div id="scanimg1" class="scanimg"></div>
                     <img id="previewImg" src="/sweepFaceOL/view/images/nopic.png" />
                 </div>
 
-                <div class="file_form">
+                <div class="file_form" style="display:none">
                     <form method="post" enctype="multipart/form-data">
                         请选择图片：<input id="myfile" name="myfile" type="file" onchange="showPreview(this,'previewImg')" accept="image/jpg,image/jpeg,image/png"
                         />
@@ -67,7 +68,7 @@
                 </div>
 
                 <div class="operate1">
-                    <button id="stop">stop</button>
+                    <button id="stop">停！！</button>
                     <button id="test_scan">点我开扫！</button>
                 </div>
                 <div id="result1" class="result_mess1 ui-widget-content" style="overflow:auto">
@@ -76,15 +77,16 @@
             </div>
 
             <div id="tabs-2">
+                <p>看看你们长得像不像</p>
                 <div style="position:relative">
-                    <p>证件图(点击上传)</p>
+                    <p>证件图、明星照、兄弟闺蜜的照骗(点击上传)</p>
                     <div id="scanimg2" class="scanimg"></div>
                     <img id="addImg1" class="addImg" src="/sweepFaceOL/view/images/addPic.png" />
                 </div>
                 <div style="position:relative">
                     <p>待对比图:(点击上传)</p>
                     <div id="scanimg3" class="scanimg"></div>
-                    <img id="addImg2" class="addImg" src="/sweepFaceOL/view/images/addPic.png" />
+                    <img id="addImg2" class="addImg" src="/sweepFaceOL/view/images/addPic2.png" />
                 </div>
                 <div id="compare_img1" class="ui-helper-hidden">
                     <form method="post" enctype="multipart/form-data">
@@ -103,15 +105,15 @@
                     <button id="stop2">stop</button>
                     <button id="test_scan2">scan it!</button>
                 </div>
-                <div id="result2" class="result_mess2 ui-widget-content" style="overflow:auto;font-size:0.5em">
+                <div id="result2" class="result_mess2 ui-widget-content">
 
                 </div>
             </div>
 
             <div id="tabs-3">
-                <p>扫一扫：选张人脸照，可以得到年龄，性别，<span style="color:red">颜值(别太相信)</span>和情绪。不准别打我 o_0 </p>
+                <p>测颜值：选张人脸照，可以得到年龄，性别<span style="color:red">(为某装大佬准备的测试器(滑稽))</span>，颜值<span style="color:red">(别太相信)</span>和情绪。不准别打我 o_0 </p>
                  <br/>
-                <p>对比识别：选两张人脸照。来判断是不是一个人 </p>
+                <p>相似度：选两张人脸照。看看你们像不像 </p>
                 <br/>
                 <p>by hzambrella 有bug联系qq 504489929</p>
             </div>

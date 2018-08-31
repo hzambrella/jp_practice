@@ -20,6 +20,8 @@ $(function () {
     })
 
     $(".addImg").click(function (event) {
+        //阻止浏览器的默认事件。比如手机端会放大图片。然而我们只想触发按钮选择照片
+        event.preventDefault()
         var $target = $(event.target)
         // console.log(map[$target.attr("id")])
         $(map[$target.attr("id")]).find("input").trigger("click")
