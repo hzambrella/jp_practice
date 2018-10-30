@@ -19,7 +19,7 @@ $(function () {
                 $.toast("请上传图片")
                 return
             }
-            $("#test_scan").disabledButton()
+           
             // getResult()
             startScan()
         } else if ($target.is("button#stop")) {
@@ -29,7 +29,7 @@ $(function () {
     })
 
     function startScan() {
-        $scanimg.scanimg("scanning")
+       
         var files = $("#myfile").prop("files");
         if (files.length <= 0) {
             $.toast("请选择一张图片");
@@ -37,6 +37,9 @@ $(function () {
         }
         form = new FormData();
         form.append(files[0].name, files[0]);
+
+        $scanimg.scanimg("scanning")
+        $("#test_scan").disabledButton()
 
         $.ajax({
             url: '/sweepFaceOL/sweepServlet',
@@ -49,6 +52,7 @@ $(function () {
                 $.toastForJavaAjaxRes(data, function () {
                     getResult(data)
                 })
+                $scanimg.scanimg("stop")
                 $("#test_scan").enableButton()
             },
             error: function (data, status, e) {
@@ -90,9 +94,9 @@ $(function () {
         _html = "年龄:" + $age + "</br>" +
             "性别:" + $gender + "</br>" +
             "颜值:" + " 对男性：" + $forMale + "   " + "对女性:" + $forFeMale + "</br>" +
-            "情绪(不是很准):" + $emotion_result + "</br>"
+            "情绪(不是很准):" + $emotion_result + "</br>"+
+            "(本测试纯属娱乐!要相信内在美和才华!)"
         $("#result1").html(_html)
-        $scanimg.scanimg("stop")
     }
 
     var map_result = {
